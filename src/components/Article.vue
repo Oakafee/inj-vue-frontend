@@ -86,7 +86,7 @@ export default {
 @import '../settings.scss';
 
 .inj-article {
-	flex: 5 0 0;
+	flex: 3 0 0; // changed from 5 0 0
 	padding: $spacing;
 	@media (min-width: $media-break) {
 		padding: 2 * $spacing;

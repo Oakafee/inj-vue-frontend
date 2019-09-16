@@ -3,12 +3,7 @@
 		<ul class="inj-nav__tree" v-for="article in mainCatArticles" :key="article.pk">
 			<TreeNav :parentArticle="article" :articles="articles" />	
 		</ul>
-	
-		<ul class="inj-nav__all">
-			<li v-for="article in articles" :key="article.pk">
-				<router-link :to="article.slug" @click.native="toggleNav()">{{ article.title }}</router-link>
-			</li>
-		</ul>
+		<FilterNav :articles="articles" />
 	</div>
 </template>
 
@@ -19,10 +14,11 @@ import store from '../store';
 import constants from '../constants';
 
 import TreeNav from './TreeNav';
+import FilterNav from './FilterNav';
 
 export default {
 	name: 'Nav',
-	components: { TreeNav },
+	components: { TreeNav, FilterNav },
 	data: function () {
 		return {
 			articles: '',
@@ -53,9 +49,6 @@ export default {
 				}
 			}
 		},
-		toggleNav() {
-			store.commit('toggleMobileNav');
-		}
 	},
 	computed: {
 		mobileOpen () {
@@ -83,6 +76,7 @@ export default {
 		border-top: none;
 		visibility: hidden;
 		opacity: 0;
+		padding: $spacing;
 	}
 	&--mobile-open {
 		visibility: visible;
@@ -91,6 +85,9 @@ export default {
 	@media(min-width: $media-break) {
 		flex: 1 0 0;
 		padding: $spacing;
+	}
+	&__tree {
+		padding-left: 3 * $spacing;
 	}
 	&__all {
 		width: 200px;

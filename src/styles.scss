@@ -5,21 +5,26 @@ body {
 	background-color: $color-secondary;
 	margin: 0;
 	overflow-x: hidden; // cheap solution to a problem I don't understand: there is white space to the right of the page at certain screen widths
+	letter-spacing: 0.2px;
 }
 
-p, ul {
-	letter-spacing: 0.2px;
+p {
 	line-height: 1.5;
+	font-size: 13pt;
 	@media(min-width: $media-break) {
-		font-size: 13pt;
 		line-height: 1.7;
 	}
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5, h6 { margin: 0; }
+
+h4 { font-weight: normal; }
+
+ul {
+	@extend p;
+	list-style-type: none;
 	margin: 0;
+	padding: 0;
 }
 
-h4 {
-	font-weight: normal;
-}
+a { color: $color-primary; } // this is a little ugly?
