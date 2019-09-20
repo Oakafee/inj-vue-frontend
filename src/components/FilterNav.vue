@@ -1,6 +1,6 @@
 <template>
 	<div class="filter-nav">
-		<input type="text" v-model="filterInput" />
+		<input class="filter-nav__input inj-text-input" type="text" v-model="filterInput" placeholder="Filter articles" />
 		<ul class="filter-nav__results">
 			<li v-for="article in filteredArticles" :key="article.pk">
 				<router-link :to="article.slug" @click.native="toggleNav()">{{ article.title }}</router-link>
@@ -33,7 +33,6 @@ export default {
 				
 				for(let j=0; j<words.length; j++) {
 					if(words[j].substring(0,len) === this.filterInput) {
-						console.log('words: ', words[j].title);
 						filtered.push(this.articles[i]);
 						break;
 					}		
@@ -53,9 +52,15 @@ export default {
 <style lang="scss">
 @import '../settings.scss';
 
-.filter-nav__results {
-	padding: $spacing;
-	height: 200px;
-	overflow: scroll;
+.filter-nav {
+	padding-top: $spacing;
+	&__input {
+		margin-left: $spacing;
+	}
+	&__results {
+		padding: $spacing;
+		height: 200px;
+		overflow-y: scroll;
+	}
 }
 </style>

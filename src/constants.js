@@ -7,4 +7,5 @@ export default {
 	MAP_FEATURE_COLOR_PRIMARY: '#00589c',
 	MAP_FEATURE_COLOR_SECONDARY: '#ff9e0f',
 	STATIC_BASE_URL: 'https://interpretation-of-nj.s3.us-east-2.amazonaws.com/',
+	DATE_FORMAT: { month: 'long', day: 'numeric', year: 'numeric' },
 }

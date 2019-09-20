@@ -4,14 +4,18 @@ import Vuex from 'vuex';
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
-  state: {
-    mobileNavOpen: false,
-  },
-  mutations: {
-    toggleMobileNav (state) {
-      state.mobileNavOpen = !state.mobileNavOpen;
-    }
-  }
+	state: {
+		mobileNavOpen: false,
+		editableArticle: null,
+	},
+	mutations: {
+		toggleMobileNav (state) {
+			state.mobileNavOpen = !state.mobileNavOpen;
+		},
+		setEditArticle (state, slug) {
+			state.editableArticle = slug;
+		}
+	}
 });
 
 export default store;

@@ -5,18 +5,18 @@ body {
 	background-color: $color-secondary;
 	margin: 0;
 	overflow-x: hidden; // cheap solution to a problem I don't understand: there is white space to the right of the page at certain screen widths
-	letter-spacing: 0.2px;
+	letter-spacing: $letter-spacing-primary;
 }
 
 p {
 	line-height: 1.5;
-	font-size: 13pt;
+	font-size: $font-size-primary;
 	@media(min-width: $media-break) {
 		line-height: 1.7;
 	}
 }
 
-h1, h2, h3, h4, h5, h6 { margin: 0; }
+h1, h2, h3, h4, h5, h6 { margin: 0.25em 0; }
 
 h4 { font-weight: normal; }
 
@@ -28,3 +28,68 @@ ul {
 }
 
 a { color: $color-primary; } // this is a little ugly?
+
+@mixin dark-button {
+	background-color: $color-primary;
+	color: white;
+	border-color: black;
+}
+
+@mixin light-button {
+	color: $color-primary;
+	border-color: $color-primary;
+	background-color: white;
+}
+
+.inj-button {
+	@extend p;
+	@include dark-button;
+	font-family: $font-family-primary;
+	font-variant: small-caps;
+	letter-spacing: $letter-spacing-primary;
+	border: 2px solid black;
+	cursor: pointer;
+	transition-property: color, background-color, border-color;
+	transition-duration: 0.2s;
+	&:hover, &:focus {
+		@include light-button;
+	}
+	&:active {
+		background-color: $color-tertiary;
+	}
+	&.inj-button-error {
+		border-color: $color-quaternary;
+	}
+	&.inj-button-secondary {
+		@include light-button;
+		&:hover, &:focus {
+			background-color: lightgray;
+		}
+	}
+	&.inj-button-tertiary {
+		background-color: $color-quaternary;
+		&:hover, &:focus {
+			@include dark-button;
+			background-color: $color-tertiary;
+		}
+	}
+}
+
+.inj-text-input {
+	padding: $spacing / 2;
+	font-family: $font-family-primary;
+	font-size: $font-size-primary;
+	&.inj-text-input-error {
+		border-color: $color-quaternary;
+	}
+}
+
+.inj-textarea {
+	@extend p;
+	width: calc(100% - 20px);
+	padding: $spacing;
+	font-family: $font-family-primary;
+	&.inj-textarea-error {
+		border-color: $color-quaternary;
+	}
+}
