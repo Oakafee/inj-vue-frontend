@@ -11,10 +11,10 @@ import { mapState } from 'vuex';
 
 export default {
 	name: 'ArticleChildren',
-	props: [ 'articlePk' ],
 	computed: {
 		...mapState({
 			articles: 'articleList',
+			articleDetail: 'articleDetail',
 		}),
 		childrenArticlesList() {
 			let childrenArticlesList = [];
@@ -22,7 +22,7 @@ export default {
 			if (this.articles) {
 				for (let i=0; i<this.articles.length; i++) {
 					let art = this.articles[i];
-					if (art.parent === this.articlePk) {
+					if (art.parent === this.articleDetail.pk) {
 						childrenArticlesList.push(art);
 					}
 				}

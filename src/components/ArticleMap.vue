@@ -6,11 +6,11 @@
 
 <script>
 import L from 'leaflet';
+import {mapState} from 'vuex';
 import constants from '../constants';
 
 export default {
 	name: 'ArticleMap',
-	props: [ 'feature' ],
 	data: function () {
 		return {
 			map: '',
@@ -25,6 +25,14 @@ export default {
 			attribution: constants.MAP_TILE_ATTRIBUTION
 		}).addTo(this.map);
 	},
+	computed: {
+		...mapState({
+			feature: 'articleMapFeature',
+		}),
+		mapHidden() {
+			return !this.feature.geometry;
+		}
+    },
 	watch: {
 		feature() {
 			if (this.map.hasLayer(this.mapFeatureLayer)) {
@@ -40,12 +48,7 @@ export default {
 				this.map.fitBounds(this.mapFeatureLayer.getBounds());
 			}
 		}
-	},
-	computed: {
-		mapHidden() {
-			return !this.feature.geometry;
-		}
-    }
+	}
 }
 </script>
 

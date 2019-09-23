@@ -9,18 +9,24 @@
 
 <script>
 import axios from 'axios';
+import {mapState} from 'vuex';
 
+import store from '../store.js';
 import constants from '../constants';
 
 export default {
 	name: 'ArticleCommentAdd',
-	props: [ 'articlePk' ],
 	data: function () {
 		return {
 			comTitle: '',
 			comContent: '',
 			validationError: null,
 		}
+	},
+	computed: {
+		...mapState({
+			articleDetail: 'articleDetail',
+		}),
 	},
 	methods: {
 		addComment() {
@@ -33,7 +39,7 @@ export default {
 				'com_title': this.comTitle,
 				'com_author': 'Jesse Fried',
 				'commentary': this.comContent,
-				'article': this.articlePk,
+				'article': this.articleDetail.pk,
 			};
 			// including this.articlePk in the request url isn't really necessary, it's just that I'm using the same Django REST class-based view for both retrieving an article's comments and adding new comments, the ListCreateAPIView
 			let apiUrl = constants.API_BASE_URL + 'commentary/' + this.articlePk + '/';
@@ -41,7 +47,7 @@ export default {
 
 			axios.post(apiUrl, serializedComment)
 				.then((response) => {
-					self.$emit(('show-new-comment'), response.data);
+					store.commit('addComment', response.data);
 					self.comTitle = '';
 					self.comContent = '';
 					self.validationError = null;

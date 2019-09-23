@@ -1,5 +1,5 @@
 <template>
-<div class="inj-article__breadcrumbs">
+<div class="inj-article__breadcrumbs" v-if="articleDetail.parent">
 	<span v-for="article in parentTree" :key="article.pk">
 		<router-link :to="article.slug">{{ article.title }}</router-link>
 		&nbsp;->&nbsp;
@@ -12,15 +12,15 @@ import { mapState } from 'vuex';
 
 export default {
 	name: 'ArticleBreadcrumbs',
-	props: [ 'articlePk' ],
 	computed: {
 		...mapState({
 			articles: 'articleList',
+			articleDetail: 'articleDetail',
 		}),
 		parentTree() {
 			let parentList = [];
 			
-			function nextLevelParent(pk, cumulativeParentList, articleList) {
+			function nextLevelParent(pk, cumulativeParentList, articleList) {				
 				let nextParent = {};
 				
 				if (!articleList) return null;
@@ -48,7 +48,7 @@ export default {
 				return cumulativeParentList;
 			}
 			
-			parentList = nextLevelParent(this.articlePk, parentList, this.articles);
+			parentList = nextLevelParent(this.articleDetail.pk, parentList, this.articles);
 			if (parentList) {
 				parentList = parentList.reverse();
 				// I shouldn't have to do this...I should change the function
