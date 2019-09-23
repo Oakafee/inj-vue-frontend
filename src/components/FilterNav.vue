@@ -10,17 +10,21 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 import store from '../store';
 
 export default {
 	name: 'FilterNav',
-	props: ['articles'],
 	data: function () {
 		return {
 			filterInput: '',
 		}
 	},
 	computed: {
+		...mapState({
+			articles: 'articleList',
+		}),
 		filteredArticles() {
 			if (!this.filterInput) return this.articles;
 			

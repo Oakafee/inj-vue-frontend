@@ -1,30 +1,43 @@
 <template>
 	<div class="inj-article">
-		<div class="inj-article__content">
+		<div class="inj-article__content" :class="{ 'inj-article__content--show' : articleInfo.pk }">
 			<ArticleMap :feature="mapFeature" />
 			
 			<div v-if="editPermission" class="inj-article__edit-button">
-				<span>Breadcrumbs </span>
+				<span>Som'n </span>
 				<button v-if="editable" class="inj-button inj-button-secondary" @click="cancelEditing()">Cancel Editing </button>
 				<button v-else class="inj-button" @click="editArticle()">Edit Article </button>
 			</div>
 			
 			<div class="inj-article__title-area">
+				<ArticleBreadcrumbs :articlePk="articleInfo.pk" />
 				<h1>{{ articleInfo.title }}</h1>
 				<h3 v-if="articleInfo.subtitle">{{ articleInfo.subtitle }} </h3>
 				<h4>By {{ articleInfo.author }} - {{ formattedPubDate }}</h4>
 			</div>
-			<p v-if="!editable" v-html="articleInfo.article_content"></p>
-			<textarea v-if="editable" class="inj-article__edit-content inj-textarea" v-model="editedContent" />
-			
-			<div v-if="editable" class="inj-article__edit-button">
-				<button class="inj-button inj-button-tertiary" @click="deleteArticle()">Delete Article </button>
-				<button class="inj-button inj-button-secondary" @click="cancelEditing()">Cancel Editing </button>
-				<button class="inj-button" @click="submitChanges()">Submit Changes </button>
+			<div v-if="editable">
+				<textarea class="inj-article__edit-content inj-textarea" :class="{ 'inj-textarea-error' : validationError }" v-model="editedContent" />			
+				<span class="inj-text-error" v-if="validationError">{{ validationError }}  </span>
+				<div class="inj-article__edit-button">
+					<button class="inj-button inj-button-tertiary" @click="deleteModalOpen = true">Delete Article </button>
+					<button class="inj-button inj-button-secondary" @click="cancelEditing()">Cancel Editing </button>
+					<button class="inj-button" :class="{ 'inj-button-error' : validationError }" @click="submitChanges()">Submit Changes </button>
+				</div>
 			</div>
-			
+			<div v-else>
+				<p v-html="articleInfo.article_content"></p>
+			</div>		
 			<ArticleComments :articlePk="articleInfo.pk" :articleEdit="editableArticle" />
+			<ArticleChildren :articlePk="articleInfo.pk" />
 		</div>
+		<InjModal v-if="deleteModalOpen">
+			<p>Are you sure you want to delete the article {{ articleInfo.title }}? </p>
+			<div class="inj-article__edit-button">
+				<button class="inj-button inj-button-secondary" @click="deleteModalOpen = false">No </button>
+				<button class="inj-button inj-button-tertiary" @click="deleteArticle()">Yes </button>
+			</div>
+		<div v-if="!articleInfo.pk">Loading...</div>
+		</InjModal>
 	</div>
 </template>
 
@@ -32,15 +45,22 @@
 import axios from 'axios';
 
 import constants from '../constants';
+import functions from '../functions';
 
 import ArticleMap from './ArticleMap';
+import ArticleBreadcrumbs from './ArticleBreadcrumbs';
 import ArticleComments from './ArticleComments';
+import ArticleChildren from './ArticleChildren';
+import InjModal from './InjModal';
 
 export default {
 	name: 'Article',
 	components: {
 		ArticleMap,
-		ArticleComments
+		ArticleBreadcrumbs,
+		ArticleComments,
+		ArticleChildren,
+		InjModal
 	},
 	data() {
 		return {
@@ -51,6 +71,8 @@ export default {
 			editPermission: true,
 			editableArticle: null,
 			editedContent: null,
+			validationError: null,
+			deleteModalOpen: false,
 		}
 	},
 	mounted() {
@@ -61,8 +83,9 @@ export default {
 	beforeRouteUpdate (to, from, next) {
 		// this fires when the route changes without rerendering the component
 		this.slug = to.params.slug;
-		this.getArticleInfo();
 		next();
+		this.articleInfo = {};
+		this.getArticleInfo();
 	},
 	computed: {
 		formattedPubDate() {
@@ -116,6 +139,11 @@ export default {
 			this.editableArticle = null;
 		},
 		submitChanges() {
+			// validation
+			if (this.editedContent) this.sendChangedInfo()
+			else this.validationError = 'Please submit something';
+		},
+		sendChangedInfo() {
 			let apiUrl = constants.API_BASE_URL + constants.API_PATH + this.slug + '/';
 			let serializedChanges = {};
 			serializedChanges = {
@@ -126,14 +154,34 @@ export default {
 			axios.patch(apiUrl, serializedChanges)
 				.then((response) => {
 					// handle success
-					console.log('successfully changed article', response.data);
+					self.articleInfo = response.data
+					self.editableArticle = null;
+					self.editedContent = null;
+					self.validationError = null;
 				})
 				.catch((error) => {
 					// handle error
-					console.log('failed to change article', error);
+					self.validationError = 'server error: ' + error;
 					return error;
 				});
 		},
+		deleteArticle() {
+			let apiUrl = constants.API_BASE_URL + constants.API_PATH + this.slug + '/';
+			let self = this;
+		
+			axios.delete(apiUrl)
+				.then((response) => {
+					// handle success
+					functions.getArticleList();
+					self.$router.push({ name: 'home' });
+				})
+				.catch((error) => {
+					self.validationError = 'server error with delete: ' + error;
+					return error;
+				});
+				
+			this.deleteModalOpen = false;
+		}
 	}
 }
 </script>
@@ -154,6 +202,13 @@ export default {
 	&__content {
 		max-width: 600px;
 		margin: 0 auto;
+		visibility: hidden;
+		opacity: 0;
+		transition: opacity $transition-time;
+		&.inj-article__content--show {
+			visibility: visible;
+			opacity: 1;
+		}
 	}
 	&__edit-content {
 		height: 300px;

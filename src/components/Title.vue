@@ -10,7 +10,7 @@
 		<h1 class="inj-header__title">Interpretation of<wbr /> New Jersey </h1>
 	</div>
 	<div class="inj-header__right">
-		<svg class="inj-header__img inj-header__menu" @click="toggleNav()" viewBox="0 0 24 24" width="32" height="32" stroke-width="2">
+		<svg class="inj-header__img inj-header__menu" :class="{ 'inj-header__menu--open' : mobileNavOpen }" @click="toggleNav()" viewBox="0 0 24 24" width="32" height="32" stroke-width="2">
 			<line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
 		</svg>
 		<router-link to="/pulaski-skyway">
@@ -21,7 +21,10 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 import constants from '../constants';
+import functions from '../functions';
 import store from '../store.js';
 
 export default {
@@ -33,9 +36,13 @@ export default {
 			skywaySrc: `${constants.STATIC_BASE_URL}skyway-circle.png`,
 		}
 	},
+	computed: mapState({
+		mobileNavOpen: 'mobileNavOpen',
+    }),
 	methods: {
 		toggleNav() {
 			store.commit('toggleMobileNav');
+			functions.updateArticleList();
 		}
 	},
 }
@@ -97,6 +104,9 @@ export default {
 		transition: stroke 0.2s;
 		&:hover {
 			stroke: $color-tertiary;
+		}
+		&.inj-header__menu--open {
+			stroke: $color-quaternary;
 		}
 	}
 }

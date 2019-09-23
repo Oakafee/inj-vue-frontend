@@ -1,9 +1,9 @@
 <template>
 	<div class="inj-article-comment-add">
-		<input class="inj-article-comment-add__title inj-text-input" :class="{ 'inj-text-input-error' : responseError }" type="text" v-model="comTitle" placeholder="Add Comment Title" />
-		<textarea class="inj-article-comment-add__content inj-textarea" v-model="comContent" :class="{ 'inj-textarea-error' : responseError }" placeholder="Add Your Thoughts..." />
-		<button class="inj-button" :class="{ 'inj-button-error' : responseError }" @click="addComment()">Add your interpretation </button>
-		<p v-if="responseError">Sorry there was an error submitting your comment: {{ responseError }}</p>
+		<input class="inj-article-comment-add__title inj-text-input" :class="{ 'inj-text-input-error' : validationError }" type="text" v-model="comTitle" placeholder="Add Comment Title" />
+		<textarea class="inj-article-comment-add__content inj-textarea" v-model="comContent" :class="{ 'inj-textarea-error' : validationError }" placeholder="Add Your Thoughts..." />
+		<span class="inj-text-error" v-if="validationError">{{ validationError }} </span>
+		<button class="inj-button" :class="{ 'inj-button-error' : validationError }" @click="addComment()">Add your interpretation </button>
 	</div>
 </template>
 
@@ -19,11 +19,15 @@ export default {
 		return {
 			comTitle: '',
 			comContent: '',
-			responseError: null,
+			validationError: null,
 		}
 	},
 	methods: {
 		addComment() {
+			if(this.comTitle && this.comContent) this.sendCommentInfo()
+			else this.validationError = 'Please make sure all the fields are filled out';
+		},
+		sendCommentInfo() {
 			let serializedComment = {};
 			serializedComment = {
 				'com_title': this.comTitle,
@@ -40,9 +44,10 @@ export default {
 					self.$emit(('show-new-comment'), response.data);
 					self.comTitle = '';
 					self.comContent = '';
+					self.validationError = null;
 				})
 				.catch((error) => {
-					self.responseError = error;
+					self.validationError = 'server error: ' + error;
 				});
 		},
 	},

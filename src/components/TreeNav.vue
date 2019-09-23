@@ -13,21 +13,28 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 import store from '../store';
 import TreeNav from "./TreeNav";
 
 export default {
 	name: 'TreeNav',
 	components: { TreeNav },
-	props: ['parentArticle', 'articles'],
+	props: ['parentArticle'],
 	data: function () {
 		return {
 			showChildren: false,
 		}
 	},
 	computed: {
-		childrenArticles() {
+		...mapState({
+			articles: 'articleList',
+		}),
+		childrenArticles() {		
 			let childrenArticles = [];
+			
+			if (!this.articles) return childrenArticles;
 			for (let i=0; i<this.articles.length; i++) {
 				if (this.articles[i].parent === this.parentArticle.pk) {
 					childrenArticles.push(this.articles[i]);
@@ -41,7 +48,7 @@ export default {
 		}
     },
     methods: {
-    	toggleNav() {
+		toggleNav() {
 			store.commit('toggleMobileNav');
 		}
     }

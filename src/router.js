@@ -13,7 +13,7 @@ const router = new VueRouter({
 	routes: [
 		// dynamic segments start with a colon
 		{ path: '/:slug/', component: Article },
-		{ path: '/', component: Home },
+		{ path: '/', name: 'home', component: Home },
 		{ path: '*', name: '404', component: FourOhFour },
 	],
 	// this makes it so that you scroll to the top of the page when you navigate to a new article

@@ -1,17 +1,16 @@
 <template>
-	<div class="inj-nav" :class="{ 'inj-nav--mobile-open' : mobileOpen }">
+	<div class="inj-nav" :class="{ 'inj-nav--mobile-open' : mobileOpen, 'inj-nav--show' : articleList }">
 		<ul class="inj-nav__tree" v-for="article in mainCatArticles" :key="article.pk">
-			<TreeNav :parentArticle="article" :articles="articles" />	
+			<TreeNav :parentArticle="article" />	
 		</ul>
-		<FilterNav :articles="articles" />
+		<FilterNav />
 	</div>
 </template>
 
 <script>
-import axios from 'axios';
+import { mapState } from 'vuex';
 
-import store from '../store';
-import constants from '../constants';
+import functions from '../functions';
 
 import TreeNav from './TreeNav';
 import FilterNav from './FilterNav';
@@ -21,42 +20,30 @@ export default {
 	components: { TreeNav, FilterNav },
 	data: function () {
 		return {
-			articles: '',
-			mainCatArticles: [],
+			// articles: '',
+			// mainCatArticles: [],
 		}
-	},
-	methods: {
-		getArticleList() {
-			let apiUrl = constants.API_BASE_URL + constants.API_PATH;
-			let self = this;
-		
-			axios.get(apiUrl)
-				.then(function (response) {
-					// handle success
-					self.articles = response.data;
-					self.getMainCatList();
-				})
-				.catch(function (error) {
-					// handle error
-					console.log('article list call failed');
-					return error;
-				});
-		},
-		getMainCatList() {
-			for(let i=0; i<this.articles.length; i++) {
-				if(this.articles[i].main_cat) {
-					this.mainCatArticles.push(this.articles[i])
-				}
-			}
-		},
 	},
 	computed: {
-		mobileOpen () {
-			return this.$store.state.mobileNavOpen;
+		...mapState({
+			mobileOpen: 'mobileNavOpen',
+			articleList: 'articleList',
+		}),
+		mainCatArticles() {
+			let mains = [];
+			
+			if (!this.articleList) return mains;  			
+			for(let i=0; i<this.articleList.length; i++) {
+				if(this.articleList[i].main_cat) {
+					mains.push(this.articleList[i])
+				}
+			}
+			return mains;
 		}
+		
 	},
 	mounted() {
-		this.getArticleList();
+		functions.getArticleList();
 	}
 }
 </script>
@@ -66,21 +53,27 @@ export default {
 
 .inj-nav {
 	background-color: $color-secondary;
+	visibility: hidden;
+	opacity: 0;
+	transition: opacity $transition-time;
 	@media(max-width: $media-break) {
-		width: calc(100% - 4px); //to factor in the border I guess?
+		width: calc(100% - 24px); // to factor in the border and the padding on the container
 		position: absolute;
 		top: 63px;
 		z-index: 9999;
-		transition: opacity 0.6s;
 		border: 2px solid black;
 		border-top: none;
-		visibility: hidden;
-		opacity: 0;
 		padding: $spacing;
 	}
 	&--mobile-open {
 		visibility: visible;
 		opacity: 1;
+	}
+	&--show {
+		@media(min-width: $media-break) {
+			visibility: visible;
+			opacity: 1;			
+		}
 	}
 	@media(min-width: $media-break) {
 		flex: 1 0 0;
