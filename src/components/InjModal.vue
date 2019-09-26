@@ -34,6 +34,7 @@ export default {
 	&__container {
 		position: fixed;
 		top: 0;
+		left: 0;
 		z-index: 99999;
 		width: 100%;
 	}

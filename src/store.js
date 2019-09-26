@@ -6,8 +6,14 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
 	state: {
 		mobileNavOpen: false,
-		articleList: null,
+		articleList: {},
+		articleDetail: {},
+		articleMapFeature: {},
+		articleCommentary: {},
+		editPermission: true,
 		editableArticle: null,
+		editMapFeature: false,
+		newMapFeature: {},
 	},
 	mutations: {
 		toggleMobileNav (state) {
@@ -16,8 +22,26 @@ const store = new Vuex.Store({
 		updateArticleList(state, articles) {
 			state.articleList = articles;
 		},
-		setEditArticle (state, slug) {
+		getArticleDetail(state, articleDetail) {
+			state.articleDetail = articleDetail;
+		},
+		getArticleCommentary(state, comments) {
+			state.articleCommentary = comments;
+		},
+		updateArticleMapFeature(state, mapFeature) {
+			state.articleMapFeature = mapFeature;
+		},
+		editArticle (state, slug) {
 			state.editableArticle = slug;
+		},
+		addComment(state, comment) {
+			state.articleCommentary.push(comment);
+		},
+		toggleEditMapFeature(state) {
+			state.editMapFeature = !state.editMapFeature;
+		},
+		addNewMapFeature(state, feature) {
+			state.newMapFeature = feature;
 		}
 	}
 });

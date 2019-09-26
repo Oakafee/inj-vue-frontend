@@ -1,19 +1,17 @@
 <template>
 	<div class="inj-article">
-		<div class="inj-article__content" :class="{ 'inj-article__content--show' : articleInfo.pk }">
-			<ArticleMap :feature="mapFeature" />
-			
+		<div class="inj-article__content" v-if="articleDetail.pk">
+			<ArticleMap :editable="editable" />
 			<div v-if="editPermission" class="inj-article__edit-button">
-				<span>Som'n </span>
 				<button v-if="editable" class="inj-button inj-button-secondary" @click="cancelEditing()">Cancel Editing </button>
 				<button v-else class="inj-button" @click="editArticle()">Edit Article </button>
 			</div>
 			
 			<div class="inj-article__title-area">
-				<ArticleBreadcrumbs :articlePk="articleInfo.pk" />
-				<h1>{{ articleInfo.title }}</h1>
-				<h3 v-if="articleInfo.subtitle">{{ articleInfo.subtitle }} </h3>
-				<h4>By {{ articleInfo.author }} - {{ formattedPubDate }}</h4>
+				<!-- <ArticleBreadcrumbs /> Having issue with excess recursion -->
+				<h1>{{ articleDetail.title }}</h1>
+				<h3 v-if="articleDetail.subtitle">{{ articleDetail.subtitle }} </h3>
+				<h4>By {{ articleDetail.author }} - {{ formattedPubDate }}</h4>
 			</div>
 			<div v-if="editable">
 				<textarea class="inj-article__edit-content inj-textarea" :class="{ 'inj-textarea-error' : validationError }" v-model="editedContent" />			
@@ -25,25 +23,27 @@
 				</div>
 			</div>
 			<div v-else>
-				<p v-html="articleInfo.article_content"></p>
+				<p v-html="articleDetail.article_content"></p>
 			</div>		
-			<ArticleComments :articlePk="articleInfo.pk" :articleEdit="editableArticle" />
-			<ArticleChildren :articlePk="articleInfo.pk" />
+			<ArticleComments :articlePk="articleDetail.pk" :articleEdit="editableArticle" />
+			<ArticleChildren />
 		</div>
+		<div v-else>Loading... </div>
 		<InjModal v-if="deleteModalOpen">
-			<p>Are you sure you want to delete the article {{ articleInfo.title }}? </p>
+			<p>Are you sure you want to delete the article {{ articleDetail.title }}? </p>
 			<div class="inj-article__edit-button">
 				<button class="inj-button inj-button-secondary" @click="deleteModalOpen = false">No </button>
 				<button class="inj-button inj-button-tertiary" @click="deleteArticle()">Yes </button>
 			</div>
-		<div v-if="!articleInfo.pk">Loading...</div>
 		</InjModal>
 	</div>
 </template>
 
 <script>
 import axios from 'axios';
+import {mapState} from 'vuex';
 
+import store from '../store.js';
 import constants from '../constants';
 import functions from '../functions';
 
@@ -64,12 +64,6 @@ export default {
 	},
 	data() {
 		return {
-			slug: '',
-			articleInfo: {},
-			mapFeature: {},
-			commentaryInfo: {},
-			editPermission: true,
-			editableArticle: null,
 			editedContent: null,
 			validationError: null,
 			deleteModalOpen: false,
@@ -78,65 +72,38 @@ export default {
 	mounted() {
 		// this fires when you load the page
 		this.slug = this.$route.params.slug;
-		this.getArticleInfo();	
+		functions.getArticleDetails(this.slug);	
 	},
 	beforeRouteUpdate (to, from, next) {
 		// this fires when the route changes without rerendering the component
 		this.slug = to.params.slug;
 		next();
-		this.articleInfo = {};
-		this.getArticleInfo();
+		functions.getArticleDetails(this.slug);
 	},
 	computed: {
+		...mapState({
+			articleDetail: 'articleDetail',
+			editPermission: 'editPermission',
+			editableArticle: 'editableArticle',
+			newMapFeature: 'newMapFeature',
+		}),
 		formattedPubDate() {
-			let pubDate = new Date(this.articleInfo.pub_date);
+			let pubDate = new Date(this.articleDetail.pub_date);
 			return pubDate.toLocaleString('default', constants.DATE_FORMAT);
 		},
 		editable() {
-			return this.editableArticle === this.articleInfo.slug;
+			return this.editableArticle === this.articleDetail.slug;
 		}
 	},
 	methods: {
-		getArticleInfo() {
-			let apiUrl = constants.API_BASE_URL + constants.API_PATH + this.slug + '/';
-			let self = this;
-		
-			axios.get(apiUrl)
-				.then((response) => {
-					// handle success
-					self.articleInfo = response.data;
-					if (self.articleInfo.geo_coordinates) {
-						self.structureGeoJsonForMap();
-					} else {
-						self.mapFeature = {};
-					}
-				})
-				.catch((error) => {
-					// handle error
-					self.$router.push({ name: '404' });
-					return error;
-				});
-		},
-		structureGeoJsonForMap() {
-			this.mapFeature = {
-				'type': 'Feature',
-				'properties': {
-					'name': this.articleInfo.title,
-					'category': this.articleInfo.geo_category
-				},
-				'geometry': {
-					'type': this.articleInfo.geo_type,
-					'coordinates': JSON.parse(this.articleInfo.geo_coordinates)
-				}
-			};	
-		},
 		editArticle() {
-			this.editedContent = this.articleInfo.article_content;
-			this.editableArticle = this.articleInfo.slug;
+			this.editedContent = this.articleDetail.article_content;
+			store.commit('editArticle', this.articleDetail.slug);
 		},
 		cancelEditing() {
 			this.editedContent = null;
-			this.editableArticle = null;
+			store.commit('editArticle', null);
+			store.commit('addNewMapFeature', {});
 		},
 		submitChanges() {
 			// validation
@@ -146,16 +113,18 @@ export default {
 		sendChangedInfo() {
 			let apiUrl = constants.API_BASE_URL + constants.API_PATH + this.slug + '/';
 			let serializedChanges = {};
-			serializedChanges = {
-				'article_content': this.editedContent,
-			};
 			let self = this;
-		
+
+			if (this.newMapFeature.geometry) {
+				serializedChanges = functions.destructureGeoJsonForDb(this.newMapFeature);
+			}
+			serializedChanges.article_content = this.editedContent;
+			console.log(serializedChanges);
 			axios.patch(apiUrl, serializedChanges)
 				.then((response) => {
 					// handle success
-					self.articleInfo = response.data
-					self.editableArticle = null;
+					store.commit('getArticleDetail', response.data);
+					store.commit('editArticle', null);
 					self.editedContent = null;
 					self.validationError = null;
 				})
@@ -174,6 +143,8 @@ export default {
 					// handle success
 					functions.getArticleList();
 					self.$router.push({ name: 'home' });
+					store.commit('getArticleDetail', {});
+					store.commit('editArticle', null);
 				})
 				.catch((error) => {
 					self.validationError = 'server error with delete: ' + error;
@@ -197,18 +168,11 @@ export default {
 	}
 	&__edit-button {
 		display: flex;
-		justify-content: space-between;
+		justify-content: right; //changed from space-between
 	}
 	&__content {
 		max-width: 600px;
 		margin: 0 auto;
-		visibility: hidden;
-		opacity: 0;
-		transition: opacity $transition-time;
-		&.inj-article__content--show {
-			visibility: visible;
-			opacity: 1;
-		}
 	}
 	&__edit-content {
 		height: 300px;
