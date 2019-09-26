@@ -37,6 +37,7 @@
 <script>
 import L from 'leaflet';
 import {mapState} from 'vuex';
+import GJV from 'geojson-validation';
 
 import store from '../store';
 import constants from '../constants';
@@ -52,8 +53,8 @@ export default {
 			mapFeatureLayer: {},
 			pasteDataModalOpen: false,
 			pasteDataType: null,
-			nCoord: null,
 			wCoord: null,
+			nCoord: null,
 			geoJson: null,
 			validationError: null,
 		}
@@ -73,7 +74,10 @@ export default {
     },
 	mounted() {
 		// the view and zoom are somewhat arbitrary because of the auto bounding around the feature
-		this.map = L.map('articleMap', { scrollWheelZoom: false }).setView([40.26, -74.50], 7).setMaxBounds(constants.MAP_MAX_BOUNDS);
+		let stateBounds = [[constants.NJ_BOUNDS.north, constants.NJ_BOUNDS.east],
+			[constants.NJ_BOUNDS.south, constants.NJ_BOUNDS.west]];
+		
+		this.map = L.map('articleMap', { scrollWheelZoom: false }).setView(constants.NJ_CENTER, constants.MAP_ZOOM_LEVEL).setMaxBounds(stateBounds);
 
 		L.tileLayer(constants.MAP_TILE_LAYER, {
 			attribution: constants.MAP_TILE_ATTRIBUTION
@@ -103,6 +107,9 @@ export default {
 					style: { 'color': constants.MAP_FEATURE_COLOR_PRIMARY },
 					onEachFeature: function(feature, layer) {
 						layer.bindPopup(feature.properties.name);
+					},
+					pointToLayer: function (feature, latlng) {
+						return L.circleMarker(latlng, constants.MAP_POINT_MARKER_OPTIONS);
 					}
 				}).addTo(this.map);
 				this.map.fitBounds(this.mapFeatureLayer.getBounds());
@@ -119,23 +126,59 @@ export default {
 		addPastedFeature() {
 			let newFeature = {};
 			if (this.pasteDataType === 'coordinates') {
-				// validation: is it in NJ?
-				// format properly
-				// put in store
-				store.commit('addNewMapFeature', this.formattedCoordinates);
+				newFeature = {
+					"type": "Feature",
+					"geometry": {
+						"type": "Point",
+						"coordinates": null,
+					},
+					"properties": {
+						"name": null,
+						"category": null
+					}
+				};
+				let n = parseFloat(this.nCoord);
+				let w = parseFloat(this.wCoord);
+				if (isNaN(n) || isNaN(w)) {
+					this.validationError = 'Please make sure your coordinates are numbers';
+					return;
+				}
+				if(
+					n > constants.NJ_BOUNDS.north ||
+					n < constants.NJ_BOUNDS.south ||
+					w > constants.NJ_BOUNDS.east ||
+					w < constants.NJ_BOUNDS.west
+				) {
+					this.validationError = 'Please make sure your coordinates are located inside New Jersey';
+					return;
+				}
+				newFeature.geometry.coordinates = [w, n];
 			} else if (this.pasteDataType === 'geoJson') {
-				// validation
-				newFeature = JSON.parse(this.geoJson);
+				/* GeoJSON validation
+				TODO:
+				- Could break this up into different functions?
+				- Should also validate to make sure it's geographically inside NJ
+				*/
+				try	{
+					newFeature = JSON.parse(this.geoJson);
+				} catch(e) {
+					this.validationError = 'Please make sure your feature is a valid JSON object';
+					return;
+				}
+				if(!GJV.isGeoJSONObject(newFeature)) {
+					this.validationError = 'Please make sure your feature is in valid GeoJSON format';
+					return;
+				}
 				if (newFeature.type === 'FeatureCollection') {
 					newFeature = newFeature.features[0]
 					newFeature.type === "Feature";
 				}
-				// if (geoJsonFeatureIsValid(newFeature)) { }
-				store.commit('addNewMapFeature', newFeature);
 			} else {
 				this.validationError = 'Please enter something';
 				return;
 			};
+			console.log('is it valid json', newFeature, GJV.isGeoJSONObject(newFeature));
+			store.commit('addNewMapFeature', newFeature);
 			console.log('newMapFeature', this.newMapFeature);
 			this.toggleModal(false);
 		},

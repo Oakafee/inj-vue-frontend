@@ -119,7 +119,6 @@ export default {
 				serializedChanges = functions.destructureGeoJsonForDb(this.newMapFeature);
 			}
 			serializedChanges.article_content = this.editedContent;
-			console.log(serializedChanges);
 			axios.patch(apiUrl, serializedChanges)
 				.then((response) => {
 					// handle success
