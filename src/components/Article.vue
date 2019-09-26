@@ -1,15 +1,14 @@
 <template>
 	<div class="inj-article">
 		<div class="inj-article__content" v-if="articleDetail.pk">
-			<ArticleMap />
+			<ArticleMap :editable="editable" />
 			<div v-if="editPermission" class="inj-article__edit-button">
-				<span>Som'n </span>
 				<button v-if="editable" class="inj-button inj-button-secondary" @click="cancelEditing()">Cancel Editing </button>
 				<button v-else class="inj-button" @click="editArticle()">Edit Article </button>
 			</div>
 			
 			<div class="inj-article__title-area">
-				<ArticleBreadcrumbs />
+				<!-- <ArticleBreadcrumbs /> Having issue with excess recursion -->
 				<h1>{{ articleDetail.title }}</h1>
 				<h3 v-if="articleDetail.subtitle">{{ articleDetail.subtitle }} </h3>
 				<h4>By {{ articleDetail.author }} - {{ formattedPubDate }}</h4>
@@ -65,8 +64,6 @@ export default {
 	},
 	data() {
 		return {
-			editPermission: true,
-			editableArticle: null,
 			editedContent: null,
 			validationError: null,
 			deleteModalOpen: false,
@@ -86,6 +83,9 @@ export default {
 	computed: {
 		...mapState({
 			articleDetail: 'articleDetail',
+			editPermission: 'editPermission',
+			editableArticle: 'editableArticle',
+			newMapFeature: 'newMapFeature',
 		}),
 		formattedPubDate() {
 			let pubDate = new Date(this.articleDetail.pub_date);
@@ -98,11 +98,12 @@ export default {
 	methods: {
 		editArticle() {
 			this.editedContent = this.articleDetail.article_content;
-			this.editableArticle = this.articleDetail.slug;
+			store.commit('editArticle', this.articleDetail.slug);
 		},
 		cancelEditing() {
 			this.editedContent = null;
-			this.editableArticle = null;
+			store.commit('editArticle', null);
+			store.commit('addNewMapFeature', {});
 		},
 		submitChanges() {
 			// validation
@@ -112,16 +113,18 @@ export default {
 		sendChangedInfo() {
 			let apiUrl = constants.API_BASE_URL + constants.API_PATH + this.slug + '/';
 			let serializedChanges = {};
-			serializedChanges = {
-				'article_content': this.editedContent,
-			};
 			let self = this;
-		
+
+			if (this.newMapFeature.geometry) {
+				serializedChanges = functions.destructureGeoJsonForDb(this.newMapFeature);
+			}
+			serializedChanges.article_content = this.editedContent;
+			console.log(serializedChanges);
 			axios.patch(apiUrl, serializedChanges)
 				.then((response) => {
 					// handle success
 					store.commit('getArticleDetail', response.data);
-					self.editableArticle = null;
+					store.commit('editArticle', null);
 					self.editedContent = null;
 					self.validationError = null;
 				})
@@ -141,6 +144,7 @@ export default {
 					functions.getArticleList();
 					self.$router.push({ name: 'home' });
 					store.commit('getArticleDetail', {});
+					store.commit('editArticle', null);
 				})
 				.catch((error) => {
 					self.validationError = 'server error with delete: ' + error;
@@ -164,7 +168,7 @@ export default {
 	}
 	&__edit-button {
 		display: flex;
-		justify-content: space-between;
+		justify-content: right; //changed from space-between
 	}
 	&__content {
 		max-width: 600px;

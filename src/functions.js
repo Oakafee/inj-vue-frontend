@@ -20,6 +20,8 @@ export default {
 				return error;
 			});
 	},
+	// Functions for loading article data
+	
 	getArticleDetails(slug) {
 		let apiUrl = constants.API_BASE_URL + constants.API_PATH + slug + '/';
 		let self = this;
@@ -30,6 +32,8 @@ export default {
 				store.commit('getArticleDetail', response.data);
 				if (response.data.geo_coordinates) {
 					self.structureGeoJsonForMap(response.data);
+				} else {
+					store.commit('updateArticleMapFeature', {});
 				}
 				if (response.data.comments) {
 					self.getCommentary(response.data.pk);
@@ -38,6 +42,7 @@ export default {
 			.catch((error) => {
 				// handle error
 				router.push({ name: '404' });
+				console.log('error with loading article: ', error);
 				return error;
 			});
 	},
@@ -70,4 +75,12 @@ export default {
 				return error;
 			});
 	},
+	destructureGeoJsonForDb(feature) {
+	// not going to work like this,
+		return {
+			'geo_type': feature.geometry.type,
+			'geo_coordinates': JSON.stringify(feature.geometry.coordinates),
+			'geo_category': feature.properties.category
+		}
+	}
 }
