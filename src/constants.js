@@ -18,4 +18,15 @@ export default {
 	},
 	STATIC_BASE_URL: 'https://interpretation-of-nj.s3.us-east-2.amazonaws.com/',
 	DATE_FORMAT: { month: 'long', day: 'numeric', year: 'numeric' },
+	NULL_GEOJSON_FEATURE: {
+		"type": "Feature",
+		"properties": {
+			"name": null,
+			"category": null
+		},
+		"geometry": {
+			"type": null,
+			"coordinates": null
+		}
+	}
 }

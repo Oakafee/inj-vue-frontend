@@ -48,14 +48,14 @@ export default {
 	},
 	structureGeoJsonForMap(data) {
 		let mapFeature = {
-			'type': 'Feature',
-			'properties': {
-				'name': data.title,
-				'category': data.geo_category
+			"type": "Feature",
+			"properties": {
+				"name": data.title,
+				"category": data.geo_category
 			},
-			'geometry': {
-				'type': data.geo_type,
-				'coordinates': JSON.parse(data.geo_coordinates)
+			"geometry": {
+				"type": data.geo_type,
+				"coordinates": JSON.parse(data.geo_coordinates)
 			}
 		};
 		store.commit('updateArticleMapFeature', mapFeature);

@@ -7,7 +7,6 @@
 			<span v-if="mapHidden">Add a map feature: </span>
 			<button @click="drawNewFeature = true">Draw map feature </button> or
 			<button @click="toggleModal(true)">Paste data </button>
-			{{ drawNewFeature }}
 		</div>
 				
 		<InjModal v-if="pasteDataModalOpen">
@@ -69,7 +68,11 @@ export default {
 			editPermission: 'editPermission',
 		}),
 		mapHidden() {
-			if (this.feature.geometry || this.newMapFeature.geometry || this.drawNewFeature) {
+			if (
+				(this.feature.geometry && this.feature.geometry.coordinates) ||
+				(this.newMapFeature.geometry && this.newMapFeature.geometry.coordinates) ||
+				this.drawNewFeature
+			) {
 				return false;
 			}
 			return true;
@@ -90,46 +93,46 @@ export default {
 			attribution: constants.MAP_TILE_ATTRIBUTION
 		}).addTo(this.map);
 		
-		this.addFeatureToMap(this.feature);
+		if(this.feature) this.addFeatureToMap(this.feature);
 	},
 	watch: {
 		feature() {
 			this.removeCurrentFeature();
-			this.addFeatureToMap(this.feature);
+			if(this.feature) this.addFeatureToMap(this.feature);
 		},
 		newMapFeature() {
 			this.removeCurrentFeature();
 			if (this.newMapFeature.geometry) {
-				this.addFeatureToMap(this.newMapFeature)	
+				// The below condition checks for if newMapFeature was deleted. In that case, it will have been replaced with constants.NULL_JSON_OBJECTS, so it will have geometry but geometry.coordinates will be null
+				if (this.newMapFeature.geometry.coordinates) {
+					this.addFeatureToMap(this.newMapFeature)
+				}
 			} else if (this.feature.geometry) {
 				this.addFeatureToMap(this.feature)
 			}
 		},
 		editable() {
-			if(this.mapFeatureLayer.options) {
-				if(this.editable) {
-					this.initializeMapDrawing();
-				} else {
-					this.mapDrawToolbar.remove();
-				}
+			if(this.editable) {
+				this.initializeMapDrawing();
+			} else {
+				this.mapDrawToolbar.remove();
 			}
 			this.drawNewFeature = false;
 		},
 	},
 	methods: {
 		addFeatureToMap(feature) {
-			if (feature.geometry) {
+			if (feature.geometry && feature.geometry.coordinates) {
 				this.mapFeatureLayer = L.geoJSON(feature, {
 					style: { 'color': constants.MAP_FEATURE_COLOR_PRIMARY },
-					onEachFeature: function(feature, layer) {
+					onEachFeature: (feature, layer) => {
 						layer.bindPopup(feature.properties.name);
 					},
-					pointToLayer: function (feature, latlng) {
+					pointToLayer: (feature, latlng) => {
 						return L.circleMarker(latlng, constants.MAP_POINT_MARKER_OPTIONS);
 					}
 				}).addTo(this.map);
 				this.map.fitBounds(this.mapFeatureLayer.getBounds());
-				console.log('map feature layer', this.mapFeatureLayer);
 			}		
 		},
 		removeCurrentFeature() {
@@ -139,29 +142,36 @@ export default {
 			}		
 		},
 		initializeMapDrawing() {
-				if (!this.mapFeatureLayer) {
-					this.mapFeatureLayer = new L.FeatureGroup();
-   					this.map.addLayer(this.mapFeatureLayer);	
-				}
-				let toolbarOptions = {
-					'edit': {
-						'featureGroup': this.mapFeatureLayer
-					},
-					'position': 'topright'
-				};
-				function commitLayerChange(layer) {
-					store.commit('addNewMapFeature', layer.toGeoJSON());
-				}
-				this.mapDrawToolbar = new L.Control.Draw(toolbarOptions);
-				this.map.addControl(this.mapDrawToolbar);
-				this.map.on('draw:created', (e) => commitLayerChange(e.layer));
-				this.map.on('draw:edited', (e) => {
-					e.layers.eachLayer((layer) => commitLayerChange(layer));
+			if (!this.mapFeatureLayer.options) {
+				this.mapFeatureLayer = new L.FeatureGroup();
+  					this.map.addLayer(this.mapFeatureLayer);	
+			}
+			let toolbarOptions = {
+				'edit': {
+					'featureGroup': this.mapFeatureLayer,
+					// 'edit': false,
+					// 'remove': false,
+				},
+				'position': 'topright'
+			};
+			if (!this.feature) {
+				toolbarOptions.edit.edit = false;
+				toolbarOptions.edit.remove = false;
+			}
+			function commitLayerChange(layer) {
+				store.commit('addNewMapFeature', layer.toGeoJSON());
+			}
+			this.mapDrawToolbar = new L.Control.Draw(toolbarOptions);
+			this.map.addControl(this.mapDrawToolbar);
+			this.map.on('draw:created', (e) => commitLayerChange(e.layer));
+			this.map.on('draw:edited', (e) => {
+				e.layers.eachLayer((layer) => commitLayerChange(layer));
+			});
+			this.map.on('draw:deleted', (e) => {
+				e.layers.eachLayer((layer) => {
+					store.commit('addNewMapFeature', constants.NULL_GEOJSON_FEATURE);
 				});
-				this.map.on('draw:deleted', (e) => {
-					// deleting is going to need some work. not working now
-					store.commit('addNewMapFeature', {});
-				});
+			});
 		},
 		toggleModal(status) {
 			this.pasteDataModalOpen = status;

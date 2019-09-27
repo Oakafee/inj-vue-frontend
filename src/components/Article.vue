@@ -109,6 +109,7 @@ export default {
 			// validation
 			if (this.editedContent) this.sendChangedInfo()
 			else this.validationError = 'Please submit something';
+			// TODO: add scrolling to top on successful submit
 		},
 		sendChangedInfo() {
 			let apiUrl = constants.API_BASE_URL + constants.API_PATH + this.slug + '/';

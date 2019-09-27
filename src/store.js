@@ -41,6 +41,7 @@ const store = new Vuex.Store({
 			state.editMapFeature = !state.editMapFeature;
 		},
 		addNewMapFeature(state, feature) {
+			console.log('trying to add new map feature', feature);
 			state.newMapFeature = feature;
 		}
 	}
