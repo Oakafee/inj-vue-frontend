@@ -76,7 +76,6 @@ export default {
 			});
 	},
 	destructureGeoJsonForDb(feature) {
-	// not going to work like this,
 		return {
 			'geo_type': feature.geometry.type,
 			'geo_coordinates': JSON.stringify(feature.geometry.coordinates),

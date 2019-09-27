@@ -5,9 +5,9 @@
 		</div>
 		<div class="inj-article-map__edit" :class="{ 'inj-article-map__edit--hidden' : !editable }" v-if="editPermission">
 			<span v-if="mapHidden">Add a map feature: </span>
-			<button @click="cat()">Draw map feature </button> or
+			<button @click="drawNewFeature = true">Draw map feature </button> or
 			<button @click="toggleModal(true)">Paste data </button>
-			{{ mapHidden }}
+			{{ drawNewFeature }}
 		</div>
 				
 		<InjModal v-if="pasteDataModalOpen">
@@ -36,6 +36,7 @@
 
 <script>
 import L from 'leaflet';
+import 'leaflet-draw';
 import {mapState} from 'vuex';
 import GJV from 'geojson-validation';
 
@@ -51,12 +52,14 @@ export default {
 		return {
 			map: '',
 			mapFeatureLayer: {},
+			mapDrawToolbar: {},
 			pasteDataModalOpen: false,
 			pasteDataType: null,
 			wCoord: null,
 			nCoord: null,
 			geoJson: null,
 			validationError: null,
+			drawNewFeature: false,
 		}
 	},
 	computed: {
@@ -66,18 +69,22 @@ export default {
 			editPermission: 'editPermission',
 		}),
 		mapHidden() {
-			if (this.feature.geometry || this.newMapFeature.geometry) {
+			if (this.feature.geometry || this.newMapFeature.geometry || this.drawNewFeature) {
 				return false;
 			}
 			return true;
 		},
     },
 	mounted() {
-		// the view and zoom are somewhat arbitrary because of the auto bounding around the feature
+		/*
+		these are proving troublesome for now, affecting how features are centered on the map, so I'm not sure if they're worth it
 		let stateBounds = [[constants.NJ_BOUNDS.north, constants.NJ_BOUNDS.east],
 			[constants.NJ_BOUNDS.south, constants.NJ_BOUNDS.west]];
+		*/
 		
-		this.map = L.map('articleMap', { scrollWheelZoom: false }).setView(constants.NJ_CENTER, constants.MAP_ZOOM_LEVEL).setMaxBounds(stateBounds);
+		this.map = L.map('articleMap', { 
+			scrollWheelZoom: false
+		 }).setView(constants.NJ_CENTER, constants.MAP_ZOOM_LEVEL);//.setMaxBounds(stateBounds);
 
 		L.tileLayer(constants.MAP_TILE_LAYER, {
 			attribution: constants.MAP_TILE_ATTRIBUTION
@@ -97,11 +104,20 @@ export default {
 			} else if (this.feature.geometry) {
 				this.addFeatureToMap(this.feature)
 			}
-		}
+		},
+		editable() {
+			if(this.mapFeatureLayer.options) {
+				if(this.editable) {
+					this.initializeMapDrawing();
+				} else {
+					this.mapDrawToolbar.remove();
+				}
+			}
+			this.drawNewFeature = false;
+		},
 	},
 	methods: {
 		addFeatureToMap(feature) {
-			console.log('in the add thing', feature.geometry);
 			if (feature.geometry) {
 				this.mapFeatureLayer = L.geoJSON(feature, {
 					style: { 'color': constants.MAP_FEATURE_COLOR_PRIMARY },
@@ -113,12 +129,39 @@ export default {
 					}
 				}).addTo(this.map);
 				this.map.fitBounds(this.mapFeatureLayer.getBounds());
+				console.log('map feature layer', this.mapFeatureLayer);
 			}		
 		},
 		removeCurrentFeature() {
 			if (this.map.hasLayer(this.mapFeatureLayer)) {
 				this.mapFeatureLayer.remove();
+				this.map.setView(constants.NJ_CENTER, constants.MAP_ZOOM_LEVEL);
 			}		
+		},
+		initializeMapDrawing() {
+				if (!this.mapFeatureLayer) {
+					this.mapFeatureLayer = new L.FeatureGroup();
+   					this.map.addLayer(this.mapFeatureLayer);	
+				}
+				let toolbarOptions = {
+					'edit': {
+						'featureGroup': this.mapFeatureLayer
+					},
+					'position': 'topright'
+				};
+				function commitLayerChange(layer) {
+					store.commit('addNewMapFeature', layer.toGeoJSON());
+				}
+				this.mapDrawToolbar = new L.Control.Draw(toolbarOptions);
+				this.map.addControl(this.mapDrawToolbar);
+				this.map.on('draw:created', (e) => commitLayerChange(e.layer));
+				this.map.on('draw:edited', (e) => {
+					e.layers.eachLayer((layer) => commitLayerChange(layer));
+				});
+				this.map.on('draw:deleted', (e) => {
+					// deleting is going to need some work. not working now
+					store.commit('addNewMapFeature', {});
+				});
 		},
 		toggleModal(status) {
 			this.pasteDataModalOpen = status;
@@ -139,20 +182,9 @@ export default {
 				};
 				let n = parseFloat(this.nCoord);
 				let w = parseFloat(this.wCoord);
-				if (isNaN(n) || isNaN(w)) {
-					this.validationError = 'Please make sure your coordinates are numbers';
-					return;
-				}
-				if(
-					n > constants.NJ_BOUNDS.north ||
-					n < constants.NJ_BOUNDS.south ||
-					w > constants.NJ_BOUNDS.east ||
-					w < constants.NJ_BOUNDS.west
-				) {
-					this.validationError = 'Please make sure your coordinates are located inside New Jersey';
-					return;
-				}
-				newFeature.geometry.coordinates = [w, n];
+				if (this.pointCoordsAreNumbers(n,w) && this.pointCoordsAreInBounds(n,w)) {
+					newFeature.geometry.coordinates = [w, n];
+				} else return;
 			} else if (this.pasteDataType === 'geoJson') {
 				/* GeoJSON validation
 				TODO:
@@ -177,10 +209,26 @@ export default {
 				this.validationError = 'Please enter something';
 				return;
 			};
-			console.log('is it valid json', newFeature, GJV.isGeoJSONObject(newFeature));
 			store.commit('addNewMapFeature', newFeature);
-			console.log('newMapFeature', this.newMapFeature);
 			this.toggleModal(false);
+		},
+		// Validation functions:
+		pointCoordsAreNumbers(n, w) {
+			if (isNaN(n) || isNaN(w)) {
+				this.validationError = 'Please make sure your coordinates are numbers';
+				return false;
+			} else return true;
+		},
+		pointCoordsAreInBounds(n, w) {
+			if(
+				n > constants.NJ_BOUNDS.north ||
+				n < constants.NJ_BOUNDS.south ||
+				w > constants.NJ_BOUNDS.east ||
+				w < constants.NJ_BOUNDS.west
+			) {
+				this.validationError = 'Please make sure your coordinates are located inside New Jersey';
+				return false;
+			} else return true;
 		},
 		cancelPasteData() {
 			this.toggleModal(false);
@@ -196,12 +244,13 @@ export default {
 
 <style lang="scss">
 @import '../../node_modules/leaflet/dist/leaflet.css';
+@import '../../node_modules/leaflet-draw/dist/leaflet.draw.css';
 @import '../settings.scss';
 
 
 #articleMap {
 	width: calc(100% - 2*$spacing);
-	height: 280px;
+	height: 290px;
 	border: 1px solid black;
 }
 

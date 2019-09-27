@@ -1,5 +1,5 @@
 export default {
-	NJ_BOUNDS: {'north': 41.41, 'east': -73.60, 'south': 39.81, 'west': -75.90},
+	NJ_BOUNDS: {'north': 41.61, 'east': -73.40, 'south': 39.61, 'west': -76.10},
 	NJ_CENTER: [40.07, -74.56],
 	API_BASE_URL: 'http://127.0.0.1:8000/',
 	API_PATH: 'articles/',
