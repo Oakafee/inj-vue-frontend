@@ -4,8 +4,10 @@ export default {
 	API_BASE_URL: 'http://127.0.0.1:8000/',
 	API_PATH: 'articles/',
 	MAP_ZOOM_LEVEL: 7,
-	MAP_TILE_LAYER: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-	MAP_TILE_ATTRIBUTION: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+//	MAP_TILE_LAYER: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+	MAP_TILE_LAYER: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+//	MAP_TILE_ATTRIBUTION: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+	MAP_TILE_ATTRIBUTION: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
 	MAP_FEATURE_COLOR_PRIMARY: '#00589c',
 	MAP_FEATURE_COLOR_SECONDARY: '#ff9e0f',
 	MAP_POINT_MARKER_OPTIONS: {

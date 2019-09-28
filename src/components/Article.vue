@@ -161,11 +161,6 @@ export default {
 @import '../settings.scss';
 
 .inj-article {
-	flex: 3 0 0; // changed from 5 0 0
-	padding: $spacing;
-	@media (min-width: $media-break) {
-		padding: 2 * $spacing;
-	}
 	&__edit-button {
 		display: flex;
 		justify-content: right; //changed from space-between

@@ -5,7 +5,7 @@
 		</div>
 		<div class="inj-article-map__edit" :class="{ 'inj-article-map__edit--hidden' : !editable }" v-if="editPermission">
 			<span v-if="mapHidden">Add a map feature: </span>
-			<button @click="drawNewFeature = true">Draw map feature </button> or
+			<button v-if="mapHidden" @click="drawNewFeature = true">Draw map feature </button> or
 			<button @click="toggleModal(true)">Paste data </button>
 		</div>
 				
@@ -68,9 +68,10 @@ export default {
 			editPermission: 'editPermission',
 		}),
 		mapHidden() {
+			// have to check if there's a feature and if it's a non-deleted feature. a deleted feature will have geometry but no coordinates
 			if (
 				(this.feature.geometry && this.feature.geometry.coordinates) ||
-				(this.newMapFeature.geometry && this.newMapFeature.geometry.coordinates) ||
+				this.newMapFeature.geometry ||
 				this.drawNewFeature
 			) {
 				return false;
@@ -86,8 +87,8 @@ export default {
 		*/
 		
 		this.map = L.map('articleMap', { 
-			scrollWheelZoom: false
-		 }).setView(constants.NJ_CENTER, constants.MAP_ZOOM_LEVEL);//.setMaxBounds(stateBounds);
+			//scrollWheelZoom: false
+		}).setView(constants.NJ_CENTER, constants.MAP_ZOOM_LEVEL);//.setMaxBounds(stateBounds);
 
 		L.tileLayer(constants.MAP_TILE_LAYER, {
 			attribution: constants.MAP_TILE_ATTRIBUTION
@@ -144,31 +145,33 @@ export default {
 		initializeMapDrawing() {
 			if (!this.mapFeatureLayer.options) {
 				this.mapFeatureLayer = new L.FeatureGroup();
-  					this.map.addLayer(this.mapFeatureLayer);	
+					this.map.addLayer(this.mapFeatureLayer);
 			}
 			let toolbarOptions = {
 				'edit': {
 					'featureGroup': this.mapFeatureLayer,
-					// 'edit': false,
-					// 'remove': false,
 				},
 				'position': 'topright'
 			};
-			if (!this.feature) {
-				toolbarOptions.edit.edit = false;
-				toolbarOptions.edit.remove = false;
-			}
 			function commitLayerChange(layer) {
 				store.commit('addNewMapFeature', layer.toGeoJSON());
 			}
 			this.mapDrawToolbar = new L.Control.Draw(toolbarOptions);
 			this.map.addControl(this.mapDrawToolbar);
+			
+			//TODO change this condition
+			if (!this.feature) {
+				this.mapDrawToolbar.Delete.disable();
+				this.mapDrawToolbar.Edit.disable();
+			}
+
+			
 			this.map.on('draw:created', (e) => commitLayerChange(e.layer));
 			this.map.on('draw:edited', (e) => {
 				e.layers.eachLayer((layer) => commitLayerChange(layer));
 			});
 			this.map.on('draw:deleted', (e) => {
-				e.layers.eachLayer((layer) => {
+				e.layers.eachLayer(() => {
 					store.commit('addNewMapFeature', constants.NULL_GEOJSON_FEATURE);
 				});
 			});
@@ -218,7 +221,7 @@ export default {
 			} else {
 				this.validationError = 'Please enter something';
 				return;
-			};
+			}
 			store.commit('addNewMapFeature', newFeature);
 			this.toggleModal(false);
 		},
