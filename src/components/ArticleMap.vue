@@ -86,7 +86,8 @@ export default {
 			[constants.NJ_BOUNDS.south, constants.NJ_BOUNDS.west]];
 		*/
 		
-		this.map = L.map('articleMap', { 
+		this.map = L.map('articleMap', {
+			maxZoom: constants.MAP_MAX_ZOOM
 			//scrollWheelZoom: false
 		}).setView(constants.NJ_CENTER, constants.MAP_ZOOM_LEVEL);//.setMaxBounds(stateBounds);
 
@@ -124,8 +125,14 @@ export default {
 	methods: {
 		addFeatureToMap(feature) {
 			if (feature.geometry && feature.geometry.coordinates) {
+				let featureStyle = {
+					'color': constants.MAP_FEATURE_COLOR_PRIMARY,
+				};
+				if (feature.geometry.type === 'LineString') {
+					featureStyle.weight = constants.MAP_LINE_WEIGHT
+				};
 				this.mapFeatureLayer = L.geoJSON(feature, {
-					style: { 'color': constants.MAP_FEATURE_COLOR_PRIMARY },
+					style: featureStyle,
 					onEachFeature: (feature, layer) => {
 						layer.bindPopup(feature.properties.name);
 					},
@@ -133,7 +140,8 @@ export default {
 						return L.circleMarker(latlng, constants.MAP_POINT_MARKER_OPTIONS);
 					}
 				}).addTo(this.map);
-				this.map.fitBounds(this.mapFeatureLayer.getBounds());
+				let bounds = this.mapFeatureLayer.getBounds();
+				this.map.fitBounds(bounds);
 			}		
 		},
 		removeCurrentFeature() {

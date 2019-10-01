@@ -1,19 +1,28 @@
 <template>
-<p>Home </p>
+<div>
+	<p>Home </p>
+	<p>{{ message }} </p>
+	<HomeMap />
+</div>
 </template>
 
 <script>
+import functions from '../functions';
+import constants from '../constants';
+import HomeMap from './HomeMap';
 
 export default {
 	name: 'Home',
-	props: {
-		msg: String
-	},
+	components: { HomeMap },
 	data: function () {
 		return {
 			map: '',
+			message: '',
 		}
 	},
+	mounted() {
+		functions.getMapFeatureList();
+	}
 }
 </script>
 

@@ -7,6 +7,7 @@ const store = new Vuex.Store({
 	state: {
 		mobileNavOpen: false,
 		articleList: {},
+		mapFeaturesList: {},
 		articleDetail: {},
 		articleMapFeature: {},
 		articleCommentary: {},
@@ -21,6 +22,9 @@ const store = new Vuex.Store({
 		},
 		updateArticleList(state, articles) {
 			state.articleList = articles;
+		},
+		updateMapFeaturesList(state, features) {
+			state.mapFeaturesList = features;
 		},
 		getArticleDetail(state, articleDetail) {
 			state.articleDetail = articleDetail;
@@ -43,7 +47,7 @@ const store = new Vuex.Store({
 		addNewMapFeature(state, feature) {
 			console.log('trying to add new map feature', feature);
 			state.newMapFeature = feature;
-		}
+		},
 	}
 });
 
