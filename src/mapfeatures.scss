@@ -1,0 +1,56 @@
+@import 'settings.scss';
+
+.inj-map-feature {
+	&__pyhsiographic-region {
+		stroke: green;
+		fill: green;
+	}
+	&__other-landform {
+		stroke: green;
+		fill: green;
+	}
+	&__mountain {
+		stroke: brown;
+		fill: brown;
+	}
+	&__swamp {
+		stroke: green;
+		fill: green;
+	}
+	&__other-political-entity {
+		stroke: gray;
+		fill: gray;
+	}
+	&__city-town {
+		stroke: lightblue;
+		fill: lightblue;
+	}
+	&__river {
+		stroke: blue;
+	}
+	&__lake-bay {
+		stroke: blue;
+		fill: blue;
+	}
+	&__waterfill {}
+	&__other-infrastructure {}
+	&__highway {
+		stroke: orange;
+		weight: 5px;
+	}
+	&__local-road {
+		stroke: orange;
+	}
+	&__bridge-tunnel {
+		stroke: red;
+		weight: 5px;
+	}
+	&__point-of-interest {
+		stroke: black;
+		fill: black;
+	}
+	&__default {
+		stroke: purple;
+		fill: purple;
+	}
+}

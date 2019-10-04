@@ -2,36 +2,38 @@
 	<div class="inj-article">
 		<div class="inj-article__content" v-if="articleDetail.pk">
 			<ArticleMap :editable="editable" />
-			<div v-if="editPermission" class="inj-article__edit-button">
-				<button v-if="editable" class="inj-button inj-button-secondary" @click="cancelEditing()">Cancel Editing </button>
-				<button v-else class="inj-button" @click="editArticle()">Edit Article </button>
-			</div>
 			
 			<div class="inj-article__title-area">
-				<!-- <ArticleBreadcrumbs /> Having issue with excess recursion -->
+				<ArticleBreadcrumbs />
 				<h1>{{ articleDetail.title }}</h1>
 				<h3 v-if="articleDetail.subtitle">{{ articleDetail.subtitle }} </h3>
 				<h4>By {{ articleDetail.author }} - {{ formattedPubDate }}</h4>
 			</div>
 			<div v-if="editable">
 				<textarea class="inj-article__edit-content inj-textarea" :class="{ 'inj-textarea-error' : validationError }" v-model="editedContent" />			
-				<span class="inj-text-error" v-if="validationError">{{ validationError }}  </span>
-				<div class="inj-article__edit-button">
-					<button class="inj-button inj-button-tertiary" @click="deleteModalOpen = true">Delete Article </button>
-					<button class="inj-button inj-button-secondary" @click="cancelEditing()">Cancel Editing </button>
-					<button class="inj-button" :class="{ 'inj-button-error' : validationError }" @click="submitChanges()">Submit Changes </button>
-				</div>
 			</div>
 			<div v-else>
 				<p v-html="articleDetail.article_content"></p>
-			</div>		
+			</div>
+			
+			<div v-if="editPermission" class="inj-article__edit-button-row">
+				<div v-if="editable">
+					<button class="inj-button inj-button-tertiary" @click="deleteModalOpen = true">Delete Article </button>
+					<button class="inj-button inj-button-secondary" @click="cancelEditing()">Cancel Editing </button>
+					<button class="inj-button" :class="{ 'inj-button-error' : validationError }" @click="submitChanges()">Submit Changes </button>
+					<span class="inj-text-error" v-if="validationError">{{ validationError }}  </span>
+				</div>
+				<div v-else>
+					<button class="inj-button" @click="editArticle()">Edit Article </button>
+				</div>
+			</div>
 			<ArticleComments :articlePk="articleDetail.pk" :articleEdit="editableArticle" />
 			<ArticleChildren />
 		</div>
 		<div v-else>Loading... </div>
 		<InjModal v-if="deleteModalOpen">
 			<p>Are you sure you want to delete the article {{ articleDetail.title }}? </p>
-			<div class="inj-article__edit-button">
+			<div>
 				<button class="inj-button inj-button-secondary" @click="deleteModalOpen = false">No </button>
 				<button class="inj-button inj-button-tertiary" @click="deleteArticle()">Yes </button>
 			</div>
@@ -72,7 +74,8 @@ export default {
 	mounted() {
 		// this fires when you load the page
 		this.slug = this.$route.params.slug;
-		functions.getArticleDetails(this.slug);	
+		functions.getArticleDetails(this.slug);
+		functions.getGeoCategories();
 	},
 	beforeRouteUpdate (to, from, next) {
 		// this fires when the route changes without rerendering the component
@@ -119,10 +122,13 @@ export default {
 			if (this.newMapFeature.geometry) {
 				serializedChanges = functions.destructureGeoJsonForDb(this.newMapFeature);
 			}
+			
 			serializedChanges.article_content = this.editedContent;
+			console.log('serialized changes before sending ', serializedChanges);
 			axios.patch(apiUrl, serializedChanges)
 				.then((response) => {
 					// handle success
+					console.log('response data ', response.data);
 					store.commit('getArticleDetail', response.data);
 					store.commit('editArticle', null);
 					self.editedContent = null;
@@ -161,7 +167,13 @@ export default {
 @import '../settings.scss';
 
 .inj-article {
-	&__edit-button {
+	&__edit-button-row {
+		position: fixed;
+		bottom: 0;
+		width: 100%;
+		max-width: 600px;
+		padding: $spacing;
+		background: $color-secondary;
 		display: flex;
 		justify-content: right; //changed from space-between
 	}
@@ -170,8 +182,8 @@ export default {
 		margin: 0 auto;
 	}
 	&__edit-content {
-		height: 300px;
-		margin-bottom: 2 * $spacing;
+		height: 600px;
+		margin-bottom: 4 * $spacing;
 	}
 	&__title-area {
 		text-align: center;

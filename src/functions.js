@@ -105,5 +105,19 @@ export default {
 				self.commentaryInfo = 'sad, there was an error';
 				return error;
 			});
+	},
+	getGeoCategories() {
+		let apiUrl = constants.API_BASE_URL + 'geo-categories/';
+
+		axios.get(apiUrl)
+			.then(function (response) {
+				// handle success
+				store.commit('getGeoCategories', response.data);
+			})
+			.catch(function (error) {
+				// handle error, not sure what to do in this case
+				console.log('sad, the geo category lookup failed')
+				return error;
+			});
 	}
 }

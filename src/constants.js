@@ -20,6 +20,25 @@ export default {
 		opacity: 1,
 		fillOpacity: 0.5
 	},
+	MAP_DEFAULT_FEATURE_CATEGORY: 15,
+	MAP_FEATURE_CLASS_NAMES: [
+		'zero',
+		'inj-map-feature__pyhsiographic-region',
+		'inj-map-feature__other-landform',
+		'inj-map-feature__mountain',
+		'inj-map-feature__swamp',
+		'inj-map-feature__other-political-entity',
+		'inj-map-feature__city-town',
+		'inj-map-feature__river',
+		'inj-map-feature__lake-bay',
+		'inj-map-feature__waterfill',
+		'inj-map-feature__other-infrastructure',
+		'inj-map-feature__highway',
+		'inj-map-feature__local-road',
+		'inj-map-feature__bridge-tunnel',
+		'inj-map-feature__point-of-interest',
+		'inj-map-feature__default'
+	],
 	STATIC_BASE_URL: 'https://interpretation-of-nj.s3.us-east-2.amazonaws.com/',
 	DATE_FORMAT: { month: 'long', day: 'numeric', year: 'numeric' },
 	NULL_GEOJSON_FEATURE: {
@@ -32,5 +51,6 @@ export default {
 			"type": '',
 			"coordinates": ''
 		}
-	}
+	},
+	
 }

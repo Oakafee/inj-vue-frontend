@@ -7,6 +7,10 @@
 			<span v-if="mapHidden">Add a map feature: </span>
 			<button v-if="mapHidden" @click="drawNewFeature = true">Draw map feature </button> or
 			<button @click="toggleModal(true)">Paste data </button>
+			<label for="geoCategory">Choose a map category </label>
+			<select id="geoCategory" :value="selectedGeoCategory" @input="selectGeoCategory">
+				<option v-for="cat in geoCategories" :value="cat.pk">{{ cat.name }}</option>
+			</select>
 		</div>
 				
 		<InjModal v-if="pasteDataModalOpen">
@@ -59,6 +63,7 @@ export default {
 			geoJson: null,
 			validationError: null,
 			drawNewFeature: false,
+			selectedGeoCategory: null,
 		}
 	},
 	computed: {
@@ -66,6 +71,7 @@ export default {
 			feature: 'articleMapFeature',
 			newMapFeature: 'newMapFeature',
 			editPermission: 'editPermission',
+			geoCategories: 'geoCategories',
 		}),
 		mapHidden() {
 			// have to check if there's a feature and if it's a non-deleted feature. a deleted feature will have geometry but no coordinates
@@ -85,7 +91,6 @@ export default {
 		let stateBounds = [[constants.NJ_BOUNDS.north, constants.NJ_BOUNDS.east],
 			[constants.NJ_BOUNDS.south, constants.NJ_BOUNDS.west]];
 		*/
-		
 		this.map = L.map('articleMap', {
 			maxZoom: constants.MAP_MAX_ZOOM
 			//scrollWheelZoom: false
@@ -104,12 +109,11 @@ export default {
 		},
 		newMapFeature() {
 			this.removeCurrentFeature();
-			if (this.newMapFeature.geometry) {
-				// The below condition checks for if newMapFeature was deleted. In that case, it will have been replaced with constants.NULL_JSON_OBJECTS, so it will have geometry but geometry.coordinates will be null
-				if (this.newMapFeature.geometry.coordinates) {
-					this.addFeatureToMap(this.newMapFeature)
-				}
+			if (this.newMapFeature.geometry && this.newMapFeature.geometry.coordinates) {
+				// The second condition above checks for if newMapFeature was deleted. In that case, it will have been replaced with constants.NULL_JSON_OBJECTS, so it will have geometry but geometry.coordinates will be null
+				this.addFeatureToMap(this.newMapFeature)
 			} else if (this.feature.geometry) {
+			// why is this necessary?
 				this.addFeatureToMap(this.feature)
 			}
 		},
@@ -140,6 +144,11 @@ export default {
 						return L.circleMarker(latlng, constants.MAP_POINT_MARKER_OPTIONS);
 					}
 				}).addTo(this.map);
+				if(feature.properties.category) {
+					this.selectedGeoCategory = feature.properties.category;
+				} else {
+					this.selectedGeoCategory = constants.MAP_DEFAULT_FEATURE_CATIGORY;
+				}
 				let bounds = this.mapFeatureLayer.getBounds();
 				this.map.fitBounds(bounds);
 			}		
@@ -161,8 +170,12 @@ export default {
 				},
 				'position': 'topright'
 			};
+			let self = this;
 			function commitLayerChange(layer) {
-				store.commit('addNewMapFeature', layer.toGeoJSON());
+				let jsonLayer = layer.toGeoJSON();
+				jsonLayer.properties.category = self.selectedGeoCategory;
+				store.commit('addNewMapFeature', jsonLayer);
+				// add the style info somewhere around here
 			}
 			this.mapDrawToolbar = new L.Control.Draw(toolbarOptions);
 			this.map.addControl(this.mapDrawToolbar);
@@ -258,6 +271,9 @@ export default {
 			this.wCoord = null;
 			this.geoJson = {};
 			this.validationError = null;
+		},
+		selectGeoCategory(event) {
+			this.selectedGeoCategory = parseInt(event.target.value);
 		}
 	}
 }

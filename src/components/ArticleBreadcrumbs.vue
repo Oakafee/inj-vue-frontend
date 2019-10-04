@@ -24,7 +24,7 @@ export default {
 				let nextParent = {};
 				
 				if (!articleList) return null;
-			
+				
 				for (let i=0; i<articleList.length; i++) {
 					let art = articleList[i];
 					if (art.pk === pk) {
@@ -48,11 +48,9 @@ export default {
 				return cumulativeParentList;
 			}
 			
-			parentList = nextLevelParent(this.articleDetail.pk, parentList, this.articles);
+			parentList = nextLevelParent(this.articleDetail.parent, parentList, this.articles);
 			if (parentList) {
 				parentList = parentList.reverse();
-				// I shouldn't have to do this...I should change the function
-				parentList.pop();
 			}
 			return parentList;
 		}

@@ -48,19 +48,27 @@ export default {
 			this.mapFeatureLayer = L.geoJSON(this.mapFeatures, {
 				style: featureStyle,
 				onEachFeature: (feature, layer) => {
-					layer.bindPopup(
-					`<a href='/#/${feature.properties.slug}' taregt='_blank'>${feature.properties.name}</a>`
-				)},
+					layer.bindPopup(this.popupText(feature));
+					layer.setStyle({ 'className':this.getClassName(feature) });
+				},
 				pointToLayer: (feature, latlng) => {
 					return L.circleMarker(latlng, constants.MAP_POINT_MARKER_OPTIONS);
 				}
 			}).addTo(this.map);		
+		},
+		popupText(feature) {
+			return `<a href='/#/${feature.properties.slug}' taregt='_blank'>${feature.properties.name}</a>`
+		},
+		getClassName(feature) {
+			return constants.MAP_FEATURE_CLASS_NAMES[feature.properties.category];
 		}
 	}
 }
 </script>
 
 <style lang="scss">
+@import '../mapfeatures.scss';
+
 #homeMap {
 	width: 100%;
 	height: 500px;
