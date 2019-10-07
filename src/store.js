@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
+import functions from './functions';
+
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
@@ -13,6 +15,7 @@ const store = new Vuex.Store({
 		articleCommentary: {},
 		editPermission: true,
 		editableArticle: null,
+		// is this below being used?
 		editMapFeature: false,
 		newMapFeature: {},
 		geoCategories: {},
@@ -29,12 +32,15 @@ const store = new Vuex.Store({
 		},
 		getArticleDetail(state, articleDetail) {
 			state.articleDetail = articleDetail;
+			if (articleDetail.geo_coordinates) {
+				let mapFeature = functions.structureGeoJsonForMap(articleDetail);
+				state.articleMapFeature = mapFeature;
+			} else {
+				state.articleMapFeature = {};
+			}
 		},
 		getArticleCommentary(state, comments) {
 			state.articleCommentary = comments;
-		},
-		updateArticleMapFeature(state, mapFeature) {
-			state.articleMapFeature = mapFeature;
 		},
 		editArticle (state, slug) {
 			state.editableArticle = slug;

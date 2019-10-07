@@ -8,7 +8,6 @@
 
 <script>
 import functions from '../functions';
-import constants from '../constants';
 import HomeMap from './HomeMap';
 
 export default {

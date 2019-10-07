@@ -2,7 +2,11 @@
 <div class="inj-home__map-container">
 	<div id="homeMap"></div>
 	<ul>{{ mapFeatures }}
-		<li v-for="feature in mapFeatures.features">{{ feature.properties.name }} </li>
+		<li
+			v-for="feature in mapFeatures.features"
+			:key="feature.properties.name"
+		>{{ feature.properties.name }}
+		</li>
 	</ul>
 </div>
 </template>

@@ -78,12 +78,14 @@ export default {
 		functions.getArticleDetails(this.slug);
 		functions.getGeoCategories();
 	},
+	destroyed() {
+		store.commit('getArticleDetail', {});
+	},
 	beforeRouteUpdate (to, from, next) {
 		// this fires when the route changes without rerendering the component
 		this.slug = to.params.slug;
 		next();
 		functions.getArticleDetails(this.slug);
-		store.commit('addNewMapFeature', {});
 	},
 	computed: {
 		...mapState({
@@ -109,25 +111,22 @@ export default {
 		cancelEditing() {
 			this.editedContent = null;
 			store.commit('editArticle', null);
-			// replace the new map feature with the old map feature:
+			// replace the new map feature with an empty object
 			if (this.newMapFeature.geometry) {
+				// really should commit the value {}, but then how do you get articleMapFeature to re render without changing its value? My whole strategy is based on watchers in ArticleMap.vue that trigger functions local to that component. 
 				store.commit('addNewMapFeature', this.articleMapFeature);
 			}
 		},
 		submitChanges() {
 			// validation
 			if (this.editedContent) this.sendChangedInfo()
-			else this.validationError = 'Please submit something';
+			else this.validationError = 'It seems like you deleted all of the content of the article.';
 			// TODO: add scrolling to top on successful submit
 		},
 		sendChangedInfo() {
 			let apiUrl = constants.API_BASE_URL + constants.API_PATH + this.slug + '/';
 			let serializedChanges = {};
 			let self = this;
-
-			// if there is a new map feature, and it ended up being different from the old one, then submit the changes
-			console.log('sending map info ', this.newMapFeature);
-			console.log('...compared to ', this.articleMapFeature);
 			
 			if (this.newMapFeature.geometry) {
 				serializedChanges = functions.destructureGeoJsonForDb(this.newMapFeature);
@@ -142,11 +141,9 @@ export default {
 				return;
 			}
 			
-			console.log('serialized changes before sending ', serializedChanges);
 			axios.patch(apiUrl, serializedChanges)
 				.then((response) => {
 					// handle success
-					console.log('response data ', response.data);
 					store.commit('getArticleDetail', response.data);
 					store.commit('editArticle', null);
 					self.editedContent = null;

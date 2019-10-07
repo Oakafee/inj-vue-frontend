@@ -53,12 +53,6 @@ export default {
 		.then((response) => {
 				// handle success
 				store.commit('getArticleDetail', response.data);
-				if (response.data.geo_coordinates) {
-					let mapFeature = self.structureGeoJsonForMap(response.data);
-					store.commit('updateArticleMapFeature', mapFeature);
-				} else {
-					store.commit('updateArticleMapFeature', {});
-				}
 				if (response.data.comments) {
 					self.getCommentary(response.data.pk);
 				}

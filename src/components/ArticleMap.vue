@@ -11,15 +11,40 @@
 		
 		<div class="inj-article-map__edit" :class="{ 'inj-article-map__edit--hidden' : !editable }" v-if="editPermission">
 			<div class="inj-article-map__expand">
-				<svg v-if="mapExpanded" @click="mapExpanded = false" viewBox="0 0 24 24" ><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
-				<svg v-else @click="mapExpanded = true" viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+			<!-- TODO: update and maybe remove this map expanded feature -->
+				<svg
+					v-if="mapExpanded"
+					@click="mapExpanded = false"
+					viewBox="0 0 24 24"
+				>
+					<polyline points="4 14 10 14 10 20"></polyline>
+					<polyline points="20 10 14 10 14 4"></polyline>
+					<line x1="14" y1="10" x2="21" y2="3"></line>
+					<line x1="3" y1="21" x2="10" y2="14"></line>
+				</svg>
+				<svg
+					v-else
+					@click="mapExpanded = true"
+					viewBox="0 0 24 24"
+				>
+					<polyline points="15 3 21 3 21 9"></polyline>
+					<polyline points="9 21 3 21 3 15"></polyline>
+					<line x1="21" y1="3" x2="14" y2="10"></line>
+					<line x1="3" y1="21" x2="10" y2="14"></line>
+				</svg>
 			</div>
 			<span v-if="mapHidden">Add a map feature: </span>
 			<button v-if="mapHidden" @click="drawNewFeature = true">Draw map feature </button> or
 			<button @click="toggleModal(true)">Paste data </button>
 			<label for="geoCategory">Choose a map category </label>
 			<select id="geoCategory" @input="selectGeoCategory">
-				<option v-for="cat in geoCategories" :value="cat.pk" :selected="feature.properties ? (cat.pk === feature.properties.category) : (cat.pk === 15)">{{ cat.name }}</option>
+				<option
+					v-for="cat in geoCategories"
+					:value="cat.pk"
+					:key="cat.pk"
+					:selected="feature.properties ? (cat.pk === feature.properties.category) : (cat.pk === 15)"
+				>{{ cat.name }}
+				</option>
 			</select>
 		</div>
 				
@@ -89,7 +114,7 @@ export default {
 			// have to check if there's a feature and if it's a non-deleted feature. a deleted feature will have geometry but no coordinates
 			if (
 				(this.feature.geometry && this.feature.geometry.coordinates) ||
-				this.newMapFeature.geometry ||
+				(this.newMapFeature.geometry && this.newMapFeature.geometry.cooordinates) ||
 				this.drawNewFeature
 			) {
 				return false;
@@ -104,6 +129,12 @@ export default {
 			[constants.NJ_BOUNDS.south, constants.NJ_BOUNDS.west]];
 		*/
 		console.log('mounted called in article map');
+		
+		// since we are loading (or reloading?) a new article afresh, we want to get rid of any previous edits.
+		if(this.newMapFeature.geometry) {
+			store.commit('addNewMapFeature', {});			
+		}
+		
 		this.map = L.map('articleMap', {
 			maxZoom: constants.MAP_MAX_ZOOM
 			//scrollWheelZoom: false
@@ -113,17 +144,22 @@ export default {
 			attribution: constants.MAP_TILE_2_ATTRIBUTION
 		}).addTo(this.map);
 		
-		if(this.feature) this.addFeatureToMap(this.feature);
+		if(this.feature.geometry && this.feature.geometry.coordinates) {
+			this.addFeatureToMap(this.feature);
+		}
+	},
+	destroyed() {
+		if(this.newMapFeature.geometry) {
+			store.commit('addNewMapFeature', {});			
+		}
 	},
 	watch: {
 		feature() {
-			this.removeCurrentFeature();
-			if(this.feature) this.addFeatureToMap(this.feature);
+			this.updateFeatureOnMap(this.feature);
 		},
 		newMapFeature() {
-			this.removeCurrentFeature();
-			if (this.newMapFeature.geometry && this.newMapFeature.geometry.coordinates) {
-				this.addFeatureToMap(this.newMapFeature)
+			if (this.newMapFeature.geometry) {
+				this.updateFeatureOnMap(this.newMapFeature);
 			}
 		},
 		editable() {
@@ -156,14 +192,21 @@ export default {
 					this.selectedGeoCategory = constants.MAP_DEFAULT_FEATURE_CATIGORY;
 				}
 				let bounds = this.mapFeatureLayer.getBounds();
-				this.map.fitBounds(bounds);
+				console.log('bounds: ', bounds);
+				this.map.fitBounds(bounds, {padding: constants.MAP_BOUNDS_PADDING});
 			}		
 		},
 		removeCurrentFeature() {
 			if (this.map.hasLayer(this.mapFeatureLayer)) {
 				this.mapFeatureLayer.remove();
-				this.map.setView(constants.NJ_CENTER, constants.MAP_ZOOM_LEVEL);
+				//this.map.setView(constants.NJ_CENTER, constants.MAP_ZOOM_LEVEL);
 			}		
+		},
+		updateFeatureOnMap(feature) {
+			this.removeCurrentFeature();
+			if(feature.geometry && feature.geometry.coordinates) {
+				this.addFeatureToMap(feature)
+			};		
 		},
 		initializeMapDrawing() {
 			if (!this.mapFeatureLayer.options) {
@@ -195,7 +238,6 @@ export default {
 			
 			this.map.on('draw:created', (e) => commitLayerChange(e.layer));
 			this.map.on('draw:edited', (e) => {
-				console.log('map edited');
 				e.layers.eachLayer((layer) => commitLayerChange(layer));
 			});
 			this.map.on('draw:deleted', (e) => {

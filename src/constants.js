@@ -5,6 +5,7 @@ export default {
 	API_PATH: 'articles/',
 	MAP_ZOOM_LEVEL: 7.5,
 	MAP_MAX_ZOOM: 15,
+	MAP_BOUNDS_PADDING: [50, 50],
 	MAP_TILE_LAYER: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
 	MAP_TILE_2_LAYER: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
 	MAP_TILE_ATTRIBUTION: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community',
