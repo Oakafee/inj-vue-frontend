@@ -12,12 +12,13 @@
 			<div v-if="editable">
 				<textarea class="inj-article__edit-content inj-textarea" :class="{ 'inj-textarea-error' : validationError }" v-model="editedContent" />			
 			</div>
-			<div v-else>
+			<div v-else class="inj-article__text">
 				<p v-html="articleDetail.article_content"></p>
 			</div>
 			
 			<div v-if="editPermission" class="inj-article__edit-button-row">
 				<div v-if="editable">
+					<!-- TODO: add transition -->
 					<button class="inj-button inj-button-tertiary" @click="deleteModalOpen = true">Delete Article </button>
 					<button class="inj-button inj-button-secondary" @click="cancelEditing()">Cancel Editing </button>
 					<button class="inj-button" :class="{ 'inj-button-error' : validationError }" @click="submitChanges()">Submit Changes </button>
@@ -82,12 +83,14 @@ export default {
 		this.slug = to.params.slug;
 		next();
 		functions.getArticleDetails(this.slug);
+		store.commit('addNewMapFeature', {});
 	},
 	computed: {
 		...mapState({
 			articleDetail: 'articleDetail',
 			editPermission: 'editPermission',
 			editableArticle: 'editableArticle',
+			articleMapFeature: 'articleMapFeature',
 			newMapFeature: 'newMapFeature',
 		}),
 		formattedPubDate() {
@@ -106,7 +109,10 @@ export default {
 		cancelEditing() {
 			this.editedContent = null;
 			store.commit('editArticle', null);
-			store.commit('addNewMapFeature', {});
+			// replace the new map feature with the old map feature:
+			if (this.newMapFeature.geometry) {
+				store.commit('addNewMapFeature', this.articleMapFeature);
+			}
 		},
 		submitChanges() {
 			// validation
@@ -119,11 +125,23 @@ export default {
 			let serializedChanges = {};
 			let self = this;
 
+			// if there is a new map feature, and it ended up being different from the old one, then submit the changes
+			console.log('sending map info ', this.newMapFeature);
+			console.log('...compared to ', this.articleMapFeature);
+			
 			if (this.newMapFeature.geometry) {
 				serializedChanges = functions.destructureGeoJsonForDb(this.newMapFeature);
 			}
 			
-			serializedChanges.article_content = this.editedContent;
+			if (this.articleDetail.article_content !== this.editedContent) {
+				serializedChanges.article_content = this.editedContent;
+			}
+			
+			if (Object.keys(serializedChanges).length === 0) {
+				this.validationError = 'No changes detected';
+				return;
+			}
+			
 			console.log('serialized changes before sending ', serializedChanges);
 			axios.patch(apiUrl, serializedChanges)
 				.then((response) => {
@@ -176,6 +194,11 @@ export default {
 		background: $color-secondary;
 		display: flex;
 		justify-content: right; //changed from space-between
+		z-index: 1001;
+		// Marina would kill me
+		.inj-button {
+			margin-left: $spacing;
+		}
 	}
 	&__content {
 		max-width: 600px;
@@ -184,6 +207,9 @@ export default {
 	&__edit-content {
 		height: 600px;
 		margin-bottom: 4 * $spacing;
+	}
+	&__text {
+		white-space: pre-line;
 	}
 	&__title-area {
 		text-align: center;

@@ -25,6 +25,7 @@ export default {
 				
 				if (!articleList) return null;
 				
+				//TODO: why is articleList.find not working?
 				for (let i=0; i<articleList.length; i++) {
 					let art = articleList[i];
 					if (art.pk === pk) {

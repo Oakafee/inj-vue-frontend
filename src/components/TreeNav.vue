@@ -77,7 +77,7 @@ export default {
 		}
 	}
 	&__article {
-		padding-bottom: 0.5em;
+		padding-bottom: 0.1em;
 		position: relative; //this is for the absolute positioning of the chevron
 	}
 	&__children {

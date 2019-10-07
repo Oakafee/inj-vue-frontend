@@ -119,5 +119,8 @@ export default {
 				console.log('sad, the geo category lookup failed')
 				return error;
 			});
+	},
+	getMapClassName(feature) {
+		return constants.MAP_FEATURE_CLASS_NAMES[feature.properties.category];
 	}
 }

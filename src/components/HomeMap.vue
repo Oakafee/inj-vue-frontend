@@ -9,6 +9,7 @@
 
 <script>
 import {mapState} from 'vuex';
+import functions from '../functions';
 import constants from '../constants';
 
 export default {
@@ -42,14 +43,10 @@ export default {
 	},
 	methods: {
 		addFeaturesToMap() {
-			let featureStyle = {
-				'color': constants.MAP_FEATURE_COLOR_PRIMARY,
-			};
 			this.mapFeatureLayer = L.geoJSON(this.mapFeatures, {
-				style: featureStyle,
 				onEachFeature: (feature, layer) => {
 					layer.bindPopup(this.popupText(feature));
-					layer.setStyle({ 'className':this.getClassName(feature) });
+					layer.setStyle({ 'className': functions.getMapClassName(feature) });
 				},
 				pointToLayer: (feature, latlng) => {
 					return L.circleMarker(latlng, constants.MAP_POINT_MARKER_OPTIONS);
@@ -59,9 +56,6 @@ export default {
 		popupText(feature) {
 			return `<a href='/#/${feature.properties.slug}' taregt='_blank'>${feature.properties.name}</a>`
 		},
-		getClassName(feature) {
-			return constants.MAP_FEATURE_CLASS_NAMES[feature.properties.category];
-		}
 	}
 }
 </script>

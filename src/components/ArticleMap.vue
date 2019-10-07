@@ -1,15 +1,25 @@
 <template>
 	<div>
-		<div class="inj-article-map-container" :class="{ 'inj-article-map-hidden' : mapHidden }">
+		<div
+			class="inj-article-map-container"
+			:class="{
+				'inj-article-map-hidden' : mapHidden,
+				'inj-article-map--expanded': mapExpanded
+			}">
 			<div id="articleMap"></div>
 		</div>
+		
 		<div class="inj-article-map__edit" :class="{ 'inj-article-map__edit--hidden' : !editable }" v-if="editPermission">
+			<div class="inj-article-map__expand">
+				<svg v-if="mapExpanded" @click="mapExpanded = false" viewBox="0 0 24 24" ><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+				<svg v-else @click="mapExpanded = true" viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+			</div>
 			<span v-if="mapHidden">Add a map feature: </span>
 			<button v-if="mapHidden" @click="drawNewFeature = true">Draw map feature </button> or
 			<button @click="toggleModal(true)">Paste data </button>
 			<label for="geoCategory">Choose a map category </label>
-			<select id="geoCategory" :value="selectedGeoCategory" @input="selectGeoCategory">
-				<option v-for="cat in geoCategories" :value="cat.pk">{{ cat.name }}</option>
+			<select id="geoCategory" @input="selectGeoCategory">
+				<option v-for="cat in geoCategories" :value="cat.pk" :selected="feature.properties ? (cat.pk === feature.properties.category) : (cat.pk === 15)">{{ cat.name }}</option>
 			</select>
 		</div>
 				
@@ -44,6 +54,7 @@ import {mapState} from 'vuex';
 import GJV from 'geojson-validation';
 
 import store from '../store';
+import functions from '../functions';
 import constants from '../constants';
 import InjModal from './InjModal';
 
@@ -64,6 +75,7 @@ export default {
 			validationError: null,
 			drawNewFeature: false,
 			selectedGeoCategory: null,
+			mapExpanded: false,
 		}
 	},
 	computed: {
@@ -91,13 +103,14 @@ export default {
 		let stateBounds = [[constants.NJ_BOUNDS.north, constants.NJ_BOUNDS.east],
 			[constants.NJ_BOUNDS.south, constants.NJ_BOUNDS.west]];
 		*/
+		console.log('mounted called in article map');
 		this.map = L.map('articleMap', {
 			maxZoom: constants.MAP_MAX_ZOOM
 			//scrollWheelZoom: false
 		}).setView(constants.NJ_CENTER, constants.MAP_ZOOM_LEVEL);//.setMaxBounds(stateBounds);
 
-		L.tileLayer(constants.MAP_TILE_LAYER, {
-			attribution: constants.MAP_TILE_ATTRIBUTION
+		L.tileLayer(constants.MAP_TILE_2_LAYER, {
+			attribution: constants.MAP_TILE_2_ATTRIBUTION
 		}).addTo(this.map);
 		
 		if(this.feature) this.addFeatureToMap(this.feature);
@@ -110,11 +123,7 @@ export default {
 		newMapFeature() {
 			this.removeCurrentFeature();
 			if (this.newMapFeature.geometry && this.newMapFeature.geometry.coordinates) {
-				// The second condition above checks for if newMapFeature was deleted. In that case, it will have been replaced with constants.NULL_JSON_OBJECTS, so it will have geometry but geometry.coordinates will be null
 				this.addFeatureToMap(this.newMapFeature)
-			} else if (this.feature.geometry) {
-			// why is this necessary?
-				this.addFeatureToMap(this.feature)
 			}
 		},
 		editable() {
@@ -130,10 +139,7 @@ export default {
 		addFeatureToMap(feature) {
 			if (feature.geometry && feature.geometry.coordinates) {
 				let featureStyle = {
-					'color': constants.MAP_FEATURE_COLOR_PRIMARY,
-				};
-				if (feature.geometry.type === 'LineString') {
-					featureStyle.weight = constants.MAP_LINE_WEIGHT
+					'className': functions.getMapClassName(feature)
 				};
 				this.mapFeatureLayer = L.geoJSON(feature, {
 					style: featureStyle,
@@ -189,6 +195,7 @@ export default {
 			
 			this.map.on('draw:created', (e) => commitLayerChange(e.layer));
 			this.map.on('draw:edited', (e) => {
+				console.log('map edited');
 				e.layers.eachLayer((layer) => commitLayerChange(layer));
 			});
 			this.map.on('draw:deleted', (e) => {
@@ -273,7 +280,21 @@ export default {
 			this.validationError = null;
 		},
 		selectGeoCategory(event) {
+			// there has to be a more concise way of doing this?
 			this.selectedGeoCategory = parseInt(event.target.value);
+			let updatedFeature = constants.NULL_GEOJSON_FEATURE;
+			if (this.newMapFeature.geometry) {
+				updatedFeature.properties.name = this.newMapFeature.properties.name;
+				updatedFeature.geometry.type = this.newMapFeature.geometry.type;
+				updatedFeature.geometry.coordinates = this.newMapFeature.geometry.coordinates;
+			} else if (this.feature.geometry) {
+				updatedFeature.properties.name = this.feature.properties.name;
+				updatedFeature.geometry.type = this.feature.geometry.type;
+				updatedFeature.geometry.coordinates = this.feature.geometry.coordinates;
+
+			} else return; // it will be handled when you draw something
+			updatedFeature.properties.category = this.selectedGeoCategory;
+			store.commit('addNewMapFeature', updatedFeature);
 		}
 	}
 }
@@ -289,19 +310,42 @@ export default {
 	width: calc(100% - 2*$spacing);
 	height: 290px;
 	border: 1px solid black;
+	transition: height $transition-time;
 }
 
-.inj-article-map-container.inj-article-map-hidden {
-	height: 0;
-	visibility: hidden;
-}
+.inj-article-map {
 
-.inj-article-map__edit {
-	opacity: 1;
-	transition: opacity $transition-time;
-	&--hidden {
-		pointer-events: none;
-		opacity: 0;
+	&-container.inj-article-map-hidden {
+		height: 0;
+		visibility: hidden;
+	}
+		
+	&__edit {
+		opacity: 1;
+		transition: opacity $transition-time;
+		&--hidden {
+			pointer-events: none;
+			opacity: 0;
+		}
+	}
+	
+	&--expanded #articleMap {
+		height: 400px;
+	}
+	
+	&__expand {
+		text-align: right;
+		// this is cheating
+		position: relative;
+		top: -25px;
+		right: 5px;
+		z-index: 1000;
+		svg {
+			cursor: pointer;
+			stroke: currentColor;
+			stroke-width: 2;
+			width: 20px;
+		}
 	}
 }
 
