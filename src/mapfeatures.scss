@@ -1,0 +1,99 @@
+@import 'settings.scss';
+
+.inj-map-feature {
+	&__pyhsiographic-region {
+		//some sort of greenish gray would be nice
+		stroke: none;
+		fill: darkgreen;
+		// stroke-width: 1px;
+		fill-opacity: 0.1;
+	}
+	&__other-landform {
+		stroke: $color-wood;
+		fill: $color-wood;
+		fill-opacity: 0.5;
+		stroke-width: 1px;
+	}
+	&__mountain {
+		stroke: $color-horsehead;
+		stroke-width: 1px;
+		opacity: 0.5;
+		fill: $color-horsehead;
+		fill-opacity: 1;
+	}
+	&__swamp {
+		stroke: lightgreen;
+		fill: lightgreen;
+		stroke-width: 2px;
+	}
+	&__other-political-entity {
+		stroke: $color-dress;
+		fill: $color-dress;
+		fill-opacity: 0.3;
+	}
+	&__city {
+		stroke: $color-tertiary;
+		fill: $color-tertiary;
+		stroke-width: 1px;
+		fill-opacity: 0.3;
+	}
+	&__town {
+		stroke: $color-secondary;
+		fill: $color-secondary;
+		stroke-width: 1px;
+		fill-opacity: 0.3;
+	}
+	&__river {
+		&-smaller {
+			stroke: $color-primary;
+			opacity: 0.6;
+			stroke-width: 1px;
+		}
+		&-major {
+			stroke: $color-primary;
+			opacity: 0.6;
+		}
+	}
+	&__lake-bay {
+		stroke: none;
+		fill: $color-primary;
+		fill-opacity: 0.6;
+	}
+	&__waterfall {
+		stroke: $color-primary;
+		stroke-width: 1px;
+		fill: $color-primary;
+	}
+	&__other-infrastructure {}
+	&__road {
+		&-major-highway {
+			stroke: $color-quaternary;
+			opacity: 0.6;
+		}
+		&-secondary-highway {
+			stroke: $color-quaternary;
+			opacity: 0.6;
+			stroke-width: 2px;
+		}
+		&-local {
+			stroke: $color-tertiary;
+			stroke-width: 2px;
+		}
+	}
+	&__bridge-tunnel {
+		stroke: $color-quaternary;
+		stroke-width: 5px;
+		opacity: 0.7;
+	}
+	&__point-of-interest {
+		stroke: black;
+		fill: black;
+		stroke-width: 1px;
+		opacity: 0.6;
+		fill-opacity: 0.3;
+	}
+	&__default {
+		stroke: purple;
+		fill: purple;
+	}
+}

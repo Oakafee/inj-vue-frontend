@@ -29,6 +29,8 @@ ul {
 
 a { color: $color-primary; } // this is a little ugly?
 
+// Buttons:
+
 @mixin dark-button {
 	background-color: $color-primary;
 	color: white;
@@ -75,6 +77,8 @@ a { color: $color-primary; } // this is a little ugly?
 	}
 }
 
+// Forms:
+
 .inj-text-input {
 	padding: $spacing / 2;
 	font-family: $font-family-primary;
@@ -96,4 +100,19 @@ a { color: $color-primary; } // this is a little ugly?
 
 .inj-text-error {
 	color: $color-quaternary;
+}
+
+// Page Layout:
+
+.inj-page {
+	&__wrapper {
+		display: flex;
+	}
+	&__content {
+		flex: 3 0 0; // changed from 5 0 0
+		padding: $spacing;
+		@media (min-width: $media-break) {
+			padding: 2 * $spacing;
+		}	
+	}
 }

@@ -19,6 +19,7 @@ export default {
 		childrenArticlesList() {
 			let childrenArticlesList = [];
 			
+			//TODO: find out why this.articles.filter() won't work
 			if (this.articles) {
 				for (let i=0; i<this.articles.length; i++) {
 					let art = this.articles[i];

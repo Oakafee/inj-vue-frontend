@@ -58,7 +58,7 @@ export default {
 	transition: opacity $transition-time;
 	@media(max-width: $media-break) {
 		width: calc(100% - 24px); // to factor in the border and the padding on the container
-		position: absolute;
+		position: fixed;
 		top: 63px;
 		z-index: 9999;
 		border: 2px solid black;

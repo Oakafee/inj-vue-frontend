@@ -42,7 +42,6 @@ export default {
 	methods: {
 		toggleNav() {
 			store.commit('toggleMobileNav');
-			functions.updateArticleList();
 		}
 	},
 }

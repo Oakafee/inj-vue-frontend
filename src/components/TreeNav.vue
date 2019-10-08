@@ -34,12 +34,12 @@ export default {
 		childrenArticles() {		
 			let childrenArticles = [];
 			
-			if (!this.articles) return childrenArticles;
-			for (let i=0; i<this.articles.length; i++) {
-				if (this.articles[i].parent === this.parentArticle.pk) {
-					childrenArticles.push(this.articles[i]);
-				}
+			if (this.articles) {
+				childrenArticles = this.articles.filter(art =>
+					art.parent === this.parentArticle.pk
+				);
 			}
+			
 			return childrenArticles;
 		},
 		hasChildren() {
@@ -77,7 +77,7 @@ export default {
 		}
 	}
 	&__article {
-		padding-bottom: 0.5em;
+		padding-bottom: 0.1em;
 		position: relative; //this is for the absolute positioning of the chevron
 	}
 	&__children {

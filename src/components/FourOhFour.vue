@@ -1,5 +1,5 @@
 <template>
-<p>404: Page Not Found </p>
+<h2 class="inj-four-oh-four">404: Page Not Found </h2>
 </template>
 
 <script>
@@ -18,5 +18,7 @@ export default {
 </script>
 
 <style lang="scss">
-	
+.inj-four-oh-four {
+	text-align: center;
+}
 </style>

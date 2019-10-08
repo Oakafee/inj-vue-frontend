@@ -1,8 +1,10 @@
 <template>
 	<div id="app">
 		<Title />
-		<div class="inj-page">
-			<router-view />
+		<div class="inj-page__wrapper">
+			<div class="inj-page__content">
+				<router-view />
+			</div>
 			<Nav />
 		</div>
 	</div>
@@ -23,11 +25,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import 'settings.scss';
 @import 'styles.scss';
-
-.inj-page {
-	display: flex;
-}
 
 </style>

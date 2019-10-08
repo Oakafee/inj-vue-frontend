@@ -9,14 +9,37 @@ export default {
 		let apiUrl = constants.API_BASE_URL + constants.API_PATH;
 		
 		axios.get(apiUrl)
-			.then(function (response) {
+			.then((response) => {
 				// handle success
 				store.commit('updateArticleList', response.data);
 				return 'it worked';
 			})
-			.catch(function (error) {
-				// handle error, what to do?
+			.catch((error) => {
+				// TODO: show general server error message page
 				console.log('article list call failed');
+				return error;
+			});
+	},
+	getMapFeatureList() {
+		let apiUrl = constants.API_BASE_URL + 'map/';
+		let self = this;
+		
+		axios.get(apiUrl)
+			.then((response) => {
+				let featuresList = [];
+				let featureCollection = {};
+				response.data.map((feature) => {
+					featuresList.push(self.structureGeoJsonForMap(feature));
+				});
+				featureCollection = {
+					"type": "FeatureCollection",
+					"features": featuresList
+				}
+				store.commit('updateMapFeaturesList', featureCollection);
+			})
+			.catch((error) => {
+				// TODO: show general server error message page?
+				console.log('map feature list call failed ', error);
 				return error;
 			});
 	},
@@ -30,11 +53,6 @@ export default {
 		.then((response) => {
 				// handle success
 				store.commit('getArticleDetail', response.data);
-				if (response.data.geo_coordinates) {
-					self.structureGeoJsonForMap(response.data);
-				} else {
-					store.commit('updateArticleMapFeature', {});
-				}
 				if (response.data.comments) {
 					self.getCommentary(response.data.pk);
 				}
@@ -47,18 +65,25 @@ export default {
 			});
 	},
 	structureGeoJsonForMap(data) {
-		let mapFeature = {
-			'type': 'Feature',
-			'properties': {
-				'name': data.title,
-				'category': data.geo_category
+		return {
+			"type": "Feature",
+			"properties": {
+				"name": data.title,
+				"slug": data.slug,
+				"category": data.geo_category
 			},
-			'geometry': {
-				'type': data.geo_type,
-				'coordinates': JSON.parse(data.geo_coordinates)
+			"geometry": {
+				"type": data.geo_type,
+				"coordinates": JSON.parse(data.geo_coordinates)
 			}
-		};
-		store.commit('updateArticleMapFeature', mapFeature);
+		}
+	},
+	destructureGeoJsonForDb(feature) {
+		return {
+			'geo_type': feature.geometry.type,
+			'geo_coordinates': JSON.stringify(feature.geometry.coordinates),
+			'geo_category': feature.properties.category
+		}
 	},
 	getCommentary(articlePk) {
 		let apiUrl = constants.API_BASE_URL + 'commentary/' + articlePk + '/';
@@ -75,12 +100,21 @@ export default {
 				return error;
 			});
 	},
-	destructureGeoJsonForDb(feature) {
-	// not going to work like this,
-		return {
-			'geo_type': feature.geometry.type,
-			'geo_coordinates': JSON.stringify(feature.geometry.coordinates),
-			'geo_category': feature.properties.category
-		}
+	getGeoCategories() {
+		let apiUrl = constants.API_BASE_URL + 'geo-categories/';
+
+		axios.get(apiUrl)
+			.then(function (response) {
+				// handle success
+				store.commit('getGeoCategories', response.data);
+			})
+			.catch(function (error) {
+				// handle error, not sure what to do in this case
+				console.log('sad, the geo category lookup failed')
+				return error;
+			});
+	},
+	getMapClassName(feature) {
+		return constants.MAP_FEATURE_CLASS_NAMES[feature.properties.category];
 	}
 }
