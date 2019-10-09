@@ -1,5 +1,6 @@
 <template>
 	<div class="inj-nav" :class="{ 'inj-nav--mobile-open' : mobileOpen, 'inj-nav--show' : articleList }">
+		<p><router-link to="new-article">+ Add Article</router-link></p>
 		<ul class="inj-nav__tree" v-for="article in mainCatArticles" :key="article.pk">
 			<TreeNav :parentArticle="article" />	
 		</ul>

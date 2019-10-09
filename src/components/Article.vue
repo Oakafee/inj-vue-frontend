@@ -2,7 +2,6 @@
 	<div class="inj-article">
 		<div class="inj-article__content" v-if="articleDetail.pk">
 			<ArticleMap :editable="editable" />
-			
 			<div class="inj-article__title-area">
 				<ArticleBreadcrumbs />
 				<h1>{{ articleDetail.title }}</h1>
@@ -25,7 +24,8 @@
 					<span class="inj-text-error" v-if="validationError">{{ validationError }}  </span>
 				</div>
 				<div v-else>
-					<button class="inj-button" @click="editArticle()">Edit Article </button>
+					<router-link :to="{ name: 'new-article', params: {parent: articleDetail.pk } }">+ Add Child Article</router-link>
+					<button class="inj-button inj-button-secondary" @click="editArticle()">Edit Article </button>
 				</div>
 			</div>
 			<ArticleComments :articlePk="articleDetail.pk" :articleEdit="editableArticle" />
@@ -76,7 +76,6 @@ export default {
 		// this fires when you load the page
 		this.slug = this.$route.params.slug;
 		functions.getArticleDetails(this.slug);
-		functions.getGeoCategories();
 	},
 	destroyed() {
 		store.commit('getArticleDetail', {});
@@ -101,6 +100,13 @@ export default {
 		},
 		editable() {
 			return this.editableArticle === this.articleDetail.slug;
+		},
+		newArticleRoute() {
+			let pk = this.articleDetail.pk;
+			return  {
+				name: 'new-article',
+				params: { parent: pk }
+			}
 		}
 	},
 	methods: {
@@ -144,10 +150,20 @@ export default {
 			axios.patch(apiUrl, serializedChanges)
 				.then((response) => {
 					// handle success
+					console.log('article patch response ', response.data);
 					store.commit('getArticleDetail', response.data);
 					store.commit('editArticle', null);
 					self.editedContent = null;
 					self.validationError = null;
+					if (self.newMapFeature.geometry) {
+						if (self.articleMapFeature.geometry.coordinates) {
+						// this condition is when there was an update or delete to an existing map feature. TODO: find out why this condition is always true?
+						console.log("TODO: replace item on old map feature list with new one");
+						} else {
+							//this condition is when a map feature is added for the first time
+							store.commit('addMapFeatureToList', response.data);
+						}
+					}
 				})
 				.catch((error) => {
 					// handle error
@@ -160,7 +176,7 @@ export default {
 			let self = this;
 		
 			axios.delete(apiUrl)
-				.then((response) => {
+				.then(() => {
 					// handle success
 					functions.getArticleList();
 					self.$router.push({ name: 'home' });

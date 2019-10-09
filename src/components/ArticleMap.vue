@@ -10,7 +10,7 @@
 		</div>
 		
 		<div class="inj-article-map__edit" :class="{ 'inj-article-map__edit--hidden' : !editable }" v-if="editPermission">
-			<div class="inj-article-map__expand">
+			<div class="inj-article-map__expand" v-if="!mapHidden">
 			<!-- TODO: update and maybe remove this map expanded feature -->
 				<svg
 					v-if="mapExpanded"
@@ -36,16 +36,18 @@
 			<span v-if="mapHidden">Add a map feature: </span>
 			<button v-if="mapHidden" @click="drawNewFeature = true">Draw map feature </button> or
 			<button @click="toggleModal(true)">Paste data </button>
-			<label for="geoCategory">Choose a map category </label>
-			<select id="geoCategory" @input="selectGeoCategory">
-				<option
-					v-for="cat in geoCategories"
-					:value="cat.pk"
-					:key="cat.pk"
-					:selected="feature.properties ? (cat.pk === feature.properties.category) : (cat.pk === 15)"
-				>{{ cat.name }}
-				</option>
-			</select>
+			<div class="inj-article-map__category-picker" v-if="!mapHidden">
+				<label for="geoCategory">Choose a map category </label>
+				<select id="geoCategory" @input="selectGeoCategory">
+					<option
+						v-for="cat in geoCategories"
+						:value="cat.pk"
+						:key="cat.pk"
+						:selected="feature.properties ? (cat.pk === feature.properties.category) : (cat.pk === 15)"
+					>{{ cat.name }}
+					</option>
+				</select>
+			</div>
 		</div>
 				
 		<InjModal v-if="pasteDataModalOpen">
@@ -129,7 +131,7 @@ export default {
 			[constants.NJ_BOUNDS.south, constants.NJ_BOUNDS.west]];
 		*/
 		console.log('mounted called in article map');
-		
+		if (this.geoCategories.length === 0) functions.getGeoCategories();
 		// since we are loading (or reloading?) a new article afresh, we want to get rid of any previous edits.
 		if(this.newMapFeature.geometry) {
 			store.commit('addNewMapFeature', {});			
@@ -206,7 +208,7 @@ export default {
 			this.removeCurrentFeature();
 			if(feature.geometry && feature.geometry.coordinates) {
 				this.addFeatureToMap(feature)
-			};		
+			}	
 		},
 		initializeMapDrawing() {
 			if (!this.mapFeatureLayer.options) {
