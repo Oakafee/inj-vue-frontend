@@ -65,24 +65,36 @@ export default {
 			});
 	},
 	structureGeoJsonForMap(data) {
-		return {
-			"type": "Feature",
-			"properties": {
-				"name": data.title,
-				"slug": data.slug,
-				"category": data.geo_category
-			},
-			"geometry": {
-				"type": data.geo_type,
-				"coordinates": JSON.parse(data.geo_coordinates)
+		if (data.geo_coordinates) {
+			return {
+				"type": "Feature",
+				"properties": {
+					"name": data.title,
+					"slug": data.slug,
+					"category": data.geo_category
+				},
+				"geometry": {
+					"type": data.geo_type,
+					"coordinates": JSON.parse(data.geo_coordinates)
+				}
 			}
+		} else {
+			return {}
 		}
 	},
 	destructureGeoJsonForDb(feature) {
-		return {
-			'geo_type': feature.geometry.type,
-			'geo_coordinates': JSON.stringify(feature.geometry.coordinates),
-			'geo_category': feature.properties.category
+		if (feature.geometry) {
+			return {
+				'geo_type': feature.geometry.type,
+				'geo_coordinates': JSON.stringify(feature.geometry.coordinates),
+				'geo_category': feature.properties.category
+			}
+		} else {
+			return {
+				'geo_type': "",
+				'geo_coordinates': "",
+				'geo_category': null
+			}
 		}
 	},
 	getCommentary(articlePk) {

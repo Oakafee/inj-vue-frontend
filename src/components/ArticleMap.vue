@@ -231,12 +231,12 @@ export default {
 			this.mapDrawToolbar = new L.Control.Draw(toolbarOptions);
 			this.map.addControl(this.mapDrawToolbar);
 			
-			//TODO change this condition
+			/*TODO change this condition, this isn't working
 			if (!this.feature) {
 				this.mapDrawToolbar.Delete.disable();
 				this.mapDrawToolbar.Edit.disable();
 			}
-
+			*/
 			
 			this.map.on('draw:created', (e) => commitLayerChange(e.layer));
 			this.map.on('draw:edited', (e) => {
@@ -244,7 +244,7 @@ export default {
 			});
 			this.map.on('draw:deleted', (e) => {
 				e.layers.eachLayer(() => {
-					store.commit('addNewMapFeature', constants.NULL_GEOJSON_FEATURE);
+					store.commit('addNewMapFeature', {});
 				});
 			});
 		},

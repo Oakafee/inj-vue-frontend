@@ -57,17 +57,23 @@ const store = new Vuex.Store({
 		getGeoCategories(state, cats) {
 			state.geoCategories = cats;
 		},
-		addMapFeatureToList(state, articleDetail) {
-			console.log('add map feature to list in store');
-			let mapFeature = functions.structureGeoJsonForMap(articleDetail);
-			state.mapFeaturesList.features.push(mapFeature);
+		addMapFeatureToList(state, feature) {
+			if (state.mapFeaturesList.features) {
+				state.mapFeaturesList.features.push(feature);
+			}
+			// else do nothing. when the map loads it will get all of the features including the new one from the server
 		},
-		replaceMapFeatureInList(state, articleDetail) {
-			let index = state.mapFeaturesList.features.findIndex((feature) =>
-				feature.properties.slug === articleDetail.slug
+		replaceMapFeatureInList(state, feature) {
+			let index = state.mapFeaturesList.features.findIndex((listItem) =>
+				listItem.properties.slug === feature.properties.slug
 			);
-			let feature = functions.structureGeoJsonForMap(articleDetail);
 			state.mapFeaturesList.features[index] = feature;
+		},
+		removeMapFeatureFromList(state, feature) {
+			let index = state.mapFeaturesList.features.findIndex((listItem) =>
+				listItem.properties.slug === feature.properties.slug
+			);
+			state.mapFeaturesList.features.splice(index, 1);
 		},
 		addArticleToList(state, articleDetail) {
 			let listInfo = {

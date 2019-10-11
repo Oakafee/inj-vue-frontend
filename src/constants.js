@@ -42,12 +42,12 @@ export default {
 	NULL_GEOJSON_FEATURE: {
 		"type": "Feature",
 		"properties": {
-			"name": '',
+			"name": null,
 			"category": null
 		},
 		"geometry": {
-			"type": '',
-			"coordinates": ''
+			"type": "",
+			"coordinates": ""
 		}
 	},
 	

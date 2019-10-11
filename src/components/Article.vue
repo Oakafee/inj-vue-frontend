@@ -93,6 +93,7 @@ export default {
 			editableArticle: 'editableArticle',
 			articleMapFeature: 'articleMapFeature',
 			newMapFeature: 'newMapFeature',
+			mapFeaturesList: 'mapFeaturesList',
 		}),
 		formattedPubDate() {
 			let pubDate = new Date(this.articleDetail.pub_date);
@@ -118,10 +119,9 @@ export default {
 			this.editedContent = null;
 			store.commit('editArticle', null);
 			// replace the new map feature with an empty object
-			if (this.newMapFeature.geometry) {
+			store.commit('addNewMapFeature', this.articleMapFeature);
 				// really should commit the value {}, but then how do you get articleMapFeature to re render without changing its value? My whole strategy is based on watchers in ArticleMap.vue that trigger functions local to that component. 
-				store.commit('addNewMapFeature', this.articleMapFeature);
-			}
+
 		},
 		submitChanges() {
 			// validation
@@ -134,11 +134,13 @@ export default {
 			let serializedChanges = {};
 			let self = this;
 			
-			if (this.newMapFeature.geometry) {
+			if (this.articleMapFeature !== this.newMapFeature) {
+			// if the map feature was changed in any way
 				serializedChanges = functions.destructureGeoJsonForDb(this.newMapFeature);
 			}
 			
 			if (this.articleDetail.article_content !== this.editedContent) {
+			// if the text of the article was changed in any way
 				serializedChanges.article_content = this.editedContent;
 			}
 			
@@ -150,25 +152,17 @@ export default {
 			axios.patch(apiUrl, serializedChanges)
 				.then((response) => {
 					// handle success
-					console.log('article patch response ', response.data);
+					// update geo info on HomeMap
+					self.updateMapFeatureInList(response.data);
 					store.commit('getArticleDetail', response.data);
 					store.commit('editArticle', null);
 					self.editedContent = null;
 					self.validationError = null;
-					if (self.newMapFeature.geometry) {
-						if (self.articleMapFeature.geometry.coordinates) {
-						// this condition is when there was an update or delete to an existing map feature. TODO: find out why this condition is always true?
-						console.log("TODO: replace item on old map feature list with new one");
-						} else {
-							//this condition is when a map feature is added for the first time
-							store.commit('addMapFeatureToList', response.data);
-						}
-					}
 				})
 				.catch((error) => {
 					// handle error
 					self.validationError = 'server error: ' + error;
-					return error;
+					console.log(error);
 				});
 		},
 		deleteArticle() {
@@ -189,6 +183,26 @@ export default {
 				});
 				
 			this.deleteModalOpen = false;
+		},
+		updateMapFeatureInList(data) {
+			if (!this.mapFeaturesList.features) return;
+			let responseMapFeature = functions.structureGeoJsonForMap(data);
+			if (responseMapFeature !== this.articleMapFeature) {
+			// if map info on the article was changed
+				if (this.articleMapFeature.geometry) {
+				// if there is already a map feature that got...
+					if(data.geo_coordinates) {
+					// ...updated
+						store.commit('replaceMapFeatureInList', responseMapFeature);
+					} else {
+					// ...deleted
+						store.commit('removeMapFeatureFromList', this.articleMapFeature)
+					}
+				} else {
+					//this condition is when a map feature is added for the first time
+					store.commit('addMapFeatureToList', responseMapFeature);
+				}
+			}			
 		}
 	}
 }
