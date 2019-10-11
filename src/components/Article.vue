@@ -113,6 +113,10 @@ export default {
 	methods: {
 		editArticle() {
 			this.editedContent = this.articleDetail.article_content;
+			if(this.articleMapFeature.geometry) {
+				// this may come back to haunt me?
+				store.commit('addNewMapFeature', this.articleMapFeature);
+			}
 			store.commit('editArticle', this.articleDetail.slug);
 		},
 		cancelEditing() {
@@ -137,6 +141,7 @@ export default {
 			if (this.articleMapFeature !== this.newMapFeature) {
 			// if the map feature was changed in any way
 				serializedChanges = functions.destructureGeoJsonForDb(this.newMapFeature);
+				console.log('serialized map changes ', serializedChanges);
 			}
 			
 			if (this.articleDetail.article_content !== this.editedContent) {
@@ -172,13 +177,16 @@ export default {
 			axios.delete(apiUrl)
 				.then(() => {
 					// handle success
-					functions.getArticleList();
+					if (this.articleMapFeature.geometry && this.mapFeaturesList.features) {
+						store.commit('removeMapFeatureFromList', this.articleMapFeature)	
+					}
 					self.$router.push({ name: 'home' });
 					store.commit('getArticleDetail', {});
 					store.commit('editArticle', null);
 				})
 				.catch((error) => {
 					self.validationError = 'server error with delete: ' + error;
+					console.log(error);
 					return error;
 				});
 				

@@ -152,7 +152,8 @@ export default {
 					console.log('create article', response.data);
 					// should I check for mapFeaturesList.features here or in the store?
 					if (response.data.geo_coordinates && this.mapFeaturesList.features) {
-						store.commit('addMapFeatureToList', response.data);
+						let newFeature = functions.structureGeoJsonForMap(response.data);
+						store.commit('addMapFeatureToList', newFeature);
 					}
 					self.validationError = null;
 					self.$router.push(response.data.slug);

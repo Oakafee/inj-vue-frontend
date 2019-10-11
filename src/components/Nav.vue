@@ -1,6 +1,6 @@
 <template>
 	<div class="inj-nav" :class="{ 'inj-nav--mobile-open' : mobileOpen, 'inj-nav--show' : articleList }">
-		<p><router-link to="new-article">+ Add Article</router-link></p>
+		<p><router-link to="new-article"  @click.native="toggleNav()">+ Add Article</router-link></p>
 		<ul class="inj-nav__tree" v-for="article in mainCatArticles" :key="article.pk">
 			<TreeNav :parentArticle="article" />	
 		</ul>
@@ -12,6 +12,7 @@
 import { mapState } from 'vuex';
 
 import functions from '../functions';
+import store from '../store';
 
 import TreeNav from './TreeNav';
 import FilterNav from './FilterNav';
@@ -45,7 +46,12 @@ export default {
 	},
 	mounted() {
 		functions.getArticleList();
-	}
+	},
+    methods: {
+		toggleNav() {
+			store.commit('toggleMobileNav');
+		}
+    }
 }
 </script>
 
