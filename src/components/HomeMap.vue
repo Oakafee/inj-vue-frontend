@@ -12,6 +12,7 @@
 </template>
 
 <script>
+import L from 'leaflet';
 import {mapState} from 'vuex';
 import functions from '../functions';
 import constants from '../constants';
@@ -30,6 +31,8 @@ export default {
 		}),
 	},
 	mounted() {
+		if (!this.mapFeatures.features) functions.getMapFeatureList();
+		
 		this.map = L.map('homeMap', {
 			maxZoom: constants.MAP_MAX_ZOOM
 			//scrollWheelZoom: false

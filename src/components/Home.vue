@@ -7,7 +7,6 @@
 </template>
 
 <script>
-import functions from '../functions';
 import HomeMap from './HomeMap';
 
 export default {
@@ -15,12 +14,8 @@ export default {
 	components: { HomeMap },
 	data: function () {
 		return {
-			map: '',
 			message: '',
 		}
-	},
-	mounted() {
-		functions.getMapFeatureList();
 	}
 }
 </script>

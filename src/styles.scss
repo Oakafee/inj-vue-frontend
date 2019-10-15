@@ -98,6 +98,15 @@ a { color: $color-primary; } // this is a little ugly?
 	}
 }
 
+.inj-select {
+	padding: $spacing / 2;
+	font-family: $font-family-primary;
+	font-size: $font-size-primary;
+	&.inj-select-error {
+		border-color: $color-quaternary;
+	}
+}
+
 .inj-text-error {
 	color: $color-quaternary;
 }

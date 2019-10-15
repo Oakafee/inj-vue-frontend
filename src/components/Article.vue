@@ -2,7 +2,6 @@
 	<div class="inj-article">
 		<div class="inj-article__content" v-if="articleDetail.pk">
 			<ArticleMap :editable="editable" />
-			
 			<div class="inj-article__title-area">
 				<ArticleBreadcrumbs />
 				<h1>{{ articleDetail.title }}</h1>
@@ -19,13 +18,14 @@
 			<div v-if="editPermission" class="inj-article__edit-button-row">
 				<div v-if="editable">
 					<!-- TODO: add transition -->
-					<button class="inj-button inj-button-tertiary" @click="deleteModalOpen = true">Delete Article </button>
-					<button class="inj-button inj-button-secondary" @click="cancelEditing()">Cancel Editing </button>
-					<button class="inj-button" :class="{ 'inj-button-error' : validationError }" @click="submitChanges()">Submit Changes </button>
+					<button class="inj-button inj-button-tertiary" @click="deleteModalOpen = true">Delete </button>
+					<button class="inj-button inj-button-secondary" @click="cancelEditing()">Cancel Edits </button>
+					<button class="inj-button" :class="{ 'inj-button-error' : validationError }" @click="submitChanges()">Submit </button>
 					<span class="inj-text-error" v-if="validationError">{{ validationError }}  </span>
 				</div>
 				<div v-else>
-					<button class="inj-button" @click="editArticle()">Edit Article </button>
+					<router-link :to="{ name: 'new-article', params: {parent: articleDetail.pk } }">+ Add Child Article</router-link>
+					<button class="inj-button inj-button-secondary" @click="editArticle()">Edit Article </button>
 				</div>
 			</div>
 			<ArticleComments :articlePk="articleDetail.pk" :articleEdit="editableArticle" />
@@ -76,7 +76,6 @@ export default {
 		// this fires when you load the page
 		this.slug = this.$route.params.slug;
 		functions.getArticleDetails(this.slug);
-		functions.getGeoCategories();
 	},
 	destroyed() {
 		store.commit('getArticleDetail', {});
@@ -84,6 +83,12 @@ export default {
 	beforeRouteUpdate (to, from, next) {
 		// this fires when the route changes without rerendering the component
 		this.slug = to.params.slug;
+		
+		this.validationError = null;
+		if (this.newMapFeature.geometry) {
+			store.commit('addNewMapFeature', {})
+		};
+		
 		next();
 		functions.getArticleDetails(this.slug);
 	},
@@ -94,6 +99,7 @@ export default {
 			editableArticle: 'editableArticle',
 			articleMapFeature: 'articleMapFeature',
 			newMapFeature: 'newMapFeature',
+			mapFeaturesList: 'mapFeaturesList',
 		}),
 		formattedPubDate() {
 			let pubDate = new Date(this.articleDetail.pub_date);
@@ -101,21 +107,31 @@ export default {
 		},
 		editable() {
 			return this.editableArticle === this.articleDetail.slug;
+		},
+		newArticleRoute() {
+			let pk = this.articleDetail.pk;
+			return  {
+				name: 'new-article',
+				params: { parent: pk }
+			}
 		}
 	},
 	methods: {
 		editArticle() {
 			this.editedContent = this.articleDetail.article_content;
+			if(this.articleMapFeature.geometry) {
+				// this may come back to haunt me?
+				store.commit('addNewMapFeature', this.articleMapFeature);
+			}
 			store.commit('editArticle', this.articleDetail.slug);
 		},
 		cancelEditing() {
 			this.editedContent = null;
 			store.commit('editArticle', null);
 			// replace the new map feature with an empty object
-			if (this.newMapFeature.geometry) {
+			store.commit('addNewMapFeature', this.articleMapFeature);
 				// really should commit the value {}, but then how do you get articleMapFeature to re render without changing its value? My whole strategy is based on watchers in ArticleMap.vue that trigger functions local to that component. 
-				store.commit('addNewMapFeature', this.articleMapFeature);
-			}
+
 		},
 		submitChanges() {
 			// validation
@@ -128,11 +144,14 @@ export default {
 			let serializedChanges = {};
 			let self = this;
 			
-			if (this.newMapFeature.geometry) {
+			if (this.articleMapFeature !== this.newMapFeature) {
+			// if the map feature was changed in any way
 				serializedChanges = functions.destructureGeoJsonForDb(this.newMapFeature);
+				console.log('serialized map changes ', serializedChanges);
 			}
 			
 			if (this.articleDetail.article_content !== this.editedContent) {
+			// if the text of the article was changed in any way
 				serializedChanges.article_content = this.editedContent;
 			}
 			
@@ -144,6 +163,8 @@ export default {
 			axios.patch(apiUrl, serializedChanges)
 				.then((response) => {
 					// handle success
+					// update geo info on HomeMap
+					self.updateMapFeatureInList(response.data);
 					store.commit('getArticleDetail', response.data);
 					store.commit('editArticle', null);
 					self.editedContent = null;
@@ -152,7 +173,7 @@ export default {
 				.catch((error) => {
 					// handle error
 					self.validationError = 'server error: ' + error;
-					return error;
+					console.log(error);
 				});
 		},
 		deleteArticle() {
@@ -160,19 +181,42 @@ export default {
 			let self = this;
 		
 			axios.delete(apiUrl)
-				.then((response) => {
+				.then(() => {
 					// handle success
-					functions.getArticleList();
+					if (this.articleMapFeature.geometry && this.mapFeaturesList.features) {
+						store.commit('removeMapFeatureFromList', this.articleMapFeature)	
+					}
 					self.$router.push({ name: 'home' });
 					store.commit('getArticleDetail', {});
 					store.commit('editArticle', null);
 				})
 				.catch((error) => {
 					self.validationError = 'server error with delete: ' + error;
+					console.log(error);
 					return error;
 				});
 				
 			this.deleteModalOpen = false;
+		},
+		updateMapFeatureInList(data) {
+			if (!this.mapFeaturesList.features) return;
+			let responseMapFeature = functions.structureGeoJsonForMap(data);
+			if (responseMapFeature !== this.articleMapFeature) {
+			// if map info on the article was changed
+				if (this.articleMapFeature.geometry) {
+				// if there is already a map feature that got...
+					if(data.geo_coordinates) {
+					// ...updated
+						store.commit('replaceMapFeatureInList', responseMapFeature);
+					} else {
+					// ...deleted
+						store.commit('removeMapFeatureFromList', this.articleMapFeature)
+					}
+				} else {
+					//this condition is when a map feature is added for the first time
+					store.commit('addMapFeatureToList', responseMapFeature);
+				}
+			}			
 		}
 	}
 }

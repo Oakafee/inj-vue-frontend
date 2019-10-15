@@ -1,5 +1,19 @@
 <template>
 	<div>
+		<div class="inj-article-map__edit inj-article-map__add" :class="{ 'inj-article-map__edit--hidden' : !editable }" v-if="editPermission">
+			<select class="inj-select" @input="selectGeoCategory">
+				<option disabled :selected="!feature.properties">Add to map...</option>
+				<option
+					v-for="cat in geoCategories"
+					:value="cat.pk"
+					:key="cat.pk"
+					:selected="feature.properties ? (cat.pk === feature.properties.category) : false"
+				>{{ cat.name }}
+				</option>
+			</select>
+			<button class="inj-button" @click="toggleModal(true)" v-if="!mapHidden">Paste data </button>
+		</div>
+	
 		<div
 			class="inj-article-map-container"
 			:class="{
@@ -10,7 +24,7 @@
 		</div>
 		
 		<div class="inj-article-map__edit" :class="{ 'inj-article-map__edit--hidden' : !editable }" v-if="editPermission">
-			<div class="inj-article-map__expand">
+			<div class="inj-article-map__expand" v-if="!mapHidden">
 			<!-- TODO: update and maybe remove this map expanded feature -->
 				<svg
 					v-if="mapExpanded"
@@ -33,19 +47,6 @@
 					<line x1="3" y1="21" x2="10" y2="14"></line>
 				</svg>
 			</div>
-			<span v-if="mapHidden">Add a map feature: </span>
-			<button v-if="mapHidden" @click="drawNewFeature = true">Draw map feature </button> or
-			<button @click="toggleModal(true)">Paste data </button>
-			<label for="geoCategory">Choose a map category </label>
-			<select id="geoCategory" @input="selectGeoCategory">
-				<option
-					v-for="cat in geoCategories"
-					:value="cat.pk"
-					:key="cat.pk"
-					:selected="feature.properties ? (cat.pk === feature.properties.category) : (cat.pk === 15)"
-				>{{ cat.name }}
-				</option>
-			</select>
 		</div>
 				
 		<InjModal v-if="pasteDataModalOpen">
@@ -129,16 +130,19 @@ export default {
 			[constants.NJ_BOUNDS.south, constants.NJ_BOUNDS.west]];
 		*/
 		console.log('mounted called in article map');
-		
+		if (this.geoCategories.length === 0) functions.getGeoCategories();
 		// since we are loading (or reloading?) a new article afresh, we want to get rid of any previous edits.
 		if(this.newMapFeature.geometry) {
 			store.commit('addNewMapFeature', {});			
 		}
 		
 		this.map = L.map('articleMap', {
-			maxZoom: constants.MAP_MAX_ZOOM
+			center: constants.NJ_CENTER,
+			zoom: constants.MAP_ZOOM_LEVEL,
+			maxZoom: constants.MAP_MAX_ZOOM,
+			maxBounds: constants.NJ_BOUNDS
 			//scrollWheelZoom: false
-		}).setView(constants.NJ_CENTER, constants.MAP_ZOOM_LEVEL);//.setMaxBounds(stateBounds);
+		});
 
 		L.tileLayer(constants.MAP_TILE_2_LAYER, {
 			attribution: constants.MAP_TILE_2_ATTRIBUTION
@@ -158,9 +162,8 @@ export default {
 			this.updateFeatureOnMap(this.feature);
 		},
 		newMapFeature() {
-			if (this.newMapFeature.geometry) {
-				this.updateFeatureOnMap(this.newMapFeature);
-			}
+			// if this is breaking things, I'm sorry, you'll have to look back at the github for how it was before
+			this.updateFeatureOnMap(this.newMapFeature);
 		},
 		editable() {
 			if(this.editable) {
@@ -206,7 +209,9 @@ export default {
 			this.removeCurrentFeature();
 			if(feature.geometry && feature.geometry.coordinates) {
 				this.addFeatureToMap(feature)
-			};		
+			} else {
+				this.map.setView(constants.NJ_CENTER, constants.MAP_ZOOM_LEVEL);
+			}
 		},
 		initializeMapDrawing() {
 			if (!this.mapFeatureLayer.options) {
@@ -229,12 +234,12 @@ export default {
 			this.mapDrawToolbar = new L.Control.Draw(toolbarOptions);
 			this.map.addControl(this.mapDrawToolbar);
 			
-			//TODO change this condition
+			/*TODO change this condition, this isn't working
 			if (!this.feature) {
 				this.mapDrawToolbar.Delete.disable();
 				this.mapDrawToolbar.Edit.disable();
 			}
-
+			*/
 			
 			this.map.on('draw:created', (e) => commitLayerChange(e.layer));
 			this.map.on('draw:edited', (e) => {
@@ -242,7 +247,7 @@ export default {
 			});
 			this.map.on('draw:deleted', (e) => {
 				e.layers.eachLayer(() => {
-					store.commit('addNewMapFeature', constants.NULL_GEOJSON_FEATURE);
+					store.commit('addNewMapFeature', {});
 				});
 			});
 		},
@@ -324,6 +329,7 @@ export default {
 		selectGeoCategory(event) {
 			// there has to be a more concise way of doing this?
 			this.selectedGeoCategory = parseInt(event.target.value);
+			this.drawNewFeature = true;
 			let updatedFeature = constants.NULL_GEOJSON_FEATURE;
 			if (this.newMapFeature.geometry) {
 				updatedFeature.properties.name = this.newMapFeature.properties.name;
@@ -357,9 +363,15 @@ export default {
 
 .inj-article-map {
 
-	&-container.inj-article-map-hidden {
-		height: 0;
-		visibility: hidden;
+	&-container {
+		visibility: visible;
+		opacity: 1;
+		transition: opacity $transition-time;
+		&.inj-article-map-hidden {
+			height: 0;
+			visibility: hidden;
+			opacity: 0;
+		}
 	}
 		
 	&__edit {
@@ -368,6 +380,14 @@ export default {
 		&--hidden {
 			pointer-events: none;
 			opacity: 0;
+		}
+	}
+	
+	&__add {
+		text-align: right;
+		padding-bottom: $spacing;
+		@media(max-width: $media-break) {
+			display: none;
 		}
 	}
 	

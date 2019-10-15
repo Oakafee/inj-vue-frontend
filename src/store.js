@@ -8,17 +8,17 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
 	state: {
 		mobileNavOpen: false,
-		articleList: {},
-		mapFeaturesList: {},
+		articleList: [],
+		mapFeaturesList: {}, // an object not an array, bc it's a GeoJSON feature collect
 		articleDetail: {},
 		articleMapFeature: {},
-		articleCommentary: {},
+		articleCommentary: [],
 		editPermission: true,
 		editableArticle: null,
 		// is this below being used?
 		editMapFeature: false,
 		newMapFeature: {},
-		geoCategories: {},
+		geoCategories: [],
 	},
 	mutations: {
 		toggleMobileNav (state) {
@@ -56,6 +56,34 @@ const store = new Vuex.Store({
 		},
 		getGeoCategories(state, cats) {
 			state.geoCategories = cats;
+		},
+		addMapFeatureToList(state, feature) {
+			if (state.mapFeaturesList.features) {
+				state.mapFeaturesList.features.push(feature);
+			}
+			// else do nothing. when the map loads it will get all of the features including the new one from the server
+		},
+		replaceMapFeatureInList(state, feature) {
+			let index = state.mapFeaturesList.features.findIndex((listItem) =>
+				listItem.properties.slug === feature.properties.slug
+			);
+			state.mapFeaturesList.features[index] = feature;
+		},
+		removeMapFeatureFromList(state, feature) {
+			let index = state.mapFeaturesList.features.findIndex((listItem) =>
+				listItem.properties.slug === feature.properties.slug
+			);
+			state.mapFeaturesList.features.splice(index, 1);
+		},
+		addArticleToList(state, articleDetail) {
+			let listInfo = {
+				"title": articleDetail.title,
+				"slug": articleDetail.slug,
+				"pk": articleDetail.pk,
+				"parent": articleDetail.parent,
+				"main_cat": false,
+			};
+			state.articleList.push(listInfo);
 		}
 	}
 });
