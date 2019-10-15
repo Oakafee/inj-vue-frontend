@@ -18,9 +18,9 @@
 			<div v-if="editPermission" class="inj-article__edit-button-row">
 				<div v-if="editable">
 					<!-- TODO: add transition -->
-					<button class="inj-button inj-button-tertiary" @click="deleteModalOpen = true">Delete Article </button>
-					<button class="inj-button inj-button-secondary" @click="cancelEditing()">Cancel Editing </button>
-					<button class="inj-button" :class="{ 'inj-button-error' : validationError }" @click="submitChanges()">Submit Changes </button>
+					<button class="inj-button inj-button-tertiary" @click="deleteModalOpen = true">Delete </button>
+					<button class="inj-button inj-button-secondary" @click="cancelEditing()">Cancel Edits </button>
+					<button class="inj-button" :class="{ 'inj-button-error' : validationError }" @click="submitChanges()">Submit </button>
 					<span class="inj-text-error" v-if="validationError">{{ validationError }}  </span>
 				</div>
 				<div v-else>
@@ -83,6 +83,12 @@ export default {
 	beforeRouteUpdate (to, from, next) {
 		// this fires when the route changes without rerendering the component
 		this.slug = to.params.slug;
+		
+		this.validationError = null;
+		if (this.newMapFeature.geometry) {
+			store.commit('addNewMapFeature', {})
+		};
+		
 		next();
 		functions.getArticleDetails(this.slug);
 	},
