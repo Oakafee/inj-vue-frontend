@@ -355,7 +355,7 @@ export default {
 
 
 #articleMap {
-	width: calc(100% - 2*$spacing);
+	width: calc(100% - 20px);
 	height: 290px;
 	border: 1px solid black;
 	transition: height $transition-time;

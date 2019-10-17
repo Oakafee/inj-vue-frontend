@@ -46,7 +46,7 @@
 import axios from 'axios';
 import {mapState} from 'vuex';
 
-import store from '../store.js';
+import store from '../store';
 import constants from '../constants';
 import functions from '../functions';
 

@@ -49,7 +49,11 @@ export default {
 		let apiUrl = constants.API_BASE_URL + constants.API_PATH + slug + '/';
 		let self = this;
 		
-		axios.get(apiUrl)
+		axios({
+			method: 'get',
+			url: apiUrl,
+			headers: {'Authorization': 'Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b'}
+		})
 		.then((response) => {
 				// handle success
 				store.commit('getArticleDetail', response.data);
