@@ -132,5 +132,8 @@ export default {
 	},
 	getMapClassName(feature) {
 		return constants.MAP_FEATURE_CLASS_NAMES[feature.properties.category];
+	},
+	enableScrollWheelZoom(map) {
+		map.scrollWheelZoom.enable();
 	}
 }

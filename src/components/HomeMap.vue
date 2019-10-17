@@ -1,5 +1,5 @@
 <template>
-<div class="inj-home__map-container">
+<div class="inj-home__map-container" @dblclick.once="enableScrollWheelZoom">
 	<div id="homeMap"></div>
 </div>
 </template>
@@ -26,10 +26,7 @@ export default {
 	mounted() {
 		if (!this.mapFeatures.features) functions.getMapFeatureList();
 		
-		this.map = L.map('homeMap', {
-			maxZoom: constants.MAP_MAX_ZOOM
-			//scrollWheelZoom: false
-		}).setView(constants.NJ_CENTER, constants.MAP_ZOOM_LEVEL);
+		this.map = L.map('homeMap', constants.MAP_DEFAULT_OPTIONS);
 
 		L.tileLayer(constants.MAP_TILE_LAYER, {
 			attribution: constants.MAP_TILE_ATTRIBUTION
@@ -56,13 +53,22 @@ export default {
 		popupText(feature) {
 			return `<a href='/#/${feature.properties.slug}' taregt='_blank'>${feature.properties.name}</a>`
 		},
+		enableScrollWheelZoom() {
+			this.map.scrollWheelZoom.enable();
+		}
 	}
 }
 </script>
 
 <style lang="scss">
+@import '../settings.scss';
 @import '../mapfeatures.scss';
 
+.inj-home__map-container {
+	@media(min-width: $media-break) {
+		padding: $spacing;
+	}
+}
 #homeMap {
 	width: 100%;
 	height: 500px;

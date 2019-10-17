@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div class="inj-article-map__edit inj-article-map__add" :class="{ 'inj-article-map__edit--hidden' : !editable }" v-if="editPermission">
+		<div class="inj-article-map__add inj-fade-transition" :class="{ 'inj-fade-transition--hidden' : !editable }" v-if="editPermission">
 			<select class="inj-select" @input="selectGeoCategory">
 				<option disabled :selected="!feature.properties">Add to map...</option>
 				<option
@@ -10,8 +10,8 @@
 					:selected="feature.properties ? (cat.pk === feature.properties.category) : false"
 				>{{ cat.name }}
 				</option>
-			</select>
-			<button class="inj-button" @click="toggleModal(true)" v-if="!mapHidden">Paste data </button>
+			</select>&nbsp;
+			<button class="inj-button inj-button-small" @click="toggleModal(true)" v-if="!mapHidden">Paste data </button>
 		</div>
 	
 		<div
@@ -19,34 +19,38 @@
 			:class="{
 				'inj-article-map-hidden' : mapHidden,
 				'inj-article-map--expanded': mapExpanded
-			}">
+			}"
+			@dblclick.once="enableScrollWheelZoom"
+		>
 			<div id="articleMap"></div>
 		</div>
 		
-		<div class="inj-article-map__edit" :class="{ 'inj-article-map__edit--hidden' : !editable }" v-if="editPermission">
-			<div class="inj-article-map__expand" v-if="!mapHidden">
-			<!-- TODO: update and maybe remove this map expanded feature -->
-				<svg
-					v-if="mapExpanded"
-					@click="mapExpanded = false"
-					viewBox="0 0 24 24"
-				>
-					<polyline points="4 14 10 14 10 20"></polyline>
-					<polyline points="20 10 14 10 14 4"></polyline>
-					<line x1="14" y1="10" x2="21" y2="3"></line>
-					<line x1="3" y1="21" x2="10" y2="14"></line>
-				</svg>
-				<svg
-					v-else
-					@click="mapExpanded = true"
-					viewBox="0 0 24 24"
-				>
-					<polyline points="15 3 21 3 21 9"></polyline>
-					<polyline points="9 21 3 21 3 15"></polyline>
-					<line x1="21" y1="3" x2="14" y2="10"></line>
-					<line x1="3" y1="21" x2="10" y2="14"></line>
-				</svg>
-			</div>
+		<div
+			class="inj-article-map__expand inj-fade-transition"
+			:class="{ 'inj-fade-transition--hidden' : !editable }"
+			v-if="!mapHidden && editPermission"
+		>
+		<!-- TODO: update and maybe remove this map expanded feature -->
+			<svg
+				v-if="mapExpanded"
+				@click="mapExpanded = false"
+				viewBox="0 0 24 24"
+			>
+				<polyline points="4 14 10 14 10 20"></polyline>
+				<polyline points="20 10 14 10 14 4"></polyline>
+				<line x1="14" y1="10" x2="21" y2="3"></line>
+				<line x1="3" y1="21" x2="10" y2="14"></line>
+			</svg>
+			<svg
+				v-else
+				@click="mapExpanded = true"
+				viewBox="0 0 24 24"
+			>
+				<polyline points="15 3 21 3 21 9"></polyline>
+				<polyline points="9 21 3 21 3 15"></polyline>
+				<line x1="21" y1="3" x2="14" y2="10"></line>
+				<line x1="3" y1="21" x2="10" y2="14"></line>
+			</svg>
 		</div>
 				
 		<InjModal v-if="pasteDataModalOpen">
@@ -136,13 +140,7 @@ export default {
 			store.commit('addNewMapFeature', {});			
 		}
 		
-		this.map = L.map('articleMap', {
-			center: constants.NJ_CENTER,
-			zoom: constants.MAP_ZOOM_LEVEL,
-			maxZoom: constants.MAP_MAX_ZOOM,
-			maxBounds: constants.NJ_BOUNDS
-			//scrollWheelZoom: false
-		});
+		this.map = L.map('articleMap', constants.MAP_DEFAULT_OPTIONS);
 
 		L.tileLayer(constants.MAP_TILE_2_LAYER, {
 			attribution: constants.MAP_TILE_2_ATTRIBUTION
@@ -160,6 +158,8 @@ export default {
 	watch: {
 		feature() {
 			this.updateFeatureOnMap(this.feature);
+			// cheap shortcut for on route change
+			this.map.scrollWheelZoom.disable();
 		},
 		newMapFeature() {
 			// if this is breaking things, I'm sorry, you'll have to look back at the github for how it was before
@@ -170,6 +170,7 @@ export default {
 				this.initializeMapDrawing();
 			} else {
 				this.mapDrawToolbar.remove();
+				this.mapExpanded = false;
 			}
 			this.drawNewFeature = false;
 		},
@@ -343,6 +344,9 @@ export default {
 			} else return; // it will be handled when you draw something
 			updatedFeature.properties.category = this.selectedGeoCategory;
 			store.commit('addNewMapFeature', updatedFeature);
+		},
+		enableScrollWheelZoom() {
+			this.map.scrollWheelZoom.enable();
 		}
 	}
 }
@@ -366,26 +370,21 @@ export default {
 	&-container {
 		visibility: visible;
 		opacity: 1;
+		margin-bottom: $spacing;
 		transition: opacity $transition-time;
 		&.inj-article-map-hidden {
 			height: 0;
+			margin: 0;
 			visibility: hidden;
-			opacity: 0;
-		}
-	}
-		
-	&__edit {
-		opacity: 1;
-		transition: opacity $transition-time;
-		&--hidden {
-			pointer-events: none;
 			opacity: 0;
 		}
 	}
 	
 	&__add {
 		text-align: right;
-		padding-bottom: $spacing;
+		position: relative;
+		top: -$spacing*1.5;
+		height: 2*$spacing;
 		@media(max-width: $media-break) {
 			display: none;
 		}
@@ -399,9 +398,10 @@ export default {
 		text-align: right;
 		// this is cheating
 		position: relative;
-		top: -25px;
-		right: 5px;
+		top: -35px;
+		right: 25px;
 		z-index: 1000;
+		height: 0;
 		svg {
 			cursor: pointer;
 			stroke: currentColor;
@@ -426,6 +426,11 @@ export default {
 		width: 260px;
 		height: 50px;
 	}
+}
+
+// hiding the leaflet edit toolbar in mobile
+.leaflet-draw {
+	@media(max-width: $media-break) { display: none }
 }
 
 </style>

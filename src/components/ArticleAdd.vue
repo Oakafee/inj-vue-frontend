@@ -21,7 +21,7 @@
 	<div class="inj-add__form-element">
 		<label for="selectParent">Parent: </label>
 		<select 
-			class="inj-select"
+			class="inj-select inj-add__parent-select"
 			:class="{ 'inj-select-error' : validationError.field === 'parent' }"
 			id="selectParent"
 			@input="selectParent"

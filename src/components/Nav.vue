@@ -1,9 +1,11 @@
 <template>
 	<div class="inj-nav" :class="{ 'inj-nav--mobile-open' : mobileOpen, 'inj-nav--show' : articleList }">
 		<p><router-link to="new-article"  @click.native="toggleNav()">+ Add Article</router-link></p>
-		<ul class="inj-nav__tree" v-for="article in mainCatArticles" :key="article.pk">
-			<TreeNav :parentArticle="article" />	
-		</ul>
+		<div class="inj-nav__tree">
+			<ul class="inj-nav__tree-cat" v-for="article in mainCatArticles" :key="article.pk">
+				<TreeNav :parentArticle="article" />	
+			</ul>
+		</div>
 		<FilterNav />
 	</div>
 </template>
@@ -87,7 +89,10 @@ export default {
 		padding: $spacing;
 	}
 	&__tree {
-		padding-left: 3 * $spacing;
+		padding-bottom: 2 * $spacing;
+		&-cat {
+			padding-left: 3 * $spacing;
+		}
 	}
 	&__all {
 		width: 200px;

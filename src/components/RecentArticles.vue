@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="inj-recent">
 	<h3>Recent Articles </h3>
 	<p v-if="serverError">{{ serverError }}</p>
 	<ul>
@@ -45,10 +45,13 @@ export default {
 <style lang="scss">
 @import '../settings.scss';
 
-.inj-recent__author {
-	font-size: 11pt;
-	font-style: italic;
-	line-height: 1;
-	padding-bottom: $spacing;
+.inj-recent {
+	padding: $spacing;
+	&__author {
+		font-size: 11pt;
+		font-style: italic;
+		line-height: 1;
+		padding-bottom: $spacing;
+	}
 }
 </style>

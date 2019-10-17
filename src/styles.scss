@@ -75,6 +75,9 @@ a { color: $color-primary; } // this is a little ugly?
 			background-color: $color-tertiary;
 		}
 	}
+	&.inj-button-small {
+		font-size: $font-size-secondary;
+	}
 }
 
 // Forms:
@@ -99,9 +102,9 @@ a { color: $color-primary; } // this is a little ugly?
 }
 
 .inj-select {
-	padding: $spacing / 2;
+	padding: 2px;
 	font-family: $font-family-primary;
-	font-size: $font-size-primary;
+	font-size: $font-size-secondary;
 	&.inj-select-error {
 		border-color: $color-quaternary;
 	}
@@ -121,7 +124,18 @@ a { color: $color-primary; } // this is a little ugly?
 		flex: 3 0 0; // changed from 5 0 0
 		padding: $spacing;
 		@media (min-width: $media-break) {
-			padding: 2 * $spacing;
+			padding: 2*$spacing;
 		}	
+	}
+}
+
+// Transitions:
+
+.inj-fade-transition {
+	transition: opacity $transition-time;
+	opacity: 1;
+	&.inj-fade-transition--hidden {
+		opacity: 0;
+		pointer-events: none;
 	}
 }
