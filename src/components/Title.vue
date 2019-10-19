@@ -63,7 +63,7 @@ export default {
 	}
 	
 	&__left, &__right {
-		padding: $spacing;
+		padding: $spacing/2;
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -81,7 +81,7 @@ export default {
 		letter-spacing: 1.1px;
 		font-size: 14pt;
 		@media (min-width: $media-break) {
-			font-size: 25pt;
+			font-size: 22pt;
 		}
 		
 	}
@@ -91,7 +91,7 @@ export default {
 		}
 		&--desktop {
 			display: none;
-			width: 80px;
+			width: 65px;
 			@media (min-width: $media-break) {
 				display: block;
 			}

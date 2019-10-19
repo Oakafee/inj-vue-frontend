@@ -1,12 +1,21 @@
 <template>
 	<div class="filter-nav">
-		<input class="filter-nav__input inj-text-input" type="text" v-model="filterInput" placeholder="Filter articles" />
+		<input
+			class="filter-nav__input inj-text-input"
+			type="text"
+			v-model="filterInput"
+			placeholder="Filter articles"
+		/>
 		<ul
 			class="filter-nav__results"
 			:class="{ 'filter-nav__results--hidden' : !filterInput }"
 		>
 			<li v-for="article in filteredArticles" :key="article.pk">
-				<router-link :to="article.slug" @click.native="toggleNav()">{{ article.title }}</router-link>
+				<router-link
+					:to="article.slug"
+					@click.native="toggleNav()"
+					tabindex="0"
+				>{{ article.title }}</router-link>
 			</li>
 		</ul>
 	</div>
