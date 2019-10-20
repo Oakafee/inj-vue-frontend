@@ -4,8 +4,10 @@
 		<h1>Welcome </h1>
 		<p>The goal of this website is to contribute to our understanding, appreciation, and love of the Garden State. </p>
 	</div>
-	<HomeMap />
-	<RecentArticles />
+	<div class="inj-home__map-row">
+		<HomeMap />
+		<RecentArticles />
+	</div>
 	<FeaturedArticle article="full-of-anxiety-and-some-fear" />
 </div>
 </template>
@@ -26,7 +28,16 @@ export default {
 </script>
 
 <style lang="scss">
-.inj-home__title-area {
-	text-align: center;
+@import '../settings.scss';
+
+.inj-home {
+	&__title-area {
+		text-align: center;
+	}
+	&__map-row {
+		@media(min-width:$large-break) {
+			display: flex;
+		}
+	}
 }
 </style>

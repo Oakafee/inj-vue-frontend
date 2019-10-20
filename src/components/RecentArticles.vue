@@ -34,8 +34,6 @@ export default {
 			})
 			.catch((error) => {
 				// TODO: show general server error message page
-				console.log('recent article call failed');
-				console.log(error);
 				self.serverError = error;
 			});	
 	}
@@ -47,6 +45,10 @@ export default {
 
 .inj-recent {
 	padding: $spacing;
+	@media(min-width:$large-break) {
+		flex: 1 1 auto;
+		order: 1;
+	}
 	&__author {
 		font-size: 11pt;
 		font-style: italic;

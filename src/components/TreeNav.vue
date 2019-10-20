@@ -69,6 +69,7 @@ export default {
 		visibility: hidden;
 		position: absolute;
 		left: -3 * $spacing;
+		height: 3*$spacing;
 		&--open {
 			transform: rotate(0.25turn);
 		}
@@ -77,7 +78,7 @@ export default {
 		}
 	}
 	&__article {
-		padding-bottom: 0.1em;
+		padding-bottom: $spacing;
 		position: relative; //this is for the absolute positioning of the chevron
 	}
 	&__children {

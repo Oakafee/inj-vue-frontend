@@ -87,7 +87,7 @@ export default {
 		this.validationError = null;
 		if (this.newMapFeature.geometry) {
 			store.commit('addNewMapFeature', {})
-		};
+		}
 		
 		next();
 		functions.getArticleDetails(this.slug);
@@ -147,7 +147,6 @@ export default {
 			if (this.articleMapFeature !== this.newMapFeature) {
 			// if the map feature was changed in any way
 				serializedChanges = functions.destructureGeoJsonForDb(this.newMapFeature);
-				console.log('serialized map changes ', serializedChanges);
 			}
 			
 			if (this.articleDetail.article_content !== this.editedContent) {
@@ -173,7 +172,6 @@ export default {
 				.catch((error) => {
 					// handle error
 					self.validationError = 'server error: ' + error;
-					console.log(error);
 				});
 		},
 		deleteArticle() {
@@ -192,7 +190,6 @@ export default {
 				})
 				.catch((error) => {
 					self.validationError = 'server error with delete: ' + error;
-					console.log(error);
 					return error;
 				});
 				
@@ -243,7 +240,7 @@ export default {
 	}
 	&__content {
 		max-width: 600px;
-		margin: 0 auto;
+		margin: 0 auto 4*$spacing auto;
 	}
 	&__edit-content {
 		height: 600px;

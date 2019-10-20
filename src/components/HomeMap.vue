@@ -65,7 +65,10 @@ export default {
 @import '../mapfeatures.scss';
 
 .inj-home__map-container {
-
+	@media(min-width:$large-break) {
+		flex: 25 1 auto;
+		order: 2;
+	}
 }
 #homeMap {
 	width: 100%;

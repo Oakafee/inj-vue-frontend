@@ -133,7 +133,6 @@ export default {
 		let stateBounds = [[constants.NJ_BOUNDS.north, constants.NJ_BOUNDS.east],
 			[constants.NJ_BOUNDS.south, constants.NJ_BOUNDS.west]];
 		*/
-		console.log('mounted called in article map');
 		if (this.geoCategories.length === 0) functions.getGeoCategories();
 		// since we are loading (or reloading?) a new article afresh, we want to get rid of any previous edits.
 		if(this.newMapFeature.geometry) {
@@ -196,7 +195,6 @@ export default {
 					this.selectedGeoCategory = constants.MAP_DEFAULT_FEATURE_CATIGORY;
 				}
 				let bounds = this.mapFeatureLayer.getBounds();
-				console.log('bounds: ', bounds);
 				this.map.fitBounds(bounds, {padding: constants.MAP_BOUNDS_PADDING});
 			}		
 		},
