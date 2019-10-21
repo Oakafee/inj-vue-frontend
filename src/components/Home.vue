@@ -8,17 +8,18 @@
 		<HomeMap />
 		<RecentArticles />
 	</div>
-	<FeaturedArticle article="full-of-anxiety-and-some-fear" />
+	<FeaturedArticle slug="full-of-anxiety-and-some-fear" />
 </div>
 </template>
 
 <script>
 import HomeMap from './HomeMap';
 import RecentArticles from './RecentArticles';
+import FeaturedArticle from './FeaturedArticle';
 
 export default {
 	name: 'Home',
-	components: { HomeMap, RecentArticles },
+	components: { HomeMap, RecentArticles, FeaturedArticle },
 	data: function () {
 		return {
 			message: '',
@@ -37,6 +38,7 @@ export default {
 	&__map-row {
 		@media(min-width:$large-break) {
 			display: flex;
+			padding-right: 2*$spacing;
 		}
 	}
 }

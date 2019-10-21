@@ -58,5 +58,5 @@ export default {
 			"coordinates": ""
 		}
 	},
-	
+	FEATURED_ARTICLE_LENGTH: 500	
 }
