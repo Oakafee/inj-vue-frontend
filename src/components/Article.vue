@@ -8,11 +8,25 @@
 				<h3 v-if="articleDetail.subtitle">{{ articleDetail.subtitle }} </h3>
 				<h4>By {{ articleDetail.author }} - {{ formattedPubDate }}</h4>
 			</div>
-			<div v-if="editable">
-				<textarea class="inj-article__edit-content inj-textarea" :class="{ 'inj-textarea-error' : validationError }" v-model="editedContent" />			
+			<div v-if="editable" class="inj-article__edit-content">
+				<textarea class="inj-textarea" :class="{ 'inj-textarea-error' : validationError }" v-model="editedContent" />
+				<div class="inj-article__choose-html">
+				<label for="htmlTags">
+					<input type="checkbox" id="htmlTags" v-model="htmlTags">
+					HTML tags used
+				</label>
+				</div>
 			</div>
-			<div v-else class="inj-article__text">
-				<p v-html="articleDetail.article_content"></p>
+			<div v-else>
+				<div
+					v-if="articleDetail.html_safe"
+					v-html="articleDetail.article_content"
+				></div>
+				<div
+					v-else
+					class="inj-article__plain-text">
+					<p>{{ articleDetail.article_content }}</p>
+				</div>
 			</div>
 			
 			<div v-if="editPermission" class="inj-article__edit-button-row">
@@ -68,6 +82,7 @@ export default {
 	data() {
 		return {
 			editedContent: null,
+			htmlTags: false,
 			validationError: null,
 			deleteModalOpen: false,
 		}
@@ -119,6 +134,7 @@ export default {
 	methods: {
 		editArticle() {
 			this.editedContent = this.articleDetail.article_content;
+			this.htmlTags = this.articleDetail.html_safe;
 			if(this.articleMapFeature.geometry) {
 				// this may come back to haunt me?
 				store.commit('addNewMapFeature', this.articleMapFeature);
@@ -127,6 +143,7 @@ export default {
 		},
 		cancelEditing() {
 			this.editedContent = null;
+			this.htmlTags = this.articleDetail.html_safe;
 			store.commit('editArticle', null);
 			// replace the new map feature with an empty object
 			store.commit('addNewMapFeature', this.articleMapFeature);
@@ -152,6 +169,10 @@ export default {
 			if (this.articleDetail.article_content !== this.editedContent) {
 			// if the text of the article was changed in any way
 				serializedChanges.article_content = this.editedContent;
+			}
+			
+			if (this.articleDetail.html_safe !== this.htmlTags) {
+				serializedChanges.html_safe = this.htmlTags;			
 			}
 			
 			if (Object.keys(serializedChanges).length === 0) {
@@ -243,11 +264,16 @@ export default {
 		margin: 0 auto 4*$spacing auto;
 	}
 	&__edit-content {
-		height: 600px;
 		margin-bottom: 4 * $spacing;
+		.inj-textarea {
+			height: 300px;
+		}
 	}
-	&__text {
+	&__plain-text {
 		white-space: pre-line;
+	}
+	&__choose-html {
+		text-align: right;
 	}
 	&__title-area {
 		text-align: center;
