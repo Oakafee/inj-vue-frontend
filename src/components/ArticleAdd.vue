@@ -18,6 +18,13 @@
 		placeholder="Subtitle"
 		v-model="newSubtitle"
 	/>
+	<input
+		type="text"
+		class="inj-text-input inj-add__form-element"
+		:class="{ 'inj-text-input-error' : validationError.field === 'title' }"
+		placeholder="Author"
+		v-model="newAuthor"
+	/>
 	<div class="inj-add__form-element">
 		<label for="selectParent">Parent: </label>
 		<select 
@@ -74,6 +81,7 @@ export default {
 		return {
 			newTitle: '',
 			newSubtitle: '',
+			newAuthor: '',
 			newParent: this.$route.params.parent ? this.$route.params.parent : null,
 			newContent: '',
 			mapEditable: false,
@@ -111,6 +119,10 @@ export default {
 			} else if (!this.newParent) {
 				this.validationError.field = "parent";
 				this.validationError.message = "Please select a parent article";
+			} else if (!this.newAuthor) {
+				this.validationError.field = "author";
+				this.validationError.message = "Author is required";
+			} else if (!this.newContent) {
 			} else if (!this.newContent) {
 				this.validationError.field = "content"
 				this.validationError.message = 'Please enter some content';
@@ -130,7 +142,7 @@ export default {
 			let serializedBasicArticle = {
 				"title": this.newTitle,
 				"subtitle": this.newSubtitle,
-				"author": "Jesse Fried",
+				"author": this.newAuthor,
 				"contributor": 1,
 				"article_content": this.newContent,
 				"parent": this.newParent
