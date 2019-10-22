@@ -4,6 +4,7 @@
 			<button class="inj-button">+ Add Article</button>
 		</router-link></p>
 		<div class="inj-nav__tree">
+			<div v-if="!articleList[0]">Loading...</div>
 			<ul class="inj-nav__tree-cat" v-for="article in mainCatArticles" :key="article.pk">
 				<TreeNav :parentArticle="article" />	
 			</ul>

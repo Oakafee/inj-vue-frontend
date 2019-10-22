@@ -1,5 +1,6 @@
 <template>
-<div class="inj-home__map-container" @dblclick.once="enableScrollWheelZoom">
+<div class="inj-home-map__container" @dblclick.once="enableScrollWheelZoom">
+	<div v-if="!mapFeatures.features" class="inj-home-map__loading">Loading...</div>
 	<div id="homeMap"></div>
 </div>
 </template>
@@ -64,11 +65,21 @@ export default {
 @import '../settings.scss';
 @import '../mapfeatures.scss';
 
-.inj-home__map-container {
-	@media(min-width:$large-break) {
-		flex: 25 1 auto;
-		order: 2;
+.inj-home-map {
+	&__container {
+		@media(min-width:$large-break) {
+			flex: 25 1 auto;
+			order: 2;
+		}
 	}
+	&__loading {
+		position: relative;
+		top: $spacing;
+		left: 6*$spacing;
+		z-index: 99999;
+		height: 0;
+	}
+		
 }
 #homeMap {
 	width: 100%;

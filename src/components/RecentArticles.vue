@@ -2,6 +2,7 @@
 <div class="inj-recent">
 	<h3>Recent Articles </h3>
 	<p v-if="serverError">{{ serverError }}</p>
+	<p v-if="!recentArticles[0]">Loading... </p>
 	<ul>
 		<li v-for="article in recentArticles" :key="article.pk">
 			<router-link :to="article.slug">{{ article.title }}</router-link>
