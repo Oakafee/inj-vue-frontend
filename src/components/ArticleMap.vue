@@ -23,34 +23,33 @@
 			@dblclick.once="enableScrollWheelZoom"
 		>
 			<div id="articleMap"></div>
-		</div>
-		
-		<div
-			class="inj-article-map__expand inj-fade-transition"
-			:class="{ 'inj-fade-transition--hidden' : !editable }"
-			v-if="!mapHidden && editPermission"
-		>
-		<!-- TODO: update and maybe remove this map expanded feature -->
-			<svg
-				v-if="mapExpanded"
-				@click="expandMap(false)"
-				viewBox="0 0 24 24"
+			
+			<div
+				class="inj-article-map__expand inj-fade-transition"
+				v-if="!mapHidden"
 			>
-				<polyline points="4 14 10 14 10 20"></polyline>
-				<polyline points="20 10 14 10 14 4"></polyline>
-				<line x1="14" y1="10" x2="21" y2="3"></line>
-				<line x1="3" y1="21" x2="10" y2="14"></line>
-			</svg>
-			<svg
-				v-else
-				@click="expandMap(true)"
-				viewBox="0 0 24 24"
-			>
-				<polyline points="15 3 21 3 21 9"></polyline>
-				<polyline points="9 21 3 21 3 15"></polyline>
-				<line x1="21" y1="3" x2="14" y2="10"></line>
-				<line x1="3" y1="21" x2="10" y2="14"></line>
-			</svg>
+			<!-- TODO: update and maybe remove this map expanded feature -->
+				<svg
+					v-if="mapExpanded"
+					@click="expandMap(false)"
+					viewBox="0 0 24 24"
+				>
+					<polyline points="4 14 10 14 10 20"></polyline>
+					<polyline points="20 10 14 10 14 4"></polyline>
+					<line x1="14" y1="10" x2="21" y2="3"></line>
+					<line x1="3" y1="21" x2="10" y2="14"></line>
+				</svg>
+				<svg
+					v-else
+					@click="expandMap(true)"
+					viewBox="0 0 24 24"
+				>
+					<polyline points="15 3 21 3 21 9"></polyline>
+					<polyline points="9 21 3 21 3 15"></polyline>
+					<line x1="21" y1="3" x2="14" y2="10"></line>
+					<line x1="3" y1="21" x2="10" y2="14"></line>
+				</svg>
+			</div>
 		</div>
 				
 		<InjModal v-if="pasteDataModalOpen">
@@ -365,7 +364,6 @@ export default {
 
 
 #articleMap {
-	width: calc(100% - 20px);
 	height: 290px;
 	border: 1px solid black;
 	transition: height $transition-time;
@@ -377,7 +375,9 @@ export default {
 		visibility: visible;
 		opacity: 1;
 		margin-bottom: $spacing;
-		transition: opacity $transition-time;
+		width: 100%;
+		transition-property: opacity, width;
+		transition-duration: $transition-time;
 		&.inj-article-map-hidden {
 			height: 0;
 			margin: 0;
@@ -396,16 +396,19 @@ export default {
 		}
 	}
 	
-	&--expanded #articleMap {
-		height: 400px;
+	&--expanded {
+		width: 89vw;
+		#articleMap {
+			height: calc(100vh - 120px);
+		}
 	}
 	
 	&__expand {
 		text-align: right;
 		// this is cheating
 		position: relative;
-		top: -35px;
-		right: 25px;
+		top: -27px;
+		right: 7px;
 		z-index: 1000;
 		height: 0;
 		svg {

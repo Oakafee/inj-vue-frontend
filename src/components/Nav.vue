@@ -82,8 +82,7 @@ export default {
 		}
 	}
 	@media(min-width: $media-break) {
-		flex: 1 0 0;
-		padding: $spacing;
+		max-width: 20%;
 	}
 	&__tree {
 		padding-bottom: 2 * $spacing;

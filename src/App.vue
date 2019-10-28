@@ -38,4 +38,16 @@ export default {
 <style lang="scss">
 @import 'styles.scss';
 
+.inj-page {
+	&__wrapper {
+		display: flex;
+		justify-content: center;
+	}
+	&__content {
+		padding: 0 $spacing;
+		@media(min-width:$large-break) {
+			width: $page-content-width;
+		}
+	}
+}
 </style>

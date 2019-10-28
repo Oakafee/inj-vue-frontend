@@ -1,7 +1,7 @@
 <template>
 	<div class="inj-article">
+	<ArticleMap :editable="editable" />
 		<div class="inj-article__content" v-if="articleDetail.pk">
-			<ArticleMap :editable="editable" />
 			<div class="inj-article__title-area">
 				<ArticleBreadcrumbs />
 				<h1>{{ articleDetail.title }}</h1>
@@ -30,16 +30,18 @@
 			</div>
 			
 			<div v-if="editPermission" class="inj-article__edit-button-row">
-				<div v-if="editable">
-					<!-- TODO: add transition -->
-					<button class="inj-button inj-button-tertiary" @click="deleteModalOpen = true">Delete </button>
-					<button class="inj-button inj-button-secondary" @click="cancelEditing()">Cancel Edits </button>
-					<button class="inj-button" :class="{ 'inj-button-error' : validationError }" @click="submitChanges()">Submit </button>
-					<span class="inj-text-error" v-if="validationError">{{ validationError }}  </span>
-				</div>
-				<div v-else>
-					<router-link :to="{ name: 'new-article', params: {parent: articleDetail.pk } }">+ Add Child Article</router-link>
-					<button class="inj-button inj-button-secondary" @click="editArticle()">Edit Article </button>
+				<div class="inj-article__edit-buttons">
+					<span v-if="editable">
+						<!-- TODO: add transition -->
+						<button class="inj-button inj-button-tertiary" @click="deleteModalOpen = true">Delete </button>
+						<button class="inj-button inj-button-secondary" @click="cancelEditing()">Cancel Edits </button>
+						<button class="inj-button" :class="{ 'inj-button-error' : validationError }" @click="submitChanges()">Submit </button>
+						<span class="inj-text-error" v-if="validationError">{{ validationError }}  </span>
+					</span>
+					<span v-else>
+						<router-link :to="{ name: 'new-article', params: {parent: articleDetail.pk } }">+ Add Child Article</router-link>
+						<button class="inj-button inj-button-secondary" @click="editArticle()">Edit Article </button>
+					</span>
 				</div>
 			</div>
 			<ArticleComments :articlePk="articleDetail.pk" :articleEdit="editableArticle" />
@@ -246,18 +248,20 @@ export default {
 .inj-article {
 	&__edit-button-row {
 		position: fixed;
+		left: 0;
 		bottom: 0;
-		width: 100%;
-		max-width: $article-content-width;
+		width: calc(100% - 20px);
 		padding: $spacing;
 		background: $color-secondary;
 		display: flex;
-		justify-content: right; //changed from space-between
+		justify-content: center;
 		z-index: 1001;
+	}
+	&__edit-buttons {
 		// Marina would kill me
 		.inj-button {
 			margin-left: $spacing;
-		}
+		}	
 	}
 	&__content {
 		max-width: $article-content-width;
