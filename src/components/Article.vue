@@ -248,7 +248,7 @@ export default {
 		position: fixed;
 		bottom: 0;
 		width: 100%;
-		max-width: 600px;
+		max-width: $article-content-width;
 		padding: $spacing;
 		background: $color-secondary;
 		display: flex;
@@ -260,7 +260,7 @@ export default {
 		}
 	}
 	&__content {
-		max-width: 600px;
+		max-width: $article-content-width;
 		margin: 0 auto 4*$spacing auto;
 	}
 	&__edit-content {

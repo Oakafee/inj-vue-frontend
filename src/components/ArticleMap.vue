@@ -33,7 +33,7 @@
 		<!-- TODO: update and maybe remove this map expanded feature -->
 			<svg
 				v-if="mapExpanded"
-				@click="mapExpanded = false"
+				@click="expandMap(false)"
 				viewBox="0 0 24 24"
 			>
 				<polyline points="4 14 10 14 10 20"></polyline>
@@ -43,7 +43,7 @@
 			</svg>
 			<svg
 				v-else
-				@click="mapExpanded = true"
+				@click="expandMap(true)"
 				viewBox="0 0 24 24"
 			>
 				<polyline points="15 3 21 3 21 9"></polyline>
@@ -345,6 +345,14 @@ export default {
 		},
 		enableScrollWheelZoom() {
 			this.map.scrollWheelZoom.enable();
+		},
+		expandMap(fullscreen) {
+			console.log('expandMap with status ', fullscreen);
+			this.mapExpanded = fullscreen;
+			let self = this;
+			setTimeout(function() {
+				self.map.invalidateSize();
+			}, 6000); // 0.6s is the css transition time
 		}
 	}
 }
