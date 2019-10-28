@@ -1,6 +1,6 @@
 <template>
-	<div class="inj-nav" :class="{ 'inj-nav--mobile-open' : mobileOpen, 'inj-nav--show' : articleList }">
-		<p><router-link to="new-article"  @click.native="toggleNav()">
+	<nav class="inj-nav" :class="{ 'inj-nav--mobile-open' : mobileOpen, 'inj-nav--show' : articleList }">
+		<p><router-link to="new-article">
 			<button class="inj-button">+ Add Article</button>
 		</router-link></p>
 		<div class="inj-nav__tree">
@@ -10,7 +10,7 @@
 			</ul>
 		</div>
 		<FilterNav />
-	</div>
+	</nav>
 </template>
 
 <script>
@@ -51,12 +51,7 @@ export default {
 	},
 	mounted() {
 		functions.getArticleList();
-	},
-    methods: {
-		toggleNav() {
-			store.commit('toggleMobileNav');
-		}
-    }
+	}
 }
 </script>
 
@@ -70,10 +65,9 @@ export default {
 	transition: opacity $transition-time;
 	@media(max-width: $media-break) {
 		width: calc(100% - 24px); // to factor in the border and the padding on the container
-		position: fixed;
+		position: absolute;
 		top: 63px;
 		z-index: 9999;
-		border: 2px solid black;
 		border-top: none;
 		padding: $spacing;
 	}

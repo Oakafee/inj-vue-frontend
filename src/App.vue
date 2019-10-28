@@ -2,7 +2,7 @@
 	<div id="app">
 		<Title />
 		<div class="inj-page__wrapper">
-			<div class="inj-page__content">
+			<div v-if="!mobileNavOpen" class="inj-page__content">
 				<router-view />
 			</div>
 			<Nav />
@@ -11,6 +11,9 @@
 </template>
 
 <script>
+import {mapState} from 'vuex';
+
+import store from './store.js'
 //import Map from './components/Map.vue'
 import Title from './components/Title.vue'
 import Nav from './components/Nav.vue'
@@ -21,6 +24,14 @@ export default {
 		Title,
 		Nav
 	},
+	computed: mapState(['mobileNavOpen']),
+	watch: {
+		$route() {
+			if (this.mobileNavOpen) {
+				store.commit('toggleMobileNav', false);
+			}
+		}
+	}
 }
 </script>
 

@@ -4,7 +4,7 @@
 			<svg @click="showChildren = !showChildren" class="tree-nav__chevron" :class="{ 'tree-nav__chevron--open' : showChildren, 'tree-nav__chevron--show' : hasChildren }" viewBox="0 0 24 24" width="24" height="24" stroke-width="2" fill="none">
 				<polyline points="9 18 15 12 9 6"></polyline>
 			</svg>
-			<router-link :to="parentArticle.slug" @click.native="toggleNav()">{{ parentArticle.title }}</router-link>
+			<router-link :to="parentArticle.slug">{{ parentArticle.title }}</router-link>
 		</li>
 		<ul v-for="child in childrenArticles" class="tree-nav__children" :class="{ 'tree-nav__children--show' : showChildren }" :key="child.pk">
 			<TreeNav :parentArticle="child" :articles="articles" />
@@ -46,13 +46,7 @@ export default {
 			if (this.childrenArticles.length === 0) return false;
 			return true;
 		}
-    },
-    methods: {
-		toggleNav() {
-			store.commit('toggleMobileNav');
-		}
     }
-	
 }
 </script>
 

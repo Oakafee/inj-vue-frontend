@@ -21,8 +21,8 @@ const store = new Vuex.Store({
 		geoCategories: [],
 	},
 	mutations: {
-		toggleMobileNav (state) {
-			state.mobileNavOpen = !state.mobileNavOpen;
+		toggleMobileNav (state, navStatus) {
+			state.mobileNavOpen = navStatus;
 		},
 		updateArticleList(state, articles) {
 			state.articleList = articles;

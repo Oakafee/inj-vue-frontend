@@ -41,7 +41,7 @@ export default {
     }),
 	methods: {
 		toggleNav() {
-			store.commit('toggleMobileNav');
+			store.commit('toggleMobileNav', !this.mobileNavOpen);
 		}
 	},
 }

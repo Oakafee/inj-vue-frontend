@@ -13,7 +13,6 @@
 			<li v-for="article in filteredArticles" :key="article.pk">
 				<router-link
 					:to="article.slug"
-					@click.native="toggleNav()"
 					tabindex="0"
 				>{{ article.title }}</router-link>
 			</li>
@@ -56,11 +55,6 @@ export default {
 			}
 			return filtered;
 		}
-	},
-	methods: {
-		toggleNav() {
-			store.commit('toggleMobileNav');
-		}
 	}
 }
 </script>
@@ -76,8 +70,12 @@ export default {
 		padding: $spacing;
 		height: 200px;
 		overflow-y: scroll;
+		opacity: 1;
+		transition: opacity $transition-time;
 		&.filter-nav__results--hidden {
 			visibility: hidden;
+			height: 0;
+			opacity: 0;
 		}
 	}
 }
