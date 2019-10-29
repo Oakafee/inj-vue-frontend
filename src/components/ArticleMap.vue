@@ -1,19 +1,5 @@
 <template>
-	<div>
-		<div class="inj-article-map__add inj-fade-transition" :class="{ 'inj-fade-transition--hidden' : !editable }" v-if="editPermission">
-			<select class="inj-select" @input="selectGeoCategory">
-				<option disabled :selected="!feature.properties">Add to map...</option>
-				<option
-					v-for="cat in geoCategories"
-					:value="cat.pk"
-					:key="cat.pk"
-					:selected="feature.properties ? (cat.pk === feature.properties.category) : false"
-				>{{ cat.name }}
-				</option>
-			</select>&nbsp;
-			<button class="inj-button inj-button-small" @click="toggleModal(true)" v-if="!mapHidden">Paste data </button>
-		</div>
-	
+	<div>	
 		<div
 			class="inj-article-map-container"
 			:class="{
@@ -50,7 +36,22 @@
 					<line x1="3" y1="21" x2="10" y2="14"></line>
 				</svg>
 			</div>
+
 		</div>
+		
+		<div class="inj-article-map__add inj-fade-transition" :class="{ 'inj-fade-transition--hidden' : !editable }" v-if="editPermission">
+			<select class="inj-select" @input="selectGeoCategory">
+				<option disabled :selected="!feature.properties">Add to map...</option>
+				<option
+					v-for="cat in geoCategories"
+					:value="cat.pk"
+					:key="cat.pk"
+					:selected="feature.properties ? (cat.pk === feature.properties.category) : false"
+				>{{ cat.name }}
+				</option>
+			</select>&nbsp;
+			<button class="inj-button inj-button-small" @click="toggleModal(true)" v-if="!mapHidden">Paste data </button>
+		</div>		
 				
 		<InjModal v-if="pasteDataModalOpen">
 			<h3>Add map feature data </h3>
@@ -386,17 +387,15 @@ export default {
 	}
 	
 	&__add {
-		text-align: right;
-		position: relative;
-		top: -$spacing*1.5;
-		height: 2*$spacing;
 		@media(max-width: $media-break) {
 			display: none;
 		}
 	}
 	
 	&--expanded {
-		width: 89vw;
+		@media(min-width:$media-break) {
+			width: 89vw;
+		}
 		#articleMap {
 			height: $map-expanded-height;
 		}

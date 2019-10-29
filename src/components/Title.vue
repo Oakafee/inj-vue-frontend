@@ -54,6 +54,7 @@ export default {
 	background-color: $color-primary;
 	display: flex;
 	border: 2px solid black;
+	margin-bottom: $spacing;
 	
 	@media (max-width: $media-break) {
 		position: sticky;

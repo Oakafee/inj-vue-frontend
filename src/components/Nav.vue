@@ -61,7 +61,6 @@ export default {
 
 .inj-nav {
 	background-color: $color-secondary;
-	padding-top: 2 * $spacing;
 	visibility: hidden;
 	opacity: 0;
 	transition-property: opacity, margin-top;
@@ -85,8 +84,10 @@ export default {
 		}
 	}
 	&--offset {
-		margin-top: $map-expanded-height;
-		padding-top: 4 * $spacing;
+		@media(min-width: $media-break) {
+			margin-top: $map-expanded-height;
+			padding-top: 4 * $spacing;
+		}
 	}
 	@media(min-width: $media-break) {
 		max-width: 20%;

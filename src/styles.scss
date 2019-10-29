@@ -122,5 +122,6 @@ a { color: $color-primary; } // this is a little ugly?
 	&.inj-fade-transition--hidden {
 		opacity: 0;
 		pointer-events: none;
+		z-index: 1;
 	}
 }
