@@ -1,8 +1,8 @@
 <template>
-	<nav class="inj-nav" :class="{ 'inj-nav--mobile-open' : mobileOpen, 'inj-nav--show' : articleList }">
-		<p><router-link to="new-article">
+	<nav class="inj-nav" :class="{ 'inj-nav--mobile-open' : mobileNavOpen, 'inj-nav--show' : articleList, 'inj-nav--offset' : articleMapExpanded }">
+		<div class="inj-nav__add"><router-link to="new-article">
 			<button class="inj-button">+ Add Article</button>
-		</router-link></p>
+		</router-link></div>
 		<div class="inj-nav__tree">
 			<div v-if="!articleList[0]">Loading...</div>
 			<ul class="inj-nav__tree-cat" v-for="article in mainCatArticles" :key="article.pk">
@@ -32,10 +32,11 @@ export default {
 		}
 	},
 	computed: {
-		...mapState({
-			mobileOpen: 'mobileNavOpen',
-			articleList: 'articleList',
-		}),
+		...mapState([
+			'mobileNavOpen',
+			'articleList',
+			'articleMapExpanded'
+		]),
 		mainCatArticles() {
 			let mains = [];
 			
@@ -60,9 +61,11 @@ export default {
 
 .inj-nav {
 	background-color: $color-secondary;
+	padding-top: 2 * $spacing;
 	visibility: hidden;
 	opacity: 0;
-	transition: opacity $transition-time;
+	transition-property: opacity, margin-top;
+	transition-duration: $transition-time;
 	@media(max-width: $media-break) {
 		width: calc(100% - 24px); // to factor in the border and the padding on the container
 		position: absolute;
@@ -81,8 +84,15 @@ export default {
 			opacity: 1;			
 		}
 	}
+	&--offset {
+		margin-top: $map-expanded-height;
+		padding-top: 4 * $spacing;
+	}
 	@media(min-width: $media-break) {
 		max-width: 20%;
+	}
+	&__add {
+		padding-bottom: 2 * $spacing;
 	}
 	&__tree {
 		padding-bottom: 2 * $spacing;

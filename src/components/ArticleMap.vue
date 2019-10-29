@@ -103,8 +103,7 @@ export default {
 			geoJson: null,
 			validationError: null,
 			drawNewFeature: false,
-			selectedGeoCategory: null,
-			mapExpanded: false,
+			selectedGeoCategory: null
 		}
 	},
 	computed: {
@@ -113,6 +112,7 @@ export default {
 			newMapFeature: 'newMapFeature',
 			editPermission: 'editPermission',
 			geoCategories: 'geoCategories',
+			mapExpanded: 'articleMapExpanded'
 		}),
 		mapHidden() {
 			// have to check if there's a feature and if it's a non-deleted feature. a deleted feature will have geometry but no coordinates
@@ -345,13 +345,12 @@ export default {
 		enableScrollWheelZoom() {
 			this.map.scrollWheelZoom.enable();
 		},
-		expandMap(fullscreen) {
-			console.log('expandMap with status ', fullscreen);
-			this.mapExpanded = fullscreen;
+		expandMap(expanded) {
+			store.commit('toggleArticleMapSize', expanded);
 			let self = this;
 			setTimeout(function() {
-				self.map.invalidateSize();
-			}, 6000); // 0.6s is the css transition time
+				self.map.invalidateSize(true); //the true is for panning the map
+			}, 600); // 0.6s is the css transition time
 		}
 	}
 }
@@ -364,7 +363,7 @@ export default {
 
 
 #articleMap {
-	height: 290px;
+	height: $map-height;
 	border: 1px solid black;
 	transition: height $transition-time;
 }
@@ -399,7 +398,7 @@ export default {
 	&--expanded {
 		width: 89vw;
 		#articleMap {
-			height: calc(100vh - 120px);
+			height: $map-expanded-height;
 		}
 	}
 	

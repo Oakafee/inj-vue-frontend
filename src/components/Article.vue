@@ -250,8 +250,8 @@ export default {
 		position: fixed;
 		left: 0;
 		bottom: 0;
-		width: calc(100% - 20px);
-		padding: $spacing;
+		width: calc(100% - 10px);
+		padding: $spacing / 2;
 		background: $color-secondary;
 		display: flex;
 		justify-content: center;

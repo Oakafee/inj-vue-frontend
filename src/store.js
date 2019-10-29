@@ -19,6 +19,7 @@ const store = new Vuex.Store({
 		editMapFeature: false,
 		newMapFeature: {},
 		geoCategories: [],
+		articleMapExpanded: false
 	},
 	mutations: {
 		toggleMobileNav (state, navStatus) {
@@ -84,6 +85,9 @@ const store = new Vuex.Store({
 				"main_cat": false,
 			};
 			state.articleList.push(listInfo);
+		},
+		toggleArticleMapSize(state, expanded) {
+			state.articleMapExpanded = expanded;
 		}
 	}
 });
