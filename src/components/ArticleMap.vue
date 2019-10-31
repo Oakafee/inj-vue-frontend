@@ -169,7 +169,7 @@ export default {
 				this.initializeMapDrawing();
 			} else {
 				this.mapDrawToolbar.remove();
-				this.mapExpanded = false;
+				store.commit('toggleArticleMapSize', false);
 			}
 			this.drawNewFeature = false;
 		},
