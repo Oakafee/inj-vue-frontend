@@ -6,7 +6,7 @@
 				'inj-article-map-hidden' : mapHidden,
 				'inj-article-map--expanded': mapExpanded
 			}"
-			@dblclick.once="enableScrollWheelZoom"
+			@dblclick="enableScrollWheelZoom"
 		>
 			<div id="articleMap"></div>
 			
@@ -50,7 +50,15 @@
 				>{{ cat.name }}
 				</option>
 			</select>&nbsp;
-			<button class="inj-button inj-button-small" @click="toggleModal(true)" v-if="!mapHidden">Paste data </button>
+			<button
+				class="inj-button inj-button-small"
+				@click="toggleModal(true)" v-if="!mapHidden"
+			>Paste data </button>
+			<button
+				class="inj-button inj-button-tertiary inj-button-small"
+				@click="removeFromMap"
+				v-if="feature.geometry || newMapFeature.geometry"
+			>Remove from map </button>
 		</div>		
 				
 		<InjModal v-if="pasteDataModalOpen">
@@ -104,7 +112,7 @@ export default {
 			geoJson: null,
 			validationError: null,
 			drawNewFeature: false,
-			selectedGeoCategory: null
+			selectedGeoCategory: null,
 		}
 	},
 	computed: {
@@ -246,7 +254,7 @@ export default {
 			});
 			this.map.on('draw:deleted', (e) => {
 				e.layers.eachLayer(() => {
-					store.commit('addNewMapFeature', {});
+					this.removeFromMap();
 				});
 			});
 		},
@@ -344,7 +352,11 @@ export default {
 			store.commit('addNewMapFeature', updatedFeature);
 		},
 		enableScrollWheelZoom() {
-			this.map.scrollWheelZoom.enable();
+			let zoom = this.map.scrollWheelZoom
+			
+			if (!zoom._enabled) {
+				zoom.enable();
+			}
 		},
 		expandMap(expanded) {
 			store.commit('toggleArticleMapSize', expanded);
@@ -352,6 +364,9 @@ export default {
 			setTimeout(function() {
 				self.map.invalidateSize(true); //the true is for panning the map
 			}, 600); // 0.6s is the css transition time
+		},
+		removeFromMap() {
+			store.commit('addNewMapFeature', {});
 		}
 	}
 }
