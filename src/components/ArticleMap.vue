@@ -39,7 +39,7 @@
 
 		</div>
 		
-		<div class="inj-article-map__add inj-fade-transition" :class="{ 'inj-fade-transition--hidden' : !editable }" v-if="editPermission">
+		<div class="inj-article-map__add inj-fade-transition inj-button-row" :class="{ 'inj-fade-transition--hidden' : !editable }" v-if="editPermission">
 			<select class="inj-select" @input="selectGeoCategory">
 				<option disabled :selected="!feature.properties">Add to map...</option>
 				<option
@@ -79,8 +79,10 @@
 				</label>
 			</div>
 			<p class="inj-text-error" v-if="validationError">{{ validationError }} </p>
-			<button class="inj-button inj-button-secondary" @click="cancelPasteData()">Cancel</button>
-			<button class="inj-button" :class="{ 'inj-button-error' : validationError }" @click="addPastedFeature()">Add</button>
+			<div class="inj-button-row">
+				<button class="inj-button inj-button-secondary" @click="cancelPasteData()">Cancel</button>
+				<button class="inj-button" :class="{ 'inj-button-error' : validationError }" @click="addPastedFeature()">Add</button>
+			</div>
 		</InjModal>
 	</div>
 </template>
@@ -125,6 +127,7 @@ export default {
 		}),
 		mapHidden() {
 			// have to check if there's a feature and if it's a non-deleted feature. a deleted feature will have geometry but no coordinates
+			// is the newMapFeature condition even doing anything?
 			if (
 				(this.feature.geometry && this.feature.geometry.coordinates) ||
 				(this.newMapFeature.geometry && this.newMapFeature.geometry.cooordinates) ||
@@ -226,6 +229,11 @@ export default {
 					this.map.addLayer(this.mapFeatureLayer);
 			}
 			let toolbarOptions = {
+				'draw': {
+					'rectangle': false,
+					'circle': false,
+					'circlemarker': false
+				},
 				'edit': {
 					'featureGroup': this.mapFeatureLayer,
 				},
@@ -402,6 +410,7 @@ export default {
 	}
 	
 	&__add {
+		margin-bottom: $spacing;
 		@media(max-width: $media-break) {
 			display: none;
 		}

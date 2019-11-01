@@ -58,5 +58,20 @@ export default {
 			"coordinates": ""
 		}
 	},
-	FEATURED_ARTICLE_LENGTH: 500	
+	FEATURED_ARTICLE_LENGTH: 500,
+	TOOLBAR_DRAW_OPTIONS: {
+		'draw': {
+			'rectangle': false,
+			'circle': false,
+			'circlemarker': false
+		},
+		'position': 'topright'
+	},
+	TOOLBAR_EDIT_OPTIONS: {
+		'draw': false,
+		'edit': {
+			'featureGroup': null,
+		},
+		'position': 'topright'
+	}
 }

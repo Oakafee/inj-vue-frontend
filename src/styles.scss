@@ -80,6 +80,13 @@ a { color: $color-primary; } // this is a little ugly?
 	}
 }
 
+.inj-button-row .inj-button {
+	margin-right: $spacing;
+	&:last-child {
+		margin-right: 0;
+	}
+}
+
 // Forms:
 
 .inj-text-input {

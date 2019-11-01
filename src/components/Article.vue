@@ -30,7 +30,7 @@
 			</div>
 			
 			<div v-if="editPermission" class="inj-article__edit-button-row">
-				<div class="inj-article__edit-buttons">
+				<div class="inj-button-row">
 					<span v-if="editable">
 						<!-- TODO: add transition -->
 						<button class="inj-button inj-button-tertiary" @click="deleteModalOpen = true">Delete </button>
@@ -39,7 +39,7 @@
 						<span class="inj-text-error" v-if="validationError">{{ validationError }}  </span>
 					</span>
 					<span v-else>
-						<router-link :to="{ name: 'new-article', params: {parent: articleDetail.pk } }">+ Add Child Article</router-link>
+						<router-link :to="{ name: 'new-article', params: {parent: articleDetail.pk } }">+ Add Child Article</router-link>&nbsp;
 						<button class="inj-button inj-button-secondary" @click="editArticle()">Edit Article </button>
 					</span>
 				</div>
@@ -49,8 +49,8 @@
 		</div>
 		<div v-else>Loading... </div>
 		<InjModal v-if="deleteModalOpen">
-			<p>Are you sure you want to delete the article {{ articleDetail.title }}? </p>
-			<div>
+			<p>Are you sure you want to delete the article "{{ articleDetail.title }}?" </p>
+			<div class="inj-button-row">
 				<button class="inj-button inj-button-secondary" @click="deleteModalOpen = false">No </button>
 				<button class="inj-button inj-button-tertiary" @click="deleteArticle()">Yes </button>
 			</div>
@@ -137,10 +137,10 @@ export default {
 		editArticle() {
 			this.editedContent = this.articleDetail.article_content;
 			this.htmlTags = this.articleDetail.html_safe;
-			if(this.articleMapFeature.geometry) {
-				// this may come back to haunt me?
+			/*if(this.articleMapFeature.geometry) {
+				// this may come back to haunt me? Yes, I think it was a cheap way of triggering the newMapFeature watcher ArticleMap.vue in order to get certain functions to run
 				store.commit('addNewMapFeature', this.articleMapFeature);
-			}
+			}*/
 			store.commit('editArticle', this.articleDetail.slug);
 		},
 		cancelEditing() {
@@ -256,12 +256,6 @@ export default {
 		display: flex;
 		justify-content: center;
 		z-index: 1001;
-	}
-	&__edit-buttons {
-		// Marina would kill me
-		.inj-button {
-			margin-left: $spacing;
-		}	
 	}
 	&__content {
 		max-width: $article-content-width;
