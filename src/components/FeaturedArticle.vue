@@ -35,7 +35,10 @@ export default {
 	},
 	computed: {
 		truncatedContent() {
-			return this.articleDetail.article_content.substring(0, constants.FEATURED_ARTICLE_LENGTH) + '...';
+			if (this.articleDetail.article_content) {
+				return this.articleDetail.article_content.substring(0, constants.FEATURED_ARTICLE_LENGTH) + '...';
+			}
+			return "Loading..."
 		}
 	},
 	mounted() {

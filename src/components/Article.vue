@@ -149,7 +149,7 @@ export default {
 			store.commit('editArticle', null);
 			// replace the new map feature with an empty object
 			store.commit('addNewMapFeature', this.articleMapFeature);
-				// really should commit the value {}, but then how do you get articleMapFeature to re render without changing its value? My whole strategy is based on watchers in ArticleMap.vue that trigger functions local to that component. 
+				// Can't commit an empty feature because that would be the same as deleting the feature.
 
 		},
 		submitChanges() {
@@ -163,8 +163,9 @@ export default {
 			let serializedChanges = {};
 			let self = this;
 			
-			if (this.articleMapFeature !== this.newMapFeature) {
-			// if the map feature was changed in any way
+			// added first condition, because even if you delete the feature, newMapFeature should still have geometry
+			if (this.newMapFeature.geometry && this.articleMapFeature !== this.newMapFeature) {
+			// second condition: if you cancel edits, newMapFeature is assigned the value of articleMapFeature, so it will update and display
 				serializedChanges = functions.destructureGeoJsonForDb(this.newMapFeature);
 			}
 			

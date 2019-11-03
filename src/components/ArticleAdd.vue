@@ -84,7 +84,7 @@ export default {
 			newAuthor: '',
 			newParent: this.$route.params.parent ? this.$route.params.parent : null,
 			newContent: '',
-			mapEditable: false,
+			mapEditable: true,
 			validationError: {
 				"field": "",
 				"message": "",
@@ -97,12 +97,6 @@ export default {
 			mapFeaturesList: 'mapFeaturesList',
 			newMapFeature: 'newMapFeature',
 		}),
-	},
-	mounted() {
-		// shouldn't have to do this
-		functions.getGeoCategories();
-		// or this
-		this.mapEditable = true;
 	},
 	methods: {
 		selectParent(event) {

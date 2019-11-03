@@ -57,7 +57,7 @@
 			<button
 				class="inj-button inj-button-tertiary inj-button-small"
 				@click="removeFromMap"
-				v-if="feature.geometry || newMapFeature.geometry"
+				v-if="nonDeletedMapFeature"
 			>Remove from map </button>
 		</div>		
 				
@@ -107,6 +107,7 @@ export default {
 			map: '',
 			mapFeatureLayer: {},
 			mapDrawToolbar: {},
+			mapEditToolbar: {},
 			pasteDataModalOpen: false,
 			pasteDataType: null,
 			wCoord: null,
@@ -125,13 +126,15 @@ export default {
 			geoCategories: 'geoCategories',
 			mapExpanded: 'articleMapExpanded'
 		}),
+		nonDeletedMapFeature() {
+			return (this.feature.geometry && this.feature.geometry.coordinates) ||
+			(this.newMapFeature.geometry && this.newMapFeature.geometry.cooordinates)
+		},
 		mapHidden() {
 			// have to check if there's a feature and if it's a non-deleted feature. a deleted feature will have geometry but no coordinates
 			// is the newMapFeature condition even doing anything?
 			if (
-				(this.feature.geometry && this.feature.geometry.coordinates) ||
-				(this.newMapFeature.geometry && this.newMapFeature.geometry.cooordinates) ||
-				this.drawNewFeature
+				this.nonDeletedMapFeature || this.drawNewFeature
 			) {
 				return false;
 			}
@@ -167,19 +170,27 @@ export default {
 	},
 	watch: {
 		feature() {
+			console.log('feature watcher');
 			this.updateFeatureOnMap(this.feature);
 			// cheap shortcut for on route change
 			this.map.scrollWheelZoom.disable();
 		},
 		newMapFeature() {
+			console.log('new map feature mwatcher');
 			// if this is breaking things, I'm sorry, you'll have to look back at the github for how it was before
 			this.updateFeatureOnMap(this.newMapFeature);
 		},
 		editable() {
 			if(this.editable) {
-				this.initializeMapDrawing();
+				if(this.nonDeletedMapFeature) {
+					this.initializeEditToolbar();
+				} else {
+					this.initializeDrawToolbar();
+				}
 			} else {
-				this.mapDrawToolbar.remove();
+				// does .options make sense?
+				if (this.mapDrawToolbar.options) this.mapDrawToolbar.remove();
+				else if (this.mapEditToolbar.options) this.mapEditToolbar.remove();
 				store.commit('toggleArticleMapSize', false);
 			}
 			this.drawNewFeature = false;
@@ -209,44 +220,28 @@ export default {
 				this.map.fitBounds(bounds, {padding: constants.MAP_BOUNDS_PADDING});
 			}		
 		},
-		removeCurrentFeature() {
+		updateFeatureOnMap(feature) {
+			// first, remove the current feature
 			if (this.map.hasLayer(this.mapFeatureLayer)) {
 				this.mapFeatureLayer.remove();
 				//this.map.setView(constants.NJ_CENTER, constants.MAP_ZOOM_LEVEL);
-			}		
-		},
-		updateFeatureOnMap(feature) {
-			this.removeCurrentFeature();
+				if (this.mapEditToolbar.options) this.mapEditToolbar.remove();
+			}
+			// then check if there's anything to add
 			if(feature.geometry && feature.geometry.coordinates) {
-				this.addFeatureToMap(feature)
+				this.addFeatureToMap(feature);
 			} else {
 				this.map.setView(constants.NJ_CENTER, constants.MAP_ZOOM_LEVEL);
+				if (this.editable) this.initializeDrawToolbar(); // could add && !this.mapDrawToolbar.options
 			}
 		},
-		initializeMapDrawing() {
+		initializeDrawToolbar() {
+			console.log('initialize draw toolbar');
 			if (!this.mapFeatureLayer.options) {
 				this.mapFeatureLayer = new L.FeatureGroup();
 					this.map.addLayer(this.mapFeatureLayer);
 			}
-			let toolbarOptions = {
-				'draw': {
-					'rectangle': false,
-					'circle': false,
-					'circlemarker': false
-				},
-				'edit': {
-					'featureGroup': this.mapFeatureLayer,
-				},
-				'position': 'topright'
-			};
-			let self = this;
-			function commitLayerChange(layer) {
-				let jsonLayer = layer.toGeoJSON();
-				jsonLayer.properties.category = self.selectedGeoCategory;
-				store.commit('addNewMapFeature', jsonLayer);
-				// add the style info somewhere around here
-			}
-			this.mapDrawToolbar = new L.Control.Draw(toolbarOptions);
+			this.mapDrawToolbar = new L.Control.Draw(constants.TOOLBAR_DRAW_OPTIONS);
 			this.map.addControl(this.mapDrawToolbar);
 			
 			/*TODO change this condition, this isn't working
@@ -256,15 +251,26 @@ export default {
 			}
 			*/
 			
-			this.map.on('draw:created', (e) => commitLayerChange(e.layer));
+			this.map.on('draw:created', (e) => {
+				this.commitLayerChange(e.layer);
+				this.initializeEditToolbar();
+			});
+		},
+		initializeEditToolbar() {
+			let toolbarOptions = constants.TOOLBAR_EDIT_OPTIONS;
+			toolbarOptions.edit.featureGroup = this.mapFeatureLayer;
+			// first remove the draw toolbar
+			if(this.mapDrawToolbar.options) this.mapDrawToolbar.remove();
+			this.mapEditToolbar = new L.Control.Draw(toolbarOptions);
+			this.map.addControl(this.mapEditToolbar);
 			this.map.on('draw:edited', (e) => {
-				e.layers.eachLayer((layer) => commitLayerChange(layer));
+				e.layers.eachLayer((layer) => this.commitLayerChange(layer));
 			});
-			this.map.on('draw:deleted', (e) => {
-				e.layers.eachLayer(() => {
-					this.removeFromMap();
-				});
-			});
+		},
+		commitLayerChange(layer) {
+			let jsonLayer = layer.toGeoJSON();
+			jsonLayer.properties.category = this.selectedGeoCategory;
+			store.commit('addNewMapFeature', jsonLayer);
 		},
 		toggleModal(status) {
 			this.pasteDataModalOpen = status;
@@ -355,7 +361,11 @@ export default {
 				updatedFeature.geometry.type = this.feature.geometry.type;
 				updatedFeature.geometry.coordinates = this.feature.geometry.coordinates;
 
-			} else return; // it will be handled when you draw something
+			} else {
+				// only if you reload the page I think the newMapFeature won't fire so we have to do it manually here
+				if(!this.mapDrawToolbar.options) this.initializeDrawToolbar();
+				return; // it will be handled when you draw something
+			};
 			updatedFeature.properties.category = this.selectedGeoCategory;
 			store.commit('addNewMapFeature', updatedFeature);
 		},
@@ -374,7 +384,7 @@ export default {
 			}, 600); // 0.6s is the css transition time
 		},
 		removeFromMap() {
-			store.commit('addNewMapFeature', {});
+			store.commit('addNewMapFeature', constants.NULL_GEOJSON_FEATURE);
 		}
 	}
 }

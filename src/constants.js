@@ -71,6 +71,7 @@ export default {
 		'draw': false,
 		'edit': {
 			'featureGroup': null,
+			'remove': false
 		},
 		'position': 'topright'
 	}

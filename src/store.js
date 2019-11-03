@@ -36,7 +36,7 @@ const store = new Vuex.Store({
 			if (articleDetail.geo_coordinates) {
 				let mapFeature = functions.structureGeoJsonForMap(articleDetail);
 				state.articleMapFeature = mapFeature;
-			} else {
+			} else if (state.articleMapFeature.geometry) {
 				state.articleMapFeature = {};
 			}
 		},
