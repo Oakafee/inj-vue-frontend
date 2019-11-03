@@ -170,13 +170,11 @@ export default {
 	},
 	watch: {
 		feature() {
-			console.log('feature watcher');
 			this.updateFeatureOnMap(this.feature);
 			// cheap shortcut for on route change
 			this.map.scrollWheelZoom.disable();
 		},
 		newMapFeature() {
-			console.log('new map feature mwatcher');
 			// if this is breaking things, I'm sorry, you'll have to look back at the github for how it was before
 			this.updateFeatureOnMap(this.newMapFeature);
 		},
@@ -232,11 +230,10 @@ export default {
 				this.addFeatureToMap(feature);
 			} else {
 				this.map.setView(constants.NJ_CENTER, constants.MAP_ZOOM_LEVEL);
-				if (this.editable) this.initializeDrawToolbar(); // could add && !this.mapDrawToolbar.options
+				if (this.editable) this.initializeDrawToolbar();
 			}
 		},
 		initializeDrawToolbar() {
-			console.log('initialize draw toolbar');
 			if (!this.mapFeatureLayer.options) {
 				this.mapFeatureLayer = new L.FeatureGroup();
 					this.map.addLayer(this.mapFeatureLayer);
