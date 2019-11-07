@@ -100,8 +100,10 @@ export default {
 		}),
 	},
 	mounted() {
-		if (this.articleMapFeature.geometry || this.newMapFeature.geometry) store.commit('getArticleDetail', {});
-		functions.clearNewMapFeature(this.newMapFeature);
+		// not 100% sure about this condition
+		if (this.articleMapFeature.geometry) {
+			store.commit('getArticleDetail', {});
+		}
 	},
 	methods: {
 		selectParent(event) {
@@ -165,7 +167,9 @@ export default {
 						let newFeature = functions.structureGeoJsonForMap(response.data);
 						store.commit('addMapFeatureToList', newFeature);
 					}
-					functions.clearNewMapFeature(this.newMapFeature);
+					if(newMapFeature.geometry) {
+						store.commit('addNewMapFeature', {});
+					}
 					self.validationError = null;
 					self.$router.push(response.data.slug);
 				})

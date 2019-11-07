@@ -144,8 +144,8 @@ export default {
 			this.htmlTags = this.articleDetail.html_safe;
 			store.commit('editArticle', null);
 			if (this.newMapFeature.geometry) {
-				store.commit('addNewMapFeature', this.articleMapFeature);
-				// Can't commit an empty feature because that would be what would show up on the map. TODO: figure out how to do this with an empty feature (reloading articleMapFeature)
+				store.commit('addNewMapFeature', {'cancelEditing':true});
+				// Can't commit an empty feature because that would be what would show up on the map. 
 			}
 
 		},
@@ -185,9 +185,10 @@ export default {
 					// handle success
 					// update geo info on HomeMap
 					self.updateMapFeatureInList(response.data);
-					functions.clearNewMapFeature(self.newMapFeature);
-					store.commit('getArticleDetail', response.data);
-					store.commit('editArticle', null);
+					functions.resetMapFeature(response.data, self.newMapFeature);
+					//functions.clearNewMapFeature(self.newMapFeature);
+					//store.commit('getArticleDetail', response.data);
+					//store.commit('editArticle', null);
 					self.editedContent = null;
 					self.validationError = null;
 				})
@@ -207,9 +208,7 @@ export default {
 						store.commit('removeMapFeatureFromList', this.articleMapFeature)	
 					}
 					self.$router.push({ name: 'home' });
-					store.commit('getArticleDetail', {});
-					functions.clearNewMapFeature(this.newMapFeature);
-					store.commit('editArticle', null);
+					functions.resetMapFeature({}, this.newMapFeature);
 				})
 				.catch((error) => {
 					self.validationError = 'server error with delete: ' + error;

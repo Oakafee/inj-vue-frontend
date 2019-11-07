@@ -59,6 +59,7 @@
 				@click="removeFromMap"
 				v-if="nonDeletedMapFeature"
 			>Remove from map </button>
+			<p>{{ newMapFeature }} </p>
 		</div>		
 				
 		<InjModal v-if="pasteDataModalOpen">
@@ -172,6 +173,10 @@ export default {
 			// if the new map feature is being set to {}, then we don't update the map. Note that if we are deleting the newMapFeature, then it WON't be {}, but rather a null geojson feature
 			if (this.newMapFeature.geometry) {
 				this.updateFeatureOnMap(this.newMapFeature);
+			} else if (this.newMapFeature.cancelEditing) {
+				// so this will happen if you click "Cancel Edits," in order to restore the articleMapFeature
+				this.updateFeatureOnMap(this.feature);
+				store.commit('addNewMapFeature', {});
 			}
 		},
 		editable() {
@@ -338,15 +343,13 @@ export default {
 			// there has to be a more concise way of doing this?
 			this.selectedGeoCategory = parseInt(event.target.value);
 			if (this.nonDeletedMapFeature) {
-				let updatedFeature = constants.NULL_GEOJSON_FEATURE;
-				if (this.newMapFeature.geometry && this.newMapFeature.geometry.coordinates) {
-					updatedFeature.properties.name = this.newMapFeature.properties.name;
-					updatedFeature.geometry.type = this.newMapFeature.geometry.type;
-					updatedFeature.geometry.coordinates = this.newMapFeature.geometry.coordinates;
+				let updatedFeature = {};
+				if (this.newMapFeature.geometry) {
+					if (this.newMapFeature.geometry.coordinates) {
+						updatedFeature = JSON.parse(JSON.stringify(this.newMapFeature));
+					}
 				} else if (this.feature.geometry && this.feature.geometry.coordinates) {
-					updatedFeature.properties.name = this.feature.properties.name;
-					updatedFeature.geometry.type = this.feature.geometry.type;
-					updatedFeature.geometry.coordinates = this.feature.geometry.coordinates;
+					updatedFeature = JSON.parse(JSON.stringify(this.feature));
 				}
 				updatedFeature.properties.category = this.selectedGeoCategory;
 				store.commit('addNewMapFeature', updatedFeature);

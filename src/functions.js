@@ -138,9 +138,12 @@ export default {
 	enableScrollWheelZoom(map) {
 		map.scrollWheelZoom.enable();
 	},
-	clearNewMapFeature(newMapFeature) {
+	resetMapFeature(feature, newMapFeature) {
+		// do I want/need this if condition?
 		if(newMapFeature.geometry) {
 			store.commit('addNewMapFeature', {});
 		}
+		store.commit('getArticleDetail', feature);
+		store.commit('editArticle', null);
 	}
 }
