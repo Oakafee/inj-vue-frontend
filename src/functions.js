@@ -137,5 +137,10 @@ export default {
 	},
 	enableScrollWheelZoom(map) {
 		map.scrollWheelZoom.enable();
+	},
+	clearNewMapFeature(newMapFeature) {
+		if(newMapFeature.geometry) {
+			store.commit('addNewMapFeature', {});
+		}
 	}
 }

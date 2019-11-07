@@ -140,12 +140,12 @@ export default {
 		},
 		cancelEditing() {
 			this.editedContent = null;
+			this.validationError = null;
 			this.htmlTags = this.articleDetail.html_safe;
 			store.commit('editArticle', null);
-			// replace the new map feature with an empty object
 			if (this.newMapFeature.geometry) {
 				store.commit('addNewMapFeature', this.articleMapFeature);
-				// Can't commit an empty feature because that would be what would show up on the map.
+				// Can't commit an empty feature because that would be what would show up on the map. TODO: figure out how to do this with an empty feature (reloading articleMapFeature)
 			}
 
 		},
@@ -185,7 +185,7 @@ export default {
 					// handle success
 					// update geo info on HomeMap
 					self.updateMapFeatureInList(response.data);
-					store.commit('addNewMapFeature', {});
+					functions.clearNewMapFeature(self.newMapFeature);
 					store.commit('getArticleDetail', response.data);
 					store.commit('editArticle', null);
 					self.editedContent = null;
@@ -208,6 +208,7 @@ export default {
 					}
 					self.$router.push({ name: 'home' });
 					store.commit('getArticleDetail', {});
+					functions.clearNewMapFeature(this.newMapFeature);
 					store.commit('editArticle', null);
 				})
 				.catch((error) => {
