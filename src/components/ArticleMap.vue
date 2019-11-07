@@ -127,8 +127,13 @@ export default {
 			mapExpanded: 'articleMapExpanded'
 		}),
 		nonDeletedMapFeature() {
-			return (this.feature.geometry && this.feature.geometry.coordinates) ||
-			(this.newMapFeature.geometry && this.newMapFeature.geometry.cooordinates)
+			if (this.feature.geometry) {
+				if (this.feature.geometry.coordinates) return true;
+			}
+			if (this.newMapFeature.geometry) {
+				if (this.newMapFeature.geometry.coordinates) return true;
+			}
+			return false;
 		},
 		mapHidden() {
 			// have to check if there's a feature and if it's a non-deleted feature. a deleted feature will have geometry but no coordinates
@@ -142,16 +147,7 @@ export default {
 		},
     },
 	mounted() {
-		/*
-		these are proving troublesome for now, affecting how features are centered on the map, so I'm not sure if they're worth it
-		let stateBounds = [[constants.NJ_BOUNDS.north, constants.NJ_BOUNDS.east],
-			[constants.NJ_BOUNDS.south, constants.NJ_BOUNDS.west]];
-		*/
 		if (this.geoCategories.length === 0) functions.getGeoCategories();
-		// since we are loading (or reloading?) a new article afresh, we want to get rid of any previous edits.
-		if(this.newMapFeature.geometry) {
-			store.commit('addNewMapFeature', {});			
-		}
 		
 		this.map = L.map('articleMap', constants.MAP_DEFAULT_OPTIONS);
 
@@ -159,24 +155,24 @@ export default {
 			attribution: constants.MAP_TILE_2_ATTRIBUTION
 		}).addTo(this.map);
 		
+		/*
 		if(this.feature.geometry && this.feature.geometry.coordinates) {
 			this.addFeatureToMap(this.feature);
-		}
-	},
-	destroyed() {
-		if(this.newMapFeature.geometry) {
-			store.commit('addNewMapFeature', {});			
-		}
+		}*/
 	},
 	watch: {
 		feature() {
+			console.log('feature watcher');
 			this.updateFeatureOnMap(this.feature);
 			// cheap shortcut for on route change
 			this.map.scrollWheelZoom.disable();
 		},
 		newMapFeature() {
-			// if this is breaking things, I'm sorry, you'll have to look back at the github for how it was before
-			this.updateFeatureOnMap(this.newMapFeature);
+			console.log('new map feature watcher');
+			// if the new map feature is being set to {}, then we don't update the map. Note that if we are deleting the newMapFeature, then it WON't be {}, but rather a null geojson feature
+			if (this.newMapFeature.geometry) {
+				this.updateFeatureOnMap(this.newMapFeature);
+			}
 		},
 		editable() {
 			if(this.editable) {
@@ -196,6 +192,7 @@ export default {
 	},
 	methods: {
 		addFeatureToMap(feature) {
+			console.log('add feature to map');
 			if (feature.geometry && feature.geometry.coordinates) {
 				let featureStyle = {
 					'className': functions.getMapClassName(feature)
@@ -209,6 +206,7 @@ export default {
 						return L.circleMarker(latlng, constants.MAP_POINT_MARKER_OPTIONS);
 					}
 				}).addTo(this.map);
+				if (this.editable) this.initializeEditToolbar();
 				if(feature.properties.category) {
 					this.selectedGeoCategory = feature.properties.category;
 				} else {
@@ -250,7 +248,6 @@ export default {
 			
 			this.map.on('draw:created', (e) => {
 				this.commitLayerChange(e.layer);
-				this.initializeEditToolbar();
 			});
 		},
 		initializeEditToolbar() {
@@ -273,19 +270,9 @@ export default {
 			this.pasteDataModalOpen = status;
 		},
 		addPastedFeature() {
-			let newFeature = {};
+			let newFeature = constants.NULL_GEOJSON_FEATURE;
 			if (this.pasteDataType === 'coordinates') {
-				newFeature = {
-					"type": "Feature",
-					"geometry": {
-						"type": "Point",
-						"coordinates": null,
-					},
-					"properties": {
-						"name": null,
-						"category": null
-					}
-				};
+				newFeature.geometry.type = "Point";
 				let n = parseFloat(this.nCoord);
 				let w = parseFloat(this.wCoord);
 				if (this.pointCoordsAreNumbers(n,w) && this.pointCoordsAreInBounds(n,w)) {
@@ -314,6 +301,9 @@ export default {
 			} else {
 				this.validationError = 'Please enter something';
 				return;
+			}
+			if (this.selectedGeoCategory) {
+				newFeature.properties.category = this.selectedGeoCategory;
 			}
 			store.commit('addNewMapFeature', newFeature);
 			this.toggleModal(false);
@@ -347,24 +337,24 @@ export default {
 		selectGeoCategory(event) {
 			// there has to be a more concise way of doing this?
 			this.selectedGeoCategory = parseInt(event.target.value);
-			this.drawNewFeature = true;
-			let updatedFeature = constants.NULL_GEOJSON_FEATURE;
-			if (this.newMapFeature.geometry) {
-				updatedFeature.properties.name = this.newMapFeature.properties.name;
-				updatedFeature.geometry.type = this.newMapFeature.geometry.type;
-				updatedFeature.geometry.coordinates = this.newMapFeature.geometry.coordinates;
-			} else if (this.feature.geometry) {
-				updatedFeature.properties.name = this.feature.properties.name;
-				updatedFeature.geometry.type = this.feature.geometry.type;
-				updatedFeature.geometry.coordinates = this.feature.geometry.coordinates;
-
+			if (this.nonDeletedMapFeature) {
+				let updatedFeature = constants.NULL_GEOJSON_FEATURE;
+				if (this.newMapFeature.geometry && this.newMapFeature.geometry.coordinates) {
+					updatedFeature.properties.name = this.newMapFeature.properties.name;
+					updatedFeature.geometry.type = this.newMapFeature.geometry.type;
+					updatedFeature.geometry.coordinates = this.newMapFeature.geometry.coordinates;
+				} else if (this.feature.geometry && this.feature.geometry.coordinates) {
+					updatedFeature.properties.name = this.feature.properties.name;
+					updatedFeature.geometry.type = this.feature.geometry.type;
+					updatedFeature.geometry.coordinates = this.feature.geometry.coordinates;
+				}
+				updatedFeature.properties.category = this.selectedGeoCategory;
+				store.commit('addNewMapFeature', updatedFeature);
 			} else {
-				// only if you reload the page I think the newMapFeature won't fire so we have to do it manually here
+				this.drawNewFeature = true;
+				// why is the below necessary?
 				if(!this.mapDrawToolbar.options) this.initializeDrawToolbar();
-				return; // it will be handled when you draw something
 			};
-			updatedFeature.properties.category = this.selectedGeoCategory;
-			store.commit('addNewMapFeature', updatedFeature);
 		},
 		enableScrollWheelZoom() {
 			let zoom = this.map.scrollWheelZoom

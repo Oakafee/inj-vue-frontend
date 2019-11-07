@@ -3,7 +3,7 @@ export default {
 	NJ_CENTER: [40.07, -74.56],
 	API_BASE_URL: 
 	'https://inj-rest-staging.herokuapp.com/',
-	//'http://127.0.0.1:8000/',
+	// 'http://127.0.0.1:8000/',
 	API_PATH: 'articles/',
 	MAP_DEFAULT_OPTIONS: {
 		center: [40.07, -74.56],

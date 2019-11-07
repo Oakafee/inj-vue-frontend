@@ -49,6 +49,7 @@ export default {
 		let apiUrl = constants.API_BASE_URL + constants.API_PATH + slug + '/';
 		let self = this;
 		
+		//store.commit('getArticleDetail', {}); //this would be so if it takes a while to load, we get to look at blank stuff instead of the previous article. TODO: loading stuff
 		axios({
 			method: 'get',
 			url: apiUrl,
@@ -88,17 +89,18 @@ export default {
 	},
 	destructureGeoJsonForDb(feature) {
 		if (feature.geometry) {
-			return {
-				'geo_type': feature.geometry.type,
-				'geo_coordinates': JSON.stringify(feature.geometry.coordinates),
-				'geo_category': feature.properties.category
+			if (feature.geometry.coordinates) {
+				return {
+					'geo_type': feature.geometry.type,
+					'geo_coordinates': JSON.stringify(feature.geometry.coordinates),
+					'geo_category': feature.properties.category
+				}
 			}
-		} else {
-			return {
-				'geo_type': "",
-				'geo_coordinates': "",
-				'geo_category': null
-			}
+		};
+		return {
+			'geo_type': "",
+			'geo_coordinates': "",
+			'geo_category': null
 		}
 	},
 	getCommentary(articlePk) {

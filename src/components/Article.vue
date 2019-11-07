@@ -94,17 +94,12 @@ export default {
 		this.slug = this.$route.params.slug;
 		functions.getArticleDetails(this.slug);
 	},
-	destroyed() {
-		store.commit('getArticleDetail', {});
-	},
 	beforeRouteUpdate (to, from, next) {
+		alert('route update');
 		// this fires when the route changes without rerendering the component
 		this.slug = to.params.slug;
 		
 		this.validationError = null;
-		if (this.newMapFeature.geometry) {
-			store.commit('addNewMapFeature', {})
-		}
 		
 		next();
 		functions.getArticleDetails(this.slug);
@@ -148,8 +143,10 @@ export default {
 			this.htmlTags = this.articleDetail.html_safe;
 			store.commit('editArticle', null);
 			// replace the new map feature with an empty object
-			store.commit('addNewMapFeature', this.articleMapFeature);
-				// Can't commit an empty feature because that would be the same as deleting the feature.
+			if (this.newMapFeature.geometry) {
+				store.commit('addNewMapFeature', this.articleMapFeature);
+				// Can't commit an empty feature because that would be what would show up on the map.
+			}
 
 		},
 		submitChanges() {
@@ -188,6 +185,7 @@ export default {
 					// handle success
 					// update geo info on HomeMap
 					self.updateMapFeatureInList(response.data);
+					store.commit('addNewMapFeature', {});
 					store.commit('getArticleDetail', response.data);
 					store.commit('editArticle', null);
 					self.editedContent = null;
@@ -220,6 +218,7 @@ export default {
 			this.deleteModalOpen = false;
 		},
 		updateMapFeatureInList(data) {
+			// this is for the homepage map
 			if (!this.mapFeaturesList.features) return;
 			let responseMapFeature = functions.structureGeoJsonForMap(data);
 			if (responseMapFeature !== this.articleMapFeature) {

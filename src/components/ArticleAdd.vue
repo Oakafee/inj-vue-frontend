@@ -95,8 +95,12 @@ export default {
 		...mapState({
 			articleList: 'articleList',
 			mapFeaturesList: 'mapFeaturesList',
-			newMapFeature: 'newMapFeature',
+			articleMapFeature: 'articleMapFeature',
+			newMapFeature: 'newMapFeature'
 		}),
+	},
+	mounted() {
+		if (this.articleMapFeature.geometry || this.newMapFeature.geometry) store.commit('getArticleDetail', {})
 	},
 	methods: {
 		selectParent(event) {
@@ -116,7 +120,6 @@ export default {
 			} else if (!this.newAuthor) {
 				this.validationError.field = "author";
 				this.validationError.message = "Author is required";
-			} else if (!this.newContent) {
 			} else if (!this.newContent) {
 				this.validationError.field = "content"
 				this.validationError.message = 'Please enter some content';
