@@ -96,7 +96,7 @@ export default {
 					'geo_category': feature.properties.category
 				}
 			}
-		};
+		}
 		return {
 			'geo_type': "",
 			'geo_coordinates': "",
@@ -128,7 +128,6 @@ export default {
 			})
 			.catch(function (error) {
 				// handle error, not sure what to do in this case
-				console.log('sad, the geo category lookup failed')
 				return error;
 			});
 	},

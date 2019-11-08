@@ -162,13 +162,11 @@ export default {
 	},
 	watch: {
 		feature() {
-			console.log('feature watcher');
 			this.updateFeatureOnMap(this.feature);
 			// cheap shortcut for on route change
 			this.map.scrollWheelZoom.disable();
 		},
 		newMapFeature() {
-			console.log('new map feature watcher');
 			// if the new map feature is being set to {}, then we don't update the map. Note that if we are deleting the newMapFeature, then it WON't be {}, but rather a null geojson feature
 			if (this.newMapFeature.geometry) {
 				this.updateFeatureOnMap(this.newMapFeature);
@@ -196,7 +194,6 @@ export default {
 	},
 	methods: {
 		addFeatureToMap(feature) {
-			console.log('add feature to map');
 			if (feature.geometry && feature.geometry.coordinates) {
 				let featureStyle = {
 					'className': functions.getMapClassName(feature)
@@ -243,13 +240,8 @@ export default {
 			this.mapDrawToolbar = new L.Control.Draw(constants.TOOLBAR_DRAW_OPTIONS);
 			this.map.addControl(this.mapDrawToolbar);
 			
-			/*TODO change this condition, this isn't working
-			if (!this.feature) {
-				this.mapDrawToolbar.Delete.disable();
-				this.mapDrawToolbar.Edit.disable();
-			}
-			*/
-			
+			this.map.on('draw:drawstart', () => store.commit('mapEditInProgress', true));
+			this.map.on('draw:drawstop', () => store.commit('mapEditInProgress', false));			
 			this.map.on('draw:created', (e) => {
 				this.commitLayerChange(e.layer);
 			});
@@ -358,7 +350,7 @@ export default {
 				this.drawNewFeature = true;
 				// why is the below necessary?
 				if(!this.mapDrawToolbar.options) this.initializeDrawToolbar();
-			};
+			}
 		},
 		enableScrollWheelZoom() {
 			let zoom = this.map.scrollWheelZoom

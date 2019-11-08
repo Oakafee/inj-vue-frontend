@@ -22,7 +22,7 @@
 		type="text"
 		class="inj-text-input inj-add__form-element"
 		:class="{ 'inj-text-input-error' : validationError.field === 'title' }"
-		placeholder="Author"
+		placeholder="Author*"
 		v-model="newAuthor"
 	/>
 	<div class="inj-add__form-element">
@@ -170,7 +170,6 @@ export default {
 					// handle success
 					//store.commit('getArticleDetail', response.data);
 					store.commit('addArticleToList', response.data);
-					console.log('create article', response.data);
 					// should I check for mapFeaturesList.features here or in the store?
 					if (response.data.geo_coordinates && this.mapFeaturesList.features) {
 						let newFeature = functions.structureGeoJsonForMap(response.data);

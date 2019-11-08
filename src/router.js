@@ -28,7 +28,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
 	if (store.state.mobileNavOpen) {
 		store.commit('toggleMobileNav', false);
-	};
+	}
 	let changeRoute = true;
 	if (store.state.editInProgress) {
 	//TODO: improve this second condition
