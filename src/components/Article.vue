@@ -206,8 +206,8 @@ export default {
 					if (this.articleMapFeature.geometry && this.mapFeaturesList.features) {
 						store.commit('removeMapFeatureFromList', this.articleMapFeature)	
 					}
-					self.$router.push({ name: 'home' });
 					functions.resetMapFeature({}, this.newMapFeature);
+					self.$router.push({ name: 'home' });
 				})
 				.catch((error) => {
 					self.validationError = 'server error with delete: ' + error;
