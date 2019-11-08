@@ -29,13 +29,19 @@ export default {
 			'interruptedRoute',
 			'editableArticle',
 			'newMapFeature',
+			'editableArticle',
 		]),
 	},
 	methods: {
 		followRoute(go) {
 			if (go) {
-				if (this.editableArticle) store.commit('editArticle', null);
-				if (this.newMapFeature.geometry) store.commit('addNewMapFeature', null);
+				if (this.newMapFeature.geometry) {
+					store.commit('addNewMapFeature', { 'cancelEditing': true });
+				}
+				if (this.editableArticle) {
+					store.commit('editArticle', null);
+				}
+				store.commit('editInProgress', false); //necessary?
 				this.$router.push(this.interruptedRoute);
 			}
 			store.commit('saveDialogIntervention', null);

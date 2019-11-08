@@ -145,5 +145,9 @@ export default {
 		}
 		store.commit('getArticleDetail', feature);
 		store.commit('editArticle', null);
+	},
+	editInProgress(editing) {
+		if (editing) store.commit('editInProgress', true)
+		else store.commit('editInProgress', false);	
 	}
 }

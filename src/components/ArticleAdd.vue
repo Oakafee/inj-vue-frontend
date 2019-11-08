@@ -92,12 +92,19 @@ export default {
 		}
 	},
 	computed: {
-		...mapState({
-			articleList: 'articleList',
-			mapFeaturesList: 'mapFeaturesList',
-			articleMapFeature: 'articleMapFeature',
-			newMapFeature: 'newMapFeature'
-		}),
+		...mapState([
+			'articleList',
+			'mapFeaturesList',
+			'articleMapFeature',
+			'newMapFeature',
+			'mapEditInProgress',
+		]),
+		inProgress() {
+			return (this.mapEditInProgress || this.newMapFeature.geometry || this.newTitle || this.newSubtitle || this.newAuthor || this.newContent)
+		}
+	},
+	watch: {
+		inProgress() { functions.editInProgress(this.inProgress) }
 	},
 	mounted() {
 		// not 100% sure about this condition
@@ -113,7 +120,9 @@ export default {
 			if (this.articleIsValid()) this.postNewArticle();
 		},
 		articleIsValid() {
-			if(!this.newTitle) {
+			if (this.mapEditInProgress) {
+				this.validationError.message = 'Please save or cancel your map changes before submitting.'
+			} else if(!this.newTitle) {
 				this.validationError.field = "title";
 				this.validationError.message = "Title is required"
 				return false;

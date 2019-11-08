@@ -30,7 +30,7 @@ router.beforeEach((to, from, next) => {
 		store.commit('toggleMobileNav', false);
 	};
 	let changeRoute = true;
-	if (store.state.editableArticle || from.path === '/new-article') {
+	if (store.state.editInProgress) {
 	//TODO: improve this second condition
 		store.commit('saveDialogIntervention', to);
 		changeRoute = false;

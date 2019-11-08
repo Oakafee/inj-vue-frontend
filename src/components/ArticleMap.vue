@@ -261,6 +261,8 @@ export default {
 			if(this.mapDrawToolbar.options) this.mapDrawToolbar.remove();
 			this.mapEditToolbar = new L.Control.Draw(toolbarOptions);
 			this.map.addControl(this.mapEditToolbar);
+			this.map.on('draw:editstart', () => store.commit('mapEditInProgress', true));
+			this.map.on('draw:editstop', () => store.commit('mapEditInProgress', false));
 			this.map.on('draw:edited', (e) => {
 				e.layers.eachLayer((layer) => this.commitLayerChange(layer));
 			});

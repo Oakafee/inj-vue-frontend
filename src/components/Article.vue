@@ -104,14 +104,16 @@ export default {
 		functions.getArticleDetails(this.slug);
 	},
 	computed: {
-		...mapState({
-			articleDetail: 'articleDetail',
-			editPermission: 'editPermission',
-			editableArticle: 'editableArticle',
-			articleMapFeature: 'articleMapFeature',
-			newMapFeature: 'newMapFeature',
-			mapFeaturesList: 'mapFeaturesList',
-		}),
+		...mapState([
+			'articleDetail',
+			'editPermission',
+			'editableArticle',
+			'articleMapFeature',
+			'newMapFeature',
+			'mapFeaturesList',
+			'mapEditInProgress',
+			'editInProgress',
+		]),
 		formattedPubDate() {
 			let pubDate = new Date(this.articleDetail.pub_date);
 			return pubDate.toLocaleString('default', constants.DATE_FORMAT);
@@ -125,7 +127,13 @@ export default {
 				name: 'new-article',
 				params: { parent: pk }
 			}
+		},
+		inProgress() {
+			return (this.mapEditInProgress || this.newMapFeature.geometry || (this.editable && (this.articleDetail.article_content !== this.editedContent)))
 		}
+	},
+	watch: {
+		inProgress() { functions.editInProgress(this.inProgress) }
 	},
 	methods: {
 		editArticle() {
@@ -143,15 +151,18 @@ export default {
 			this.htmlTags = this.articleDetail.html_safe;
 			store.commit('editArticle', null);
 			if (this.newMapFeature.geometry) {
-				store.commit('addNewMapFeature', {'cancelEditing':true});
+				store.commit('addNewMapFeature', { 'cancelEditing': true });
 				// Can't commit an empty feature because that would be what would show up on the map. 
 			}
 
 		},
 		submitChanges() {
 			// validation
-			if (this.editedContent) this.sendChangedInfo()
-			else this.validationError = 'It seems like you deleted all of the content of the article.';
+			if (this.mapEditInProgress) {
+				this.validationError = 'Please save or cancel your map changes before submitting.'
+			} else if (!this.editedContent) {
+				this.validationError = 'It seems like you deleted all of the content of the article. To delete the article please use the delete button instead.';
+			} else this.sendChangedInfo();
 			// TODO: add scrolling to top on successful submit
 		},
 		sendChangedInfo() {

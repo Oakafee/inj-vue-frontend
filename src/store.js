@@ -21,6 +21,8 @@ const store = new Vuex.Store({
 		geoCategories: [],
 		articleMapExpanded: false,
 		interruptedRoute: null,
+		mapEditInProgress: false,
+		editInProgress: false,
 	},
 	mutations: {
 		toggleMobileNav (state, navStatus) {
@@ -92,6 +94,12 @@ const store = new Vuex.Store({
 		},
 		saveDialogIntervention(state, route) {
 			state.interruptedRoute = route;
+		},
+		mapEditInProgress(state, editing) {
+			state.mapEditInProgress = editing;
+		},
+		editInProgress(state, editing) {
+			state.editInProgress = editing;
 		}
 	}
 });
