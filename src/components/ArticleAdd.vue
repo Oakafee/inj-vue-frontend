@@ -167,7 +167,7 @@ export default {
 						let newFeature = functions.structureGeoJsonForMap(response.data);
 						store.commit('addMapFeatureToList', newFeature);
 					}
-					if(newMapFeature.geometry) {
+					if(self.newMapFeature.geometry) {
 						store.commit('addNewMapFeature', {});
 					}
 					self.validationError = null;
