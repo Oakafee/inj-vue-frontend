@@ -59,7 +59,6 @@
 				@click="removeFromMap"
 				v-if="nonDeletedMapFeature"
 			>Remove from map </button>
-			<p>{{ newMapFeature }} </p>
 		</div>		
 				
 		<InjModal v-if="pasteDataModalOpen">

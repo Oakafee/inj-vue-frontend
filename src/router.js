@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
+import store from './store.js';
 import Home from './components/Home.vue';
 import Article from './components/Article.vue';
 import ArticleAdd from './components/ArticleAdd.vue';
@@ -22,6 +23,19 @@ const router = new VueRouter({
 	scrollBehavior() {
 		return { x: 0, y: 0 }
 	},
+});
+
+router.beforeEach((to, from, next) => {
+	if (store.state.mobileNavOpen) {
+		store.commit('toggleMobileNav', false);
+	};
+	let changeRoute = true;
+	if (store.state.editableArticle || from.path === '/new-article') {
+	//TODO: improve this second condition
+		store.commit('saveDialogIntervention', to);
+		changeRoute = false;
+	}
+	next(changeRoute);
 });
 
 export default router;

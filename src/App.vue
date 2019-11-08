@@ -7,6 +7,7 @@
 			</div>
 			<Nav />
 		</div>
+		<SaveChangesModal />
 	</div>
 </template>
 
@@ -14,24 +15,18 @@
 import {mapState} from 'vuex';
 
 import store from './store.js'
-//import Map from './components/Map.vue'
 import Title from './components/Title.vue'
 import Nav from './components/Nav.vue'
+import SaveChangesModal from './components/SaveChangesModal.vue'
 
 export default {
 	name: 'app',
 	components: {
 		Title,
-		Nav
+		Nav,
+		SaveChangesModal
 	},
 	computed: mapState(['mobileNavOpen']),
-	watch: {
-		$route() {
-			if (this.mobileNavOpen) {
-				store.commit('toggleMobileNav', false);
-			}
-		}
-	}
 }
 </script>
 

@@ -95,7 +95,6 @@ export default {
 		functions.getArticleDetails(this.slug);
 	},
 	beforeRouteUpdate (to, from, next) {
-		alert('route update');
 		// this fires when the route changes without rerendering the component
 		this.slug = to.params.slug;
 		
