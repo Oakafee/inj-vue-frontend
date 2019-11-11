@@ -52,7 +52,7 @@ export default {
 			}).addTo(this.map);		
 		},
 		popupText(feature) {
-			return `<a href='/#/${feature.properties.slug}' taregt='_blank'>${feature.properties.name}</a>`
+			return `<p><a href='/#/${feature.properties.slug}' taregt='_blank'>${feature.properties.name}</a></p>`
 		},
 		enableScrollWheelZoom() {
 			this.map.scrollWheelZoom.enable();
@@ -85,5 +85,10 @@ export default {
 	width: 100%;
 	height: 500px;
 	border: 1px solid black;
+}
+
+// stupid stupid stupid override of font styles leaflet insists on including
+.leaflet-container {
+	font: unset !important;
 }
 </style>

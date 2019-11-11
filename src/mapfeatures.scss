@@ -12,11 +12,11 @@
 		stroke: $color-wood;
 		fill: $color-wood;
 		fill-opacity: 0.5;
-		stroke-width: 1px;
+		stroke-width: $map-feature-stroke-width;
 	}
 	&__mountain {
 		stroke: $color-horsehead;
-		stroke-width: 1px;
+		stroke-width: $map-feature-stroke-width;;
 		opacity: 0.5;
 		fill: $color-horsehead;
 		fill-opacity: 1;
@@ -24,55 +24,56 @@
 	&__swamp {
 		stroke: lightgreen;
 		fill: lightgreen;
-		stroke-width: 2px;
+		stroke-width: $map-feature-stroke-width;
 	}
 	&__other-political-entity {
 		stroke: $color-dress;
+		stroke-width: $map-feature-stroke-width;;
 		fill: $color-dress;
 		fill-opacity: 0.3;
 	}
 	&__city {
 		stroke: $color-tertiary;
 		fill: $color-tertiary;
-		stroke-width: 1px;
+		stroke-width: $map-feature-stroke-width;;
 		fill-opacity: 0.3;
 	}
 	&__town {
 		stroke: $color-secondary;
 		fill: $color-secondary;
-		stroke-width: 1px;
+		stroke-width: $map-feature-stroke-width;;
 		fill-opacity: 0.3;
 	}
 	&__river {
 		&-smaller {
 			stroke: $color-primary;
-			opacity: 0.6;
+			opacity: $map-feature-opacity;
 			stroke-width: 2px;
 		}
 		&-major {
 			stroke: $color-primary;
-			opacity: 0.6;
+			opacity: $map-feature-opacity;
 		}
 	}
 	&__lake-bay {
 		stroke: none;
 		fill: $color-primary;
-		fill-opacity: 0.6;
+		fill-opacity: $map-feature-opacity;
 	}
 	&__waterfall {
 		stroke: $color-primary;
-		stroke-width: 1px;
+		stroke-width: $map-feature-stroke-width;;
 		fill: $color-primary;
 	}
 	&__other-infrastructure {}
 	&__road {
 		&-major-highway {
 			stroke: $color-quaternary;
-			opacity: 0.6;
+			opacity: $map-feature-opacity;
 		}
 		&-secondary-highway {
 			stroke: $color-quaternary;
-			opacity: 0.6;
+			opacity: $map-feature-opacity;
 			stroke-width: 2px;
 		}
 		&-local {
@@ -88,12 +89,14 @@
 	&__point-of-interest {
 		stroke: black;
 		fill: black;
-		stroke-width: 1px;
-		opacity: 0.6;
+		stroke-width: $map-feature-stroke-width;;
+		opacity: $map-feature-opacity;
 		fill-opacity: 0.3;
 	}
 	&__default {
-		stroke: purple;
-		fill: purple;
+		stroke: $color-primary;
+		stroke-width: $map-feature-stroke-width;
+		fill: $color-primary;
+		fill-opacity: 0.5;
 	}
 }

@@ -100,7 +100,8 @@ export default {
 			'mapEditInProgress',
 		]),
 		inProgress() {
-			return (this.mapEditInProgress || this.newMapFeature.geometry || this.newTitle || this.newSubtitle || this.newAuthor || this.newContent)
+			return false
+//			return (this.mapEditInProgress || this.newMapFeature.geometry || this.newTitle || this.newSubtitle || this.newAuthor || this.newContent)
 		}
 	},
 	watch: {
@@ -179,7 +180,7 @@ export default {
 						store.commit('addNewMapFeature', {});
 					}
 					self.validationError = null;
-					self.$router.push(response.data.slug);
+					self.$router.push({ path:response.data.slug, params:{ createCall:true }});
 				})
 				.catch((error) => {
 					// handle error

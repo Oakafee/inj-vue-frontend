@@ -200,9 +200,6 @@ export default {
 				};
 				this.mapFeatureLayer = L.geoJSON(feature, {
 					style: featureStyle,
-					onEachFeature: (feature, layer) => {
-						layer.bindPopup(feature.properties.name);
-					},
 					pointToLayer: (feature, latlng) => {
 						return L.circleMarker(latlng, constants.MAP_POINT_MARKER_OPTIONS);
 					}
