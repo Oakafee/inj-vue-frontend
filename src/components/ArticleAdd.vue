@@ -100,8 +100,7 @@ export default {
 			'mapEditInProgress',
 		]),
 		inProgress() {
-			return false
-//			return (this.mapEditInProgress || this.newMapFeature.geometry || this.newTitle || this.newSubtitle || this.newAuthor || this.newContent)
+			return (this.mapEditInProgress || this.newMapFeature.geometry || this.newTitle || this.newSubtitle || this.newAuthor || this.newContent)
 		}
 	},
 	watch: {
@@ -166,6 +165,7 @@ export default {
 				serializedArticle = serializedBasicArticle;
 			}
 			
+			
 			axios.post(apiUrl, serializedArticle)
 				.then((response) => {
 					// handle success
@@ -180,7 +180,8 @@ export default {
 						store.commit('addNewMapFeature', {});
 					}
 					self.validationError = null;
-					self.$router.push({ path:response.data.slug, params:{ createCall:true }});
+					store.commit('editInProgress', false); //need to do this so the route change can happen
+					self.$router.push(response.data.slug);
 				})
 				.catch((error) => {
 					// handle error
