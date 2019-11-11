@@ -1,10 +1,10 @@
 <template>
 	<div class="tree-nav">
 		<li class="tree-nav__article">
-			<svg @click="showChildren = !showChildren" class="tree-nav__chevron" :class="{ 'tree-nav__chevron--open' : showChildren, 'tree-nav__chevron--show' : hasChildren }" viewBox="0 0 24 24" width="24" height="24" stroke-width="2" fill="none">
+			<svg @click="showChildren = !showChildren" class="tree-nav__chevron" :class="{ 'tree-nav__chevron--open' : showChildren, 'tree-nav__chevron--show' : hasChildren }" viewBox="0 0 24 24" stroke-width="2" fill="none">
 				<polyline points="9 18 15 12 9 6"></polyline>
 			</svg>
-			<router-link :to="parentArticle.slug">{{ parentArticle.title }}</router-link>
+			<router-link :to="parentArticle.slug" class="tree-nav__link">{{ parentArticle.title }}</router-link>
 		</li>
 		<ul v-for="child in childrenArticles" class="tree-nav__children" :class="{ 'tree-nav__children--show' : showChildren }" :key="child.pk">
 			<TreeNav :parentArticle="child" :articles="articles" />
@@ -14,8 +14,6 @@
 
 <script>
 import { mapState } from 'vuex';
-
-import store from '../store';
 import TreeNav from "./TreeNav";
 
 export default {
@@ -46,11 +44,11 @@ export default {
 			if (this.childrenArticles.length === 0) return false;
 			return true;
 		}
-    },
-    watch: {
-    	$route() {
-    		this.showChildren = false;
-    	}
+	},
+	watch: {
+		$route() {
+			this.showChildren = false;
+		}
     }
 }
 </script>
@@ -59,7 +57,10 @@ export default {
 @import '../settings.scss';
 
 .tree-nav {
-	font-size: 15pt;
+	font-size: $font-size-quaternary;
+	@media(min-width: $media-break) {
+		font-size: $font-size-tertiary;
+	}
 	&__chevron {
 		cursor: pointer;
 		transition: transform 0.2s;
@@ -69,6 +70,9 @@ export default {
 		position: absolute;
 		left: -3 * $spacing;
 		height: 3*$spacing;
+		@media(min-width: $media-break) {
+			width: 24px;
+		}
 		&--open {
 			transform: rotate(0.25turn);
 		}
@@ -77,8 +81,16 @@ export default {
 		}
 	}
 	&__article {
-		padding-bottom: $spacing;
+		padding-bottom: 2*$spacing;
 		position: relative; //this is for the absolute positioning of the chevron
+		@media(min-width:$media-break) {
+			padding-bottom: $spacing;
+		}
+	}
+	&__link {
+		@media(max-width:$media-break) {
+			padding-left: $spacing;
+		}
 	}
 	&__children {
 		padding-left: 2 * $spacing;

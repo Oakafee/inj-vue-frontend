@@ -11,6 +11,7 @@ body {
 p {
 	line-height: 1.5;
 	font-size: $font-size-primary;
+	word-break: break-all;
 	@media(min-width: $media-break) {
 		line-height: 1.7;
 	}
@@ -131,4 +132,17 @@ a { color: $color-primary; } // this is a little ugly?
 		pointer-events: none;
 		z-index: 1;
 	}
+}
+
+// Classes to add inline
+.inj-article-img {
+	width: 100%;
+}
+
+.inj-article-table {
+	@media(max-width:$media-break) {
+		width: 0;
+		// idk why I'm doing this tbh
+	}
+	// container div around table
 }

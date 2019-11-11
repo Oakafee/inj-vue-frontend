@@ -4,7 +4,7 @@
 			class="filter-nav__input inj-text-input"
 			type="text"
 			v-model="filterInput"
-			placeholder="Filter articles"
+			placeholder="Find articles"
 		/>
 		<ul
 			class="filter-nav__results"
@@ -22,8 +22,6 @@
 
 <script>
 import { mapState } from 'vuex';
-
-import store from '../store';
 
 export default {
 	name: 'FilterNav',

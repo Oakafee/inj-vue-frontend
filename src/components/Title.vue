@@ -22,7 +22,6 @@
 import { mapState } from 'vuex';
 
 import constants from '../constants';
-import functions from '../functions';
 import store from '../store.js';
 
 export default {
