@@ -34,9 +34,13 @@ router.beforeEach((to, from, next) => {
 	//TODO: improve this second condition
 		store.commit('saveDialogIntervention', to);
 		changeRoute = false;
-	}
-	if (changeRoute && store.state.articleMapExpanded) {
-		store.commit('toggleArticleMapSize', false);
+	} else {
+		if (store.state.articleMapExpanded) {
+			store.commit('toggleArticleMapSize', false);
+		}
+		if (store.state.editableArticle) {
+			store.commit('editArticle', null);
+		}
 	}
 	next(changeRoute);
 });
