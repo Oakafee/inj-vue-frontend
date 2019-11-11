@@ -46,6 +46,11 @@ export default {
 			if (this.childrenArticles.length === 0) return false;
 			return true;
 		}
+    },
+    watch: {
+    	$route() {
+    		this.showChildren = false;
+    	}
     }
 }
 </script>
