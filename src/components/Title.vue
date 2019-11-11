@@ -1,14 +1,12 @@
 <template>
 <header class="inj-header">
-	<div class="inj-header__left">
-		<router-link to="/">
-			<img :src="capSrc" class="inj-header__img" />
-			<img :src="sealSrc" class="inj-header__img--desktop" />
-		</router-link>
-	</div>
-	<div class="inj-header__center">
+	<router-link to="/" class="inj-header__left">
+		<img :src="capSrc" class="inj-header__img" />
+		<img :src="sealSrc" class="inj-header__img--desktop" />
+	</router-link>
+	<router-link to="/" class="inj-header__center">
 		<h1 class="inj-header__title">Interpretation of<wbr /> New Jersey </h1>
-	</div>
+	</router-link>
 	<div class="inj-header__right">
 		<svg class="inj-header__img inj-header__menu" :class="{ 'inj-header__menu--open' : mobileNavOpen }" @click="toggleNav()" viewBox="0 0 24 24" width="32" height="32" stroke-width="2">
 			<line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
