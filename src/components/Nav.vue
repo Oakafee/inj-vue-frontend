@@ -1,15 +1,25 @@
 <template>
 	<nav class="inj-nav" :class="{ 'inj-nav--mobile-open' : mobileNavOpen, 'inj-nav--show' : articleList, 'inj-nav--offset' : articleMapExpanded }">
-		<div class="inj-nav__add"><router-link to="new-article">
-			<button class="inj-button">+ Add Article</button>
-		</router-link></div>
+		<LoginNav />
+		<div class="inj-nav__row">
+			<button
+				v-if="authToken"
+				class="inj-button inj-button--full-width"
+				@click="addArticle"
+			>+ Add Article </button>
+			<button
+				v-else-if="!loginFormOpen"
+				class="inj-button inj-button--full-width"
+				@click="login"
+			>Log in </button>
+		</div>
 		<div class="inj-nav__tree">
 			<div v-if="!articleList[0]">Loading...</div>
 			<ul class="inj-nav__tree-cat" v-for="article in mainCatArticles" :key="article.pk">
 				<TreeNav :parentArticle="article" />	
 			</ul>
 		</div>
-		<FilterNav />
+		<FilterNav class="inj-nav__row" />
 	</nav>
 </template>
 
@@ -19,23 +29,20 @@ import { mapState } from 'vuex';
 import functions from '../functions';
 import store from '../store';
 
+import LoginNav from './LoginNav';
 import TreeNav from './TreeNav';
 import FilterNav from './FilterNav';
 
 export default {
 	name: 'Nav',
-	components: { TreeNav, FilterNav },
-	data: function () {
-		return {
-			// articles: '',
-			// mainCatArticles: [],
-		}
-	},
+	components: { LoginNav, TreeNav, FilterNav },
 	computed: {
 		...mapState([
 			'mobileNavOpen',
 			'articleList',
-			'articleMapExpanded'
+			'articleMapExpanded',
+			'authToken',
+			'loginFormOpen'
 		]),
 		mainCatArticles() {
 			let mains = [];
@@ -52,6 +59,14 @@ export default {
 	},
 	mounted() {
 		functions.getArticleList();
+	},
+	methods: {
+		addArticle() {
+			this.$router.push('new-article');
+		},
+		login() {
+			store.commit('toggleLoginForm', true);
+		},
 	}
 }
 </script>
@@ -92,8 +107,8 @@ export default {
 	@media(min-width: $media-break) {
 		max-width: 20%;
 	}
-	&__add {
-		padding-bottom: 2 * $spacing;
+	&__row {
+		padding: 0 2*$spacing 2*$spacing 2*$spacing;
 	}
 	&__tree {
 		padding-bottom: 2 * $spacing;

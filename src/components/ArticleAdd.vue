@@ -1,67 +1,71 @@
 <template>
-<div class="inj-article">
-<div class="inj-article__content">
-<h1 class="inj-article__title-area">Add New Article </h1>
-<p>Please add your own new interpretive article, from your own personal perspective. </p>
-<ArticleMap :editable="mapEditable" class="inj-add__form-element" />
-<form id="injAddArticle">
-	<input
-		type="text"
-		class="inj-text-input inj-add__form-element"
-		:class="{ 'inj-text-input-error' : validationError.field === 'title' }"
-		placeholder="Title*"
-		v-model="newTitle"
-	/>
-	<input
-		type="text"
-		class="inj-text-input inj-add__form-element"
-		placeholder="Subtitle"
-		v-model="newSubtitle"
-	/>
-	<input
-		type="text"
-		class="inj-text-input inj-add__form-element"
-		:class="{ 'inj-text-input-error' : validationError.field === 'title' }"
-		placeholder="Author*"
-		v-model="newAuthor"
-	/>
-	<div class="inj-add__form-element">
-		<label for="selectParent">Parent: </label>
-		<select 
-			class="inj-select inj-add__parent-select"
-			:class="{ 'inj-select-error' : validationError.field === 'parent' }"
-			id="selectParent"
-			@input="selectParent"
-		>
-			<option value="null" disabled :selected="!newParent">Parent article: </option>
-			<option
-				v-for="parent in articleList"
-				:value="parent.pk"
-				:key="parent.pk"
-				:selected="newParent === parent.pk"
-			>
-				{{ parent.title }}
-			</option>
-		</select>
-	</div>
-	<p>You can add plain text, or use HTML tags for formatting. </p>
-	<textarea
-		class="inj-textarea inj-add__form-element inj-add__content"
-		:class="{ 'inj-textarea-error' : validationError.field === 'content' }"
-		placeholder="Add your interpretation*" 
-		v-model="newContent"
-	/>
-	<p class="inj-text-error" v-if="validationError.message">{{ validationError.message }}  </p>
-	<input
-		type="submit"
-		class="inj-button"
-		:class="{ 'inj-button-error' : validationError.message }"
-		@click="submitNewArticleForm()"
-	/>
-</form>
+	<div class="inj-article">
+		<div v-if="authToken" class="inj-article__content">
+			<h1 class="inj-article__title-area">Add New Article </h1>
+			<p>Please add your own new interpretive article, from your own personal perspective. </p>
+			<ArticleMap :editable="mapEditable" class="inj-form-element" />
+			<form id="injAddArticle">
+				<input
+					type="text"
+					class="inj-text-input inj-text-input--full-width inj-form-element"
+					:class="{ 'inj-text-input-error' : validationError.field === 'title' }"
+					placeholder="Title*"
+					v-model="newTitle"
+				/>
+				<input
+					type="text"
+					class="inj-text-input inj-text-input--full-width inj-form-element"
+					placeholder="Subtitle"
+					v-model="newSubtitle"
+				/>
+				<input
+					type="text"
+					class="inj-text-input inj-text-input--full-width inj-form-element"
+					:class="{ 'inj-text-input-error' : validationError.field === 'title' }"
+					placeholder="Author*"
+					v-model="newAuthor"
+				/>
+				<div class="inj-form-element">
+					<label for="selectParent">Parent: </label>
+					<select 
+						class="inj-select inj-add__parent-select"
+						:class="{ 'inj-select-error' : validationError.field === 'parent' }"
+						id="selectParent"
+						@input="selectParent"
+					>
+						<option value="null" disabled :selected="!newParent">Parent article: </option>
+						<option
+							v-for="parent in articleList"
+							:value="parent.pk"
+							:key="parent.pk"
+							:selected="newParent === parent.pk"
+						>
+							{{ parent.title }}
+						</option>
+					</select>
+				</div>
+				<p>You can add plain text, or use HTML tags for formatting. </p>
+				<textarea
+					class="inj-textarea inj-form-element inj-add__content"
+					:class="{ 'inj-textarea-error' : validationError.field === 'content' }"
+					placeholder="Add your interpretation*" 
+					v-model="newContent"
+				/>
+				<p class="inj-text-error" v-if="validationError.message">{{ validationError.message }}  </p>
+				<div class="inj-form-submit-button">
+					<input
+						type="submit"
+						value="Add Article"
+						class="inj-button"
+						:class="{ 'inj-button-error' : validationError.message }"
+						@click="submitNewArticleForm()"
+					/>
+				</div>
+			</form>
 	
-</div>
-</div>
+		</div>
+		<div v-else><p>To submit an article, please log in or sign up. </p></div>
+	</div>
 </template>
 
 <script>
@@ -98,6 +102,7 @@ export default {
 			'articleMapFeature',
 			'newMapFeature',
 			'mapEditInProgress',
+			'authToken'
 		]),
 		inProgress() {
 			return (this.mapEditInProgress || this.newMapFeature.geometry || this.newTitle || this.newSubtitle || this.newAuthor || this.newContent)
@@ -200,11 +205,6 @@ export default {
 @import '../settings.scss';
 
 .inj-add {
-	&__form-element {
-		display: block;
-		width: 100%;
-		margin-bottom: 2 * $spacing;
-	}
 	&__content {
 		height: 300px;
 	}

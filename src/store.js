@@ -23,6 +23,8 @@ const store = new Vuex.Store({
 		interruptedRoute: null,
 		mapEditInProgress: false,
 		editInProgress: false,
+		authToken: null,
+		loginFormOpen: false
 	},
 	mutations: {
 		toggleMobileNav (state, navStatus) {
@@ -100,6 +102,17 @@ const store = new Vuex.Store({
 		},
 		editInProgress(state, editing) {
 			state.editInProgress = editing;
+		},
+		storeAuthToken(state, token) {
+			state.authToken = token;
+			if (token) {
+				if (state.loginFormOpen) {
+					state.loginFormOpen = false
+				}
+			}
+		},
+		toggleLoginForm(state, formToggle) {
+			state.loginFormOpen = formToggle
 		}
 	}
 });

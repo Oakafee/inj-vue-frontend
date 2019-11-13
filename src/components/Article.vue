@@ -113,6 +113,7 @@ export default {
 			'mapFeaturesList',
 			'mapEditInProgress',
 			'editInProgress',
+			'authToken'
 		]),
 		formattedPubDate() {
 			let pubDate = new Date(this.articleDetail.pub_date);
@@ -189,23 +190,27 @@ export default {
 				this.validationError = 'No changes detected';
 				return;
 			}
-			
-			axios.patch(apiUrl, serializedChanges)
-				.then((response) => {
-					// handle success
-					// update geo info on HomeMap
-					self.updateMapFeatureInList(response.data);
-					functions.resetMapFeature(response.data, self.newMapFeature);
-					//functions.clearNewMapFeature(self.newMapFeature);
-					//store.commit('getArticleDetail', response.data);
-					//store.commit('editArticle', null);
-					self.editedContent = null;
-					self.validationError = null;
-				})
-				.catch((error) => {
-					// handle error
-					self.validationError = 'server error: ' + error;
-				});
+			axios({
+				method: 'patch',
+				url: apiUrl,
+				headers: {'Authorization': `Token ${self.authToken}`},
+				data: serializedChanges
+			})
+			.then((response) => {
+				// handle success
+				// update geo info on HomeMap
+				self.updateMapFeatureInList(response.data);
+				functions.resetMapFeature(response.data, self.newMapFeature);
+				//functions.clearNewMapFeature(self.newMapFeature);
+				//store.commit('getArticleDetail', response.data);
+				//store.commit('editArticle', null);
+				self.editedContent = null;
+				self.validationError = null;
+			})
+			.catch((error) => {
+				// handle error
+				self.validationError = 'server error: ' + error;
+			});
 		},
 		deleteArticle() {
 			let apiUrl = constants.API_BASE_URL + constants.API_PATH + this.slug + '/';

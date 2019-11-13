@@ -53,7 +53,7 @@ export default {
 		axios({
 			method: 'get',
 			url: apiUrl,
-			headers: {'Authorization': 'Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b'}
+			//headers: {'Authorization': 'Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b'}
 		})
 		.then((response) => {
 				// handle success

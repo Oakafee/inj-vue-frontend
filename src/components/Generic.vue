@@ -6,9 +6,7 @@
 
 export default {
 	name: 'Generic',
-	props: {
-		msg: String
-	},
+	props: ['prop'],
 	data: function () {
 		return {
 			map: '',

@@ -41,6 +41,9 @@ router.beforeEach((to, from, next) => {
 		if (store.state.editableArticle) {
 			store.commit('editArticle', null);
 		}
+		if (store.state.loginFormOpen) {
+			store.commit('toggleLoginForm', false);
+		}
 	}
 	next(changeRoute);
 });

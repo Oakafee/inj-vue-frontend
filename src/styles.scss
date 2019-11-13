@@ -78,6 +78,9 @@ a { color: $color-primary; } // this is a little ugly?
 	&.inj-button-small {
 		font-size: $font-size-secondary;
 	}
+	&--full-width {
+		width: 100%;
+	}
 }
 
 .inj-button-row .inj-button {
@@ -95,6 +98,9 @@ a { color: $color-primary; } // this is a little ugly?
 	font-size: $font-size-primary;
 	&.inj-text-input-error {
 		border-color: $color-quaternary;
+	}
+	&--full-width {
+		width: 100%;
 	}
 }
 
@@ -119,6 +125,16 @@ a { color: $color-primary; } // this is a little ugly?
 
 .inj-text-error {
 	color: $color-quaternary;
+}
+
+.inj-form {
+	&-element {
+		display: block;
+		margin-bottom: 2 * $spacing;
+	}
+	&-submit-button {
+		text-align: right;
+	}
 }
 
 // Transitions:

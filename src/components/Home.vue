@@ -1,8 +1,8 @@
 <template>
 <div class="inj-home">
 	<div class="inj-home__title-area">
-		<h1>Welcome </h1>
-		<p>The goal of this website is to contribute to our understanding, appreciation, and love of the Garden State. </p>
+		<h2>Welcome </h2>
+		<p class="inj-home__welcome-text">The goal of this website is to contribute to our understanding, appreciation, and love of the Garden State. </p>
 	</div>
 	<div class="inj-home__map-row">
 		<HomeMap />
@@ -35,10 +35,13 @@ export default {
 	&__title-area {
 		text-align: center;
 	}
+	&__welcome-text {
+		margin: 0 0 7px 0;
+		// this is to be equal to the side spacing with the nav, based on something with the line height
+	}
 	&__map-row {
 		@media(min-width:$large-break) {
 			display: flex;
-			padding-right: 2*$spacing;
 		}
 	}
 }

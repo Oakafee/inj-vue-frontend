@@ -1,7 +1,7 @@
 <template>
 	<div class="filter-nav">
 		<input
-			class="filter-nav__input inj-text-input"
+			class="inj-text-input inj-text-input--full-width"
 			type="text"
 			v-model="filterInput"
 			placeholder="Find articles"
@@ -61,11 +61,8 @@ export default {
 @import '../settings.scss';
 
 .filter-nav {
-	&__input {
-		margin-left: $spacing;
-	}
 	&__results {
-		padding: $spacing;
+		padding-top: $spacing;
 		height: 200px;
 		overflow-y: scroll;
 		opacity: 1;
