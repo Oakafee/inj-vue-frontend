@@ -1,6 +1,6 @@
 <template>
 	<div class="inj-article">
-		<div v-if="authToken" class="inj-article__content">
+		<div v-if="user.id" class="inj-article__content">
 			<h1 class="inj-article__title-area">Add New Article </h1>
 			<p>Please add your own new interpretive article, from your own personal perspective. </p>
 			<ArticleMap :editable="mapEditable" class="inj-form-element" />
@@ -18,6 +18,7 @@
 					placeholder="Subtitle"
 					v-model="newSubtitle"
 				/>
+				<!--
 				<input
 					type="text"
 					class="inj-text-input inj-text-input--full-width inj-form-element"
@@ -25,6 +26,7 @@
 					placeholder="Author*"
 					v-model="newAuthor"
 				/>
+				-->
 				<div class="inj-form-element">
 					<label for="selectParent">Parent: </label>
 					<select 
@@ -102,7 +104,8 @@ export default {
 			'articleMapFeature',
 			'newMapFeature',
 			'mapEditInProgress',
-			'authToken'
+			'authToken',
+			'user'
 		]),
 		inProgress() {
 			return (this.mapEditInProgress || this.newMapFeature.geometry || this.newTitle || this.newSubtitle || this.newAuthor || this.newContent)
@@ -134,9 +137,6 @@ export default {
 			} else if (!this.newParent) {
 				this.validationError.field = "parent";
 				this.validationError.message = "Please select a parent article";
-			} else if (!this.newAuthor) {
-				this.validationError.field = "author";
-				this.validationError.message = "Author is required";
 			} else if (!this.newContent) {
 				this.validationError.field = "content"
 				this.validationError.message = 'Please enter some content';
@@ -156,8 +156,8 @@ export default {
 			let serializedBasicArticle = {
 				"title": this.newTitle,
 				"subtitle": this.newSubtitle,
-				"author": this.newAuthor,
-				"contributor": 1,
+				//"author": `${this.user.first_name} ${this.user.last_name}`,
+				"contributor": this.user.id,
 				"article_content": this.newContent,
 				"parent": this.newParent
 			}
@@ -171,31 +171,36 @@ export default {
 			}
 			
 			
-			axios.post(apiUrl, serializedArticle)
-				.then((response) => {
-					// handle success
-					//store.commit('getArticleDetail', response.data);
-					store.commit('addArticleToList', response.data);
-					// should I check for mapFeaturesList.features here or in the store?
-					if (response.data.geo_coordinates && this.mapFeaturesList.features) {
-						let newFeature = functions.structureGeoJsonForMap(response.data);
-						store.commit('addMapFeatureToList', newFeature);
-					}
-					if(self.newMapFeature.geometry) {
-						store.commit('addNewMapFeature', {});
-					}
-					self.validationError = null;
-					store.commit('editInProgress', false); //need to do this so the route change can happen
-					self.$router.push(response.data.slug);
-				})
-				.catch((error) => {
-					// handle error
-					console.log(error);
-					if (error.response) {
-						self.validationError.message = 'server error: ' + error.response.data.title;
-					}
-					return error;
-				});
+			axios({
+				method: 'post',
+				url: apiUrl,
+				headers: functions.authHeader(self.authToken),
+				data: serializedArticle
+			})
+			.then((response) => {
+				// handle success
+				//store.commit('getArticleDetail', response.data);
+				store.commit('addArticleToList', response.data);
+				// should I check for mapFeaturesList.features here or in the store?
+				if (response.data.geo_coordinates && this.mapFeaturesList.features) {
+					let newFeature = functions.structureGeoJsonForMap(response.data);
+					store.commit('addMapFeatureToList', newFeature);
+				}
+				if(self.newMapFeature.geometry) {
+					store.commit('addNewMapFeature', {});
+				}
+				self.validationError = null;
+				store.commit('editInProgress', false); //need to do this so the route change can happen
+				self.$router.push(response.data.slug);
+			})
+			.catch((error) => {
+				// handle error
+				console.log(error);
+				if (error.response) {
+					self.validationError.message = 'server error: ' + error.response.data.title;
+				}
+				return error;
+			});
 		}
 	}
 }

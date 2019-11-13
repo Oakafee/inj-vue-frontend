@@ -13,7 +13,6 @@ const store = new Vuex.Store({
 		articleDetail: {},
 		articleMapFeature: {},
 		articleCommentary: [],
-		editPermission: true,
 		editableArticle: null,
 		// is this below being used?
 		editMapFeature: false,
@@ -24,6 +23,7 @@ const store = new Vuex.Store({
 		mapEditInProgress: false,
 		editInProgress: false,
 		authToken: null,
+		user: {},
 		loginFormOpen: false
 	},
 	mutations: {
@@ -110,6 +110,9 @@ const store = new Vuex.Store({
 					state.loginFormOpen = false
 				}
 			}
+		},
+		getUserInfo(state, user) {
+			state.user = user;
 		},
 		toggleLoginForm(state, formToggle) {
 			state.loginFormOpen = formToggle

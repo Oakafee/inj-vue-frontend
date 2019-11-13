@@ -3,7 +3,7 @@
 		<LoginNav />
 		<div class="inj-nav__row">
 			<button
-				v-if="authToken"
+				v-if="user.id"
 				class="inj-button inj-button--full-width"
 				@click="addArticle"
 			>+ Add Article </button>
@@ -41,7 +41,7 @@ export default {
 			'mobileNavOpen',
 			'articleList',
 			'articleMapExpanded',
-			'authToken',
+			'user',
 			'loginFormOpen'
 		]),
 		mainCatArticles() {

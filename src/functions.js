@@ -148,5 +148,22 @@ export default {
 	editInProgress(editing) {
 		if (editing) store.commit('editInProgress', true)
 		else store.commit('editInProgress', false);	
+	},
+	authHeader(token) {
+		return {'Authorization': `Token ${token}`}
+	},
+	getUserInfo(username, authToken) {
+		axios({
+			method: 'get',
+			url: `${constants.API_BASE_URL}users/${username}/`,
+			headers: this.authHeader(authToken),
+		})
+		.then((response) => {
+			store.commit('getUserInfo', response.data);
+		})
+		.catch((error) => {
+			// handle error
+			console.log("couldn't get user info: " + error);
+		});
 	}
 }

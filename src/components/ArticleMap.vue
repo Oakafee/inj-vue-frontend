@@ -101,7 +101,7 @@ import InjModal from './InjModal';
 export default {
 	name: 'ArticleMap',
 	components: { InjModal },
-	props: ['editable'],
+	props: ['editable', 'editPermission'],
 	data: function () {
 		return {
 			map: '',
@@ -122,7 +122,6 @@ export default {
 		...mapState({
 			feature: 'articleMapFeature',
 			newMapFeature: 'newMapFeature',
-			editPermission: 'editPermission',
 			geoCategories: 'geoCategories',
 			mapExpanded: 'articleMapExpanded'
 		}),

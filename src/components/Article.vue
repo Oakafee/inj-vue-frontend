@@ -1,6 +1,6 @@
 <template>
 	<div class="inj-article">
-	<ArticleMap :editable="editable" />
+	<ArticleMap :editable="editable" :editPermission="editPermission" />
 		<div class="inj-article__content" v-if="articleDetail.pk">
 			<div class="inj-article__title-area">
 				<ArticleBreadcrumbs />
@@ -106,18 +106,21 @@ export default {
 	computed: {
 		...mapState([
 			'articleDetail',
-			'editPermission',
 			'editableArticle',
 			'articleMapFeature',
 			'newMapFeature',
 			'mapFeaturesList',
 			'mapEditInProgress',
 			'editInProgress',
-			'authToken'
+			'authToken',
+			'user'
 		]),
 		formattedPubDate() {
 			let pubDate = new Date(this.articleDetail.pub_date);
 			return pubDate.toLocaleString('default', constants.DATE_FORMAT);
+		},
+		editPermission() {
+			return this.articleDetail.contributor === this.user.id;
 		},
 		editable() {
 			return this.editableArticle === this.articleDetail.slug;
@@ -193,7 +196,7 @@ export default {
 			axios({
 				method: 'patch',
 				url: apiUrl,
-				headers: {'Authorization': `Token ${self.authToken}`},
+				headers: functions.authHeader(self.authToken),
 				data: serializedChanges
 			})
 			.then((response) => {
@@ -215,20 +218,24 @@ export default {
 		deleteArticle() {
 			let apiUrl = constants.API_BASE_URL + constants.API_PATH + this.slug + '/';
 			let self = this;
-		
-			axios.delete(apiUrl)
-				.then(() => {
-					// handle success
-					if (this.articleMapFeature.geometry && this.mapFeaturesList.features) {
-						store.commit('removeMapFeatureFromList', this.articleMapFeature)	
-					}
-					functions.resetMapFeature({}, this.newMapFeature);
-					self.$router.push({ name: 'home' });
-				})
-				.catch((error) => {
-					self.validationError = 'server error with delete: ' + error;
-					return error;
-				});
+
+			axios({
+				method: 'delete',
+				url: apiUrl,
+				headers: functions.authHeader(self.authToken),
+			})
+			.then(() => {
+				// handle success
+				if (this.articleMapFeature.geometry && this.mapFeaturesList.features) {
+					store.commit('removeMapFeatureFromList', this.articleMapFeature)	
+				}
+				functions.resetMapFeature({}, this.newMapFeature);
+				self.$router.push({ name: 'home' });
+			})
+			.catch((error) => {
+				self.validationError = 'server error with delete: ' + error;
+				return error;
+			});
 				
 			this.deleteModalOpen = false;
 		},

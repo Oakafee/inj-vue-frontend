@@ -1,8 +1,8 @@
 <template>
 	<div>
 		<div class="inj-login-nav__login-text inj-nav__row">
-			<span v-if="authToken">
-				Welcome <router-link to="user-page">Jesse Fried</router-link>,&nbsp;
+			<span v-if="user.id">
+				Welcome <router-link to="user-page">{{ user.first_name }} {{ user.last_name }}</router-link>, 
 				<a href="#" @click="logout($event)">Log out </a>
 			</span>
 			<router-link to="create-account" v-else>Create an account </router-link>
@@ -49,12 +49,13 @@ import axios from 'axios';
 import { mapState } from 'vuex';
 import store from '../store';
 import constants from '../constants';
+import functions from '../functions';
 
 export default {
 	name: 'LoginNav',
 	computed: {
 		...mapState([
-			'authToken',
+			'user',
 			'loginFormOpen'
 		]),
 	},
@@ -72,6 +73,7 @@ export default {
 		logout(event) {
 			event.preventDefault();
 			store.commit('storeAuthToken', null);
+			store.commit('getUserInfo', {});
 		},
 		submitLoginForm() {
 			if (this.loginIsValid()) this.postLoginInfo();
@@ -86,11 +88,12 @@ export default {
 				'username': this.username,
 				'password': this.password
 			}
-			//let self = this;
+			let self = this;
 			
 			axios.post(apiUrl, loginInfo)
 				.then((response) => {
-					store.commit('storeAuthToken', response.data.token)
+					store.commit('storeAuthToken', response.data.token);
+					functions.getUserInfo(self.username, response.data.token);
 				})
 				.catch((error) => {
 					console.log(error);
