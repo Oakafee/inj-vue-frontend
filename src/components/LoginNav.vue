@@ -75,11 +75,23 @@ export default {
 			},
 		}
 	},
+	mounted() {
+		let authToken = window.localStorage.getItem('authTokenINJ');
+		let username = window.localStorage.getItem('usernameINJ');
+		console.log('getting authToken and username from local storage');
+		console.log(authToken, username);
+		if (authToken && username) {
+			store.commit('storeAuthToken', authToken);
+			functions.getUserInfo(username, authToken);
+		}
+	},
 	methods: {
 		logout(event) {
 			event.preventDefault();
 			store.commit('storeAuthToken', null);
 			store.commit('getUserInfo', {});
+			window.localStorage.removeItem('authTokenINJ');
+			window.localStorage.removeItem('usernameINJ');
 		},
 		submitLoginForm() {
 			if (this.loginIsValid()) this.postLoginInfo();
@@ -108,6 +120,8 @@ export default {
 				.then((response) => {
 					store.commit('storeAuthToken', response.data.token);
 					functions.getUserInfo(self.username, response.data.token);
+					window.localStorage.setItem('authTokenINJ', response.data.token);
+					window.localStorage.setItem('usernameINJ', self.username);
 					self.validationError.field = "";
 					self.validationError.message = "";
 				})
