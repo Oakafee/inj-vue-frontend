@@ -5,6 +5,7 @@ import store from './store.js';
 import Home from './components/Home.vue';
 import Article from './components/Article.vue';
 import ArticleAdd from './components/ArticleAdd.vue';
+import CreateAccount from './components/CreateAccount.vue';
 import FourOhFour from './components/FourOhFour.vue';
 
 Vue.use(VueRouter);
@@ -14,7 +15,8 @@ const router = new VueRouter({
 	// mode: 'history',
 	routes: [
 		// dynamic segments start with a colon
-		{ path: '/new-article/', name: 'new-article', component: ArticleAdd },		
+		{ path: '/new-article/', name: 'new-article', component: ArticleAdd },
+		{ path: '/create-account/', name: 'create-account', component: CreateAccount },
 		{ path: '/:slug/', component: Article },
 		{ path: '/', name: 'home', component: Home },
 		{ path: '*', name: '404', component: FourOhFour },

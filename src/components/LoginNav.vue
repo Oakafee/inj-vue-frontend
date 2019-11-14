@@ -78,8 +78,6 @@ export default {
 	mounted() {
 		let authToken = window.localStorage.getItem('authTokenINJ');
 		let username = window.localStorage.getItem('usernameINJ');
-		console.log('getting authToken and username from local storage');
-		console.log(authToken, username);
 		if (authToken && username) {
 			store.commit('storeAuthToken', authToken);
 			functions.getUserInfo(username, authToken);
