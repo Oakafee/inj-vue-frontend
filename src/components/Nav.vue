@@ -1,7 +1,7 @@
 <template>
 	<nav class="inj-nav" :class="{ 'inj-nav--mobile-open' : mobileNavOpen, 'inj-nav--show' : articleList, 'inj-nav--offset' : articleMapExpanded }">
 		<LoginNav />
-		<div class="inj-nav__row">
+		<div class="inj-nav__row inj-nav__row--bottom">
 			<button
 				v-if="user.id"
 				class="inj-button inj-button--full-width"
@@ -108,7 +108,10 @@ export default {
 		max-width: 20%;
 	}
 	&__row {
-		padding: 0 2*$spacing 2*$spacing 2*$spacing;
+		padding: 0 2*$spacing;
+		&.inj-nav__row--bottom {
+			padding-bottom: 2*$spacing;
+		}
 	}
 	&__tree {
 		padding-bottom: 2 * $spacing;

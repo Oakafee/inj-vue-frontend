@@ -1,30 +1,19 @@
 <template>
 	<div>
 		<div class="inj-login-nav__login-text inj-nav__row">
-			<span v-if="user.id">
+			<p v-if="user.id">
 				Welcome <router-link to="user-page">{{ user.first_name }} {{ user.last_name }}</router-link>, 
 				<a href="#" @click="logout($event)">Log out </a>
-			</span>
-			<router-link to="create-account" v-else>Create an account </router-link>
+			</p>
+			<p v-else-if="!loginFormOpen"><router-link to="create-account">Create an account</router-link> to add or comment </p>
 		</div>
 		<form 
 			class="inj-login-nav__form inj-nav__row"
 			:class="{ 'inj-login-nav__form--hidden': !loginFormOpen }"
 			id="loginForm"
 		>
-			<input
-				type="text"
-				class="inj-text-input inj-text-input--full-width inj-form-element"
-				placeholder="Username"
-				v-model="username"
-			/>
-			<input
-				type="password"
-				class="inj-text-input inj-text-input--full-width inj-form-element"
-				placeholder="Password"
-				v-model="password"
-			/>
-			<div class="inj-login-nav__submit-row">
+			<div class="inj-login-nav__close-row">
+				<router-link to="password-reset">Forgot password? </router-link>			
 				<svg
 					class="inj-login-nav__close"
 					@click="closeForm"
@@ -32,13 +21,30 @@
 				>
 					<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
 				</svg>
-				<input
-					type="submit"
-					value="Log in for real"
-					class="inj-form-submit-button inj-button inj-button-secondary inj-button-small"
-					:class="{ 'inj-button-error' : validationError.message }"
-					@click="submitLoginForm()"
-				/>
+			</div>
+			<input
+				type="text"
+				class="inj-text-input inj-text-input--full-width inj-form-element"
+				:class="{ 'inj-text-input-error' : validationError.field === 'username' }"
+				placeholder="Username"
+				v-model="username"
+			/>
+			<input
+				type="password"
+				class="inj-text-input inj-text-input--full-width inj-form-element"
+				:class="{ 'inj-text-input-error' : validationError.field === 'password' }"
+				placeholder="Password"
+				v-model="password"
+			/>
+			<div class="inj-login-nav__close-row">
+			<span class="inj-text-error">{{ validationError.message }}  </span>
+			<input
+				type="submit"
+				value="Log in"
+				class="inj-form-submit-button inj-button inj-button-secondary inj-button-small"
+				:class="{ 'inj-button-error' : validationError.message }"
+				@click="submitLoginForm()"
+			/>
 			</div>
 		</form>
 	</div>
@@ -80,7 +86,15 @@ export default {
 			// store.commit('setAuthentication', true);
 		},
 		loginIsValid() {
-			return true
+			if(!this.username) {
+				this.validationError.field = "username"
+				this.validationError.message = "Please enter a username";
+				return false;
+			} else if (!this.password) {
+				this.validationError.field = "password"
+				this.validationError.message = "Please enter your password";
+				return false;
+			} else return true;
 		},
 		postLoginInfo() {
 			let apiUrl = constants.API_BASE_URL + constants.API_LOGIN_PATH;
@@ -94,13 +108,21 @@ export default {
 				.then((response) => {
 					store.commit('storeAuthToken', response.data.token);
 					functions.getUserInfo(self.username, response.data.token);
+					self.validationError.field = "";
+					self.validationError.message = "";
 				})
 				.catch((error) => {
-					console.log(error);
+					if (error.response.status === 400) {
+						self.validationError.message = "Sorry, you're login info is incorrect";
+					} else {
+						self.validationError.message = "Server error, please try again later"
+					}
 				});
 		},
 		closeForm() {
 			store.commit('toggleLoginForm', false);
+			this.validationError.field = "";
+			this.validationError.message = "";
 		}
 	}
 }
@@ -114,7 +136,7 @@ export default {
 		margin-top: $spacing;
 	}
 	&__form {
-		height: 115px;
+		height: 175px;
 		opacity: 1;
 		transition-property: height, opacity;
 		transition-duration: $transition-time;
@@ -125,10 +147,11 @@ export default {
 			visibility: hidden;
 		}
 	}
-	&__submit-row {
+	&__close-row {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		padding-bottom: $spacing;
 	}
 	&__close {
 		width: 24px;
