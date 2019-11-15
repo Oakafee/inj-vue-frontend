@@ -59,8 +59,14 @@ a { color: $color-primary; } // this is a little ugly?
 	&:active {
 		background-color: $color-tertiary;
 	}
-	&.inj-button-error {
+	&.inj-button--error {
 		border-color: $color-quaternary;
+	}
+	&.inj-button--disabled {
+		background-color: lightgray;
+		color: gray;
+		border-color: gray;
+		pointer-events: none;
 	}
 	&.inj-button-secondary {
 		@include light-button;
@@ -135,6 +141,12 @@ a { color: $color-primary; } // this is a little ugly?
 	&-submit-button {
 		text-align: right;
 	}
+}
+
+// Page Layout:
+
+.inj__title-area {
+	text-align: center;
 }
 
 // Transitions:

@@ -3,7 +3,7 @@
 	<div v-if="serverError">{{ serverError }} </div>
 	<div v-else>
 		<h3 class="inj-featured-article__callout">Featured article</h3>
-		<div class="inj-article__title-area">
+		<div class="inj__title-area">
 			<router-link :to="slug">
 				<h2>{{ articleDetail.title }}</h2>
 			</router-link>

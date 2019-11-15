@@ -2,7 +2,7 @@
 	<div class="inj-article">
 	<ArticleMap :editable="editable" :editPermission="editPermission" />
 		<div class="inj-article__content" v-if="articleDetail.pk">
-			<div class="inj-article__title-area">
+			<div class="inj__title-area">
 				<ArticleBreadcrumbs />
 				<h1>{{ articleDetail.title }}</h1>
 				<h3 v-if="articleDetail.subtitle">{{ articleDetail.subtitle }} </h3>
@@ -35,7 +35,7 @@
 						<!-- TODO: add transition -->
 						<button class="inj-button inj-button-tertiary" @click="deleteModalOpen = true">Delete </button>
 						<button class="inj-button inj-button-secondary" @click="cancelEditing()">Cancel Edits </button>
-						<button class="inj-button" :class="{ 'inj-button-error' : validationError }" @click="submitChanges()">Submit </button>
+						<button class="inj-button" :class="{ 'inj-button--error' : validationError }" @click="submitChanges()">Submit </button>
 						<span class="inj-text-error" v-if="validationError">{{ validationError }}  </span>
 					</span>
 					<span v-else>
@@ -294,9 +294,6 @@ export default {
 	}
 	&__choose-html {
 		text-align: right;
-	}
-	&__title-area {
-		text-align: center;
 	}
 }
 	

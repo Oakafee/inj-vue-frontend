@@ -42,7 +42,7 @@
 				type="submit"
 				value="Log in"
 				class="inj-form-submit-button inj-button inj-button-secondary inj-button-small"
-				:class="{ 'inj-button-error' : validationError.message }"
+				:class="{ 'inj-button--error' : validationError.message }"
 				@click="submitLoginForm()"
 			/>
 			</div>

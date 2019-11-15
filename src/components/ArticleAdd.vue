@@ -1,7 +1,7 @@
 <template>
 	<div class="inj-article">
 		<div v-if="user.id" class="inj-article__content">
-			<h1 class="inj-article__title-area">Add New Article </h1>
+			<h1 class="inj__title-area">Add New Article </h1>
 			<p>Please add your own new interpretive article, from your own personal perspective. </p>
 			<ArticleMap :editable="mapEditable" class="inj-form-element" />
 			<form id="injAddArticle">
@@ -59,7 +59,7 @@
 						type="submit"
 						value="Add Article"
 						class="inj-button"
-						:class="{ 'inj-button-error' : validationError.message }"
+						:class="{ 'inj-button--error' : validationError.message }"
 						@click="submitNewArticleForm()"
 					/>
 				</div>

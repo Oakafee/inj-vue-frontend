@@ -1,6 +1,6 @@
 <template>
 <div class="inj-home">
-	<div class="inj-home__title-area">
+	<div class="inj__title-area">
 		<h2>Welcome </h2>
 		<p class="inj-home__welcome-text">The goal of this website is to contribute to our understanding, appreciation, and love of the Garden State. </p>
 	</div>
@@ -32,9 +32,6 @@ export default {
 @import '../settings.scss';
 
 .inj-home {
-	&__title-area {
-		text-align: center;
-	}
 	&__welcome-text {
 		margin: 0 0 7px 0;
 		// this is to be equal to the side spacing with the nav, based on something with the line height

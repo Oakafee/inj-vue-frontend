@@ -81,7 +81,7 @@
 			<p class="inj-text-error" v-if="validationError">{{ validationError }} </p>
 			<div class="inj-button-row">
 				<button class="inj-button inj-button-secondary" @click="cancelPasteData()">Cancel</button>
-				<button class="inj-button" :class="{ 'inj-button-error' : validationError }" @click="addPastedFeature()">Add</button>
+				<button class="inj-button" :class="{ 'inj-button--error' : validationError }" @click="addPastedFeature()">Add</button>
 			</div>
 		</InjModal>
 	</div>
