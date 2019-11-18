@@ -55,7 +55,9 @@
 				/>
 				<p class="inj-text-error" v-if="validationError.message">{{ validationError.message }}  </p>
 				<div class="inj-form-submit-button">
+					<span v-if="submitInProgress">Submitting article... </span>
 					<input
+						v-else
 						type="submit"
 						value="Add Article"
 						class="inj-button"
@@ -95,6 +97,7 @@ export default {
 				"field": "",
 				"message": "",
 			},
+			submitInProgress: false,
 		}
 	},
 	computed: {
@@ -170,7 +173,7 @@ export default {
 				serializedArticle = serializedBasicArticle;
 			}
 			
-			
+			this.submitInProgress = true;
 			axios({
 				method: 'post',
 				url: apiUrl,
@@ -179,6 +182,7 @@ export default {
 			})
 			.then((response) => {
 				// handle success
+				self.submitInProgress = false;
 				//store.commit('getArticleDetail', response.data);
 				store.commit('addArticleToList', response.data);
 				// should I check for mapFeaturesList.features here or in the store?
@@ -195,6 +199,7 @@ export default {
 			})
 			.catch((error) => {
 				// handle error
+				self.submitInProgress = false;
 				console.log(error);
 				if (error.response) {
 					self.validationError.message = 'server error: ' + error.response.data.title;

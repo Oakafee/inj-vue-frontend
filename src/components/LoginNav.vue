@@ -37,14 +37,16 @@
 				v-model="password"
 			/>
 			<div class="inj-form__button-row">
-			<span class="inj-text-error">{{ validationError.message }}  </span>
-			<input
-				type="submit"
-				value="Log in"
-				class="inj-form-submit-button inj-button inj-button-secondary inj-button-small"
-				:class="{ 'inj-button--error' : validationError.message }"
-				@click="submitLoginForm()"
-			/>
+				<span class="inj-text-error">{{ validationError.message }}  </span>
+				<span v-if="submitInProgress">Logging in... </span>
+				<input
+					v-else
+					type="submit"
+					value="Log in"
+					class="inj-form-submit-button inj-button inj-button-secondary inj-button-small"
+					:class="{ 'inj-button--error' : validationError.message }"
+					@click="submitLoginForm()"
+				/>
 			</div>
 		</form>
 	</div>
@@ -73,6 +75,7 @@ export default {
 				"field": "",
 				"message": "",
 			},
+			submitInProgress: false,
 		}
 	},
 	mounted() {
@@ -112,10 +115,12 @@ export default {
 				'username': this.username,
 				'password': this.password
 			}
+			this.submitInProgress = true;
 			let self = this;
 			
 			axios.post(apiUrl, loginInfo)
 				.then((response) => {
+					this.submitInProgress = false;
 					store.commit('storeAuthToken', response.data.token);
 					functions.getUserInfo(self.username, response.data.token);
 					window.localStorage.setItem('authTokenINJ', response.data.token);
@@ -124,6 +129,7 @@ export default {
 					self.validationError.message = "";
 				})
 				.catch((error) => {
+					this.submitInProgress = false;
 					if (error.response.status === 400) {
 						self.validationError.message = "Sorry, you're login info is incorrect";
 					} else {

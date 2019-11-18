@@ -234,7 +234,7 @@ export default {
 			})
 			.catch((error) => {
 				self.validationError.field = '';
-				if (error.response.status=400) {
+				if (error.response.status === 400) {
 					if (error.response.data.username) {
 						self.validationError.message = error.response.data.username;
 					} else {

@@ -30,7 +30,8 @@
 			</div>
 			
 			<div v-if="editPermission" class="inj-article__edit-button-row">
-				<div class="inj-button-row">
+				<div v-if="submitInProgress">Saving changes... </div>
+				<div v-else class="inj-button-row">
 					<span v-if="editable">
 						<!-- TODO: add transition -->
 						<button class="inj-button inj-button-tertiary" @click="deleteModalOpen = true">Delete </button>
@@ -87,6 +88,7 @@ export default {
 			htmlTags: false,
 			validationError: null,
 			deleteModalOpen: false,
+			submitInProgress: false,
 		}
 	},
 	mounted() {
@@ -172,6 +174,7 @@ export default {
 		sendChangedInfo() {
 			let apiUrl = constants.API_BASE_URL + constants.API_PATH + this.slug + '/';
 			let serializedChanges = {};
+			this.submitInProgress = true;
 			let self = this;
 			
 			// added first condition, because even if you delete the feature, newMapFeature should still have geometry
@@ -201,6 +204,7 @@ export default {
 			})
 			.then((response) => {
 				// handle success
+				self.submitInProgress = false;
 				// update geo info on HomeMap
 				self.updateMapFeatureInList(response.data);
 				functions.resetMapFeature(response.data, self.newMapFeature);
@@ -212,6 +216,7 @@ export default {
 			})
 			.catch((error) => {
 				// handle error
+				self.submitInProgress = false;
 				self.validationError = 'server error: ' + error;
 			});
 		},
