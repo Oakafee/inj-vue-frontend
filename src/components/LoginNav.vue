@@ -12,7 +12,7 @@
 			:class="{ 'inj-login-nav__form--hidden': !loginFormOpen }"
 			id="loginForm"
 		>
-			<div class="inj-login-nav__close-row">
+			<div class="inj-form__button-row">
 				<router-link to="password-reset">Forgot password? </router-link>			
 				<svg
 					class="inj-login-nav__close"
@@ -36,7 +36,7 @@
 				placeholder="Password"
 				v-model="password"
 			/>
-			<div class="inj-login-nav__close-row">
+			<div class="inj-form__button-row">
 			<span class="inj-text-error">{{ validationError.message }}  </span>
 			<input
 				type="submit"
@@ -158,12 +158,6 @@ export default {
 			padding-bottom: 0;
 			visibility: hidden;
 		}
-	}
-	&__close-row {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding-bottom: $spacing;
 	}
 	&__close {
 		width: 24px;

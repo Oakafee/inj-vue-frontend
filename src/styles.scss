@@ -86,6 +86,11 @@ a { color: $color-primary; } // this is a little ugly?
 	}
 	&--full-width {
 		width: 100%;
+		&-mobile {
+			@media(max-width:$media-break) {
+				width: 100%;
+			}
+		}
 	}
 }
 
@@ -106,7 +111,8 @@ a { color: $color-primary; } // this is a little ugly?
 		border-color: $color-quaternary;
 	}
 	&--full-width {
-		width: 100%;
+		width: calc(100% - 15px);
+		
 	}
 }
 
@@ -138,8 +144,15 @@ a { color: $color-primary; } // this is a little ugly?
 		display: block;
 		margin-bottom: 2 * $spacing;
 	}
+	&__button-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding-bottom: $spacing;
+	}
 	&-submit-button {
-		text-align: right;
+		display: flex;
+		justify-content: right;
 	}
 }
 

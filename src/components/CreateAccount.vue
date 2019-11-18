@@ -1,6 +1,6 @@
 <template>
 <div class="inj-article__content">
-	<div v-if="created">
+	<div v-if="userCreated">
 		<p>You successfully created an account. Now log in! </p>
 	</div>
 	<div v-else>
@@ -35,6 +35,7 @@
 				placeholder="Create password"
 				v-model="password"
 			/>
+			<p>I won't share your email with anyone. I will only use it to send you verification codes when you create an account or if you forget your password. </p>
 			<input
 				type="text"
 				class="inj-text-input inj-text-input--full-width inj-form-element"
@@ -42,12 +43,19 @@
 				placeholder="Email address"
 				v-model="emailAddress"
 			/>
-			<div class="inj-form-submit-button inj-form-element">
+			<div class="inj-form__button-row inj-form-element">
+				<span><span v-if="emailSent === 'sent'">Verification code sent </span></span>
 				<button
-					class="inj-button"
-					:class="{ 'inj-button-secondary': emailSent }"
+					type="button"
+					class="inj-button inj-button--full-width-mobile"
+					:class="{
+						'inj-button-secondary': emailSent === 'sent',
+						'inj-button--disabled': emailSent === 'sending'
+					}"
+					:disabled="emailSent === 'sending'"
 					@click="emailVerification()">
-					<span v-if="emailSent">Re-send verification code </span>
+					<span v-if="emailSent === 'sent'">Re-send </span>
+					<span v-else-if="emailSent === 'sending'">Sending... </span>
 					<span v-else>Send verification code to email </span>
 				</button>
 			</div>
@@ -59,22 +67,27 @@
 				v-model="userCode"
 				:disabled="!emailSent"
 			/>
-			<p class="inj-text-error" v-if="validationError.message">{{ validationError.message }}</p>
-			<div class="inj-form-submit-button">
+			<div class="inj-form__button-row">
 			<!-- TODO: create class for submit button and validation error message on same line in desktop view -->
+				<p class="inj-text-error">
+					<span v-if="validationError.message">{{ validationError.message }}</span>
+					</p>
 				<input
 					type="submit"
 					value="Create account"
-					class="inj-form-submit-button inj-button"
+					class="
+						inj-form-submit-button
+						inj-button 
+						inj-button--full-width-mobile
+					"
 					:class="{
 						'inj-button--error': validationError.message,
-						'inj-button--disabled': !emailSent
+						'inj-button--disabled': emailSent !== 'sent'
 					}"
 					:disabled="!emailSent"
-					@click="submitCreateAccount()"
+					@click="createAccount()"
 				/>
 			</div>
-			<p class="inj-error-text" v-if="validationError.message">{{ validationError.message }} </p>
 		</form>
 	</div>
 </div>
@@ -96,7 +109,7 @@ export default {
 			emailAddress: '',
 			randomCode: '',
 			userCode: '',
-			emailSent: false,
+			emailSent: '',
 			validationError: {
 				'field': '',
 				'message': '',
@@ -128,6 +141,7 @@ export default {
 				'email_address': this.emailAddress,
 				'random_code': this.randomCode
 			};
+			this.emailSent = 'sending';
 			let self = this;
 			
 			axios({
@@ -137,7 +151,11 @@ export default {
 				data: JSON.stringify(emailInfo)
 			})
 			.then(() => {
-				self.emailSent = true;
+				self.emailSent = 'sent';
+				if (self.validationError.field === 'emailAddress') {
+					self.validationError.field = '';
+					self.validationError.message = '';
+				}
 			})
 			.catch((error) => {
 				self.validationError.field = 'emailAddress';
@@ -179,6 +197,9 @@ export default {
 				this.validationError.message = "Please choose a password different from your username";
 			} else return true
 		},
+		createAccount() {
+			if(this.userInfoIsValid()) this.submitCreateAccount();
+		},
 		userCodeIsValid() {
 			if(!this.userCode) {
 				this.validationError.field = "userCode";
@@ -187,7 +208,9 @@ export default {
 			} else if (this.userCode !== this.randomCode) {
 				this.validationError.field = "userCode";
 				this.validationError.message = "The code you provided does not match the code sent to your email";
+				return false;
 			}
+			return true;
 		},
 		submitCreateAccount() {
 			let apiUrl = `${constants.API_BASE_URL}users/create/`;
@@ -206,12 +229,20 @@ export default {
 				data: userInfo
 			})
 			.then((response) => {
-				self.created = true;
+				self.userCreated = true;
 				console.log(response.data);
 			})
 			.catch((error) => {
 				self.validationError.field = '';
-				self.validationError.message = error;
+				if (error.response.status=400) {
+					if (error.response.data.username) {
+						self.validationError.message = error.response.data.username;
+					} else {
+						self.validationError.message = error.response.data;
+					}
+				} else {
+					self.validationError.message = error;
+				}
 			});
 		}
 		
