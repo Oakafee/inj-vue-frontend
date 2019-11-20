@@ -13,7 +13,7 @@
 			id="loginForm"
 		>
 			<div class="inj-form__button-row">
-				<router-link to="password-reset">Forgot password? </router-link>			
+				<router-link to="reset-password">Forgot password? </router-link>			
 				<svg
 					class="inj-login-nav__close"
 					@click="closeForm"
