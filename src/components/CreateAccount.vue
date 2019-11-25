@@ -163,9 +163,7 @@ export default {
 			});
 		},
 		userInfoIsValid() {
-			if(!this.username) {
-				this.validationError.field = "username"
-				this.validationError.message = "Please enter a username";
+			if(!this.usernameIsValid) {
 				return false;
 			} else if(!this.firstName) {
 				this.validationError.field = "firstName"
@@ -181,6 +179,17 @@ export default {
 				return false;
 			} else if (!this.userCodeIsValid()) {
 				return false;
+			} else return true;		
+		},
+		usernameIsValid() {
+			if (!this.emailAddress) {
+				this.validationError.field = "username"
+				this.validationError.message = "Please enter a username";
+				return false;
+			} else if (!functions.usernameValidation(this.username)) {
+				this.validationError.field = "username"
+				this.validationError.message = "Please enter a valid username, without any weird characters";
+				return false;		
 			} else return true;		
 		},
 		passwordIsValid() {

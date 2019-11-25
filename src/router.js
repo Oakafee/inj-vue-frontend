@@ -5,6 +5,7 @@ import store from './store.js';
 import Home from './components/Home.vue';
 import Article from './components/Article.vue';
 import ArticleAdd from './components/ArticleAdd.vue';
+import Contributor from './components/Contributor.vue';
 import CreateAccount from './components/CreateAccount.vue';
 import ResetPassword from './components/ResetPassword.vue';
 import FourOhFour from './components/FourOhFour.vue';
@@ -16,6 +17,7 @@ const router = new VueRouter({
 	// mode: 'history',
 	routes: [
 		// dynamic segments start with a colon
+		{ path: '/contributor/:username', name: 'contributor', component: Contributor },
 		{ path: '/new-article/', name: 'new-article', component: ArticleAdd },
 		{ path: '/create-account/', name: 'create-account', component: CreateAccount },
 		{ path: '/reset-password/', name: 'reset-password', component: ResetPassword },

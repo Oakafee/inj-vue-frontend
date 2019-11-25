@@ -77,5 +77,6 @@ export default {
 		},
 		'position': 'topright'
 	},
-	PLEASE_LOG_IN: 'Please log in or create an account'
+	PLEASE_LOG_IN: 'Please log in or create an account',
+	NO_CONTRIBUTOR_ARTICLES: 'There are no articles associated with that contributor.'
 }
