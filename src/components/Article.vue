@@ -5,7 +5,10 @@
 			<div class="inj__title-area">
 				<ArticleBreadcrumbs />
 				<h1>{{ articleDetail.title }}</h1>
-				<h3 v-if="articleDetail.subtitle">{{ articleDetail.subtitle }} </h3>
+				<h3
+					v-if="articleDetail.subtitle"
+					class="inj-article__subtitle"
+				>{{ articleDetail.subtitle }} </h3>
 				<h4>By 
 					<router-link :to="contributorUrl">{{ contributorName }}</router-link>
 					 - {{ formattedPubDate }}</h4>
@@ -126,11 +129,13 @@ export default {
 			return `${this.articleDetail.contributor.first_name} ${this.articleDetail.contributor.last_name}`
 		},
 		formattedPubDate() {
-			let pubDate = new Date(this.articleDetail.pub_date);
-			return pubDate.toLocaleString('default', constants.DATE_FORMAT);
+			return functions.formatDate(this.articleDetail.pub_date);
 		},
 		editPermission() {
-			return this.articleDetail.contributor.id === this.user.id;
+			if (this.articleDetail.contributor) {
+				return this.articleDetail.contributor.id === this.user.id;
+			}
+			return false
 		},
 		editable() {
 			return this.editableArticle === this.articleDetail.slug;
@@ -291,6 +296,9 @@ export default {
 		display: flex;
 		justify-content: center;
 		z-index: 1001;
+	}
+	&__subtitle {
+		margin-bottom: $spacing;
 	}
 	&__content {
 		max-width: $article-content-width;

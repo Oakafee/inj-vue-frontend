@@ -2,7 +2,10 @@
 	<div>
 		<div class="inj-login-nav__login-text inj-nav__row">
 			<p v-if="user.id">
-				Welcome <router-link to="user-page">{{ user.first_name }} {{ user.last_name }}</router-link>, 
+				Welcome
+				<router-link :to="{ name: 'contributor', params: { username: user.username }}">
+					{{ `${user.first_name} ${user.last_name}` }}
+				</router-link>, 
 				<a href="#" @click="logout($event)">Log out </a>
 			</p>
 			<p v-else-if="!loginFormOpen"><router-link to="create-account">Create an account</router-link> to add or comment </p>

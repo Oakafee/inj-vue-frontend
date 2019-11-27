@@ -65,7 +65,6 @@
 				:class="{ 'inj-text-input-error' : validationError.field === 'userCode' }"
 				placeholder="Enter email verification code"
 				v-model="userCode"
-				:disabled="!emailSent"
 			/>
 			<div class="inj-form__button-row">
 			<!-- TODO: create class for submit button and validation error message on same line in desktop view -->
@@ -82,9 +81,7 @@
 					"
 					:class="{
 						'inj-button--error': validationError.message,
-						'inj-button--disabled': emailSent !== 'sent'
 					}"
-					:disabled="!emailSent"
 					@click="createAccount()"
 				/>
 			</div>
@@ -163,7 +160,7 @@ export default {
 			});
 		},
 		userInfoIsValid() {
-			if(!this.usernameIsValid) {
+			if(!this.usernameIsValid()) {
 				return false;
 			} else if(!this.firstName) {
 				this.validationError.field = "firstName"
@@ -182,7 +179,7 @@ export default {
 			} else return true;		
 		},
 		usernameIsValid() {
-			if (!this.emailAddress) {
+			if (!this.username) {
 				this.validationError.field = "username"
 				this.validationError.message = "Please enter a username";
 				return false;
@@ -237,9 +234,8 @@ export default {
 				url: apiUrl,
 				data: userInfo
 			})
-			.then((response) => {
+			.then(() => {
 				self.userCreated = true;
-				console.log(response.data);
 			})
 			.catch((error) => {
 				self.validationError.field = '';
