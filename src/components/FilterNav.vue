@@ -12,7 +12,7 @@
 		>
 			<li v-for="article in filteredArticles" :key="article.pk">
 				<router-link
-					:to="article.slug"
+					:to="{ name: 'article', params: { slug: article.slug }}"
 					tabindex="0"
 				>{{ article.title }}</router-link>
 			</li>

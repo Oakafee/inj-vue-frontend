@@ -6,7 +6,14 @@
 	<ul>
 		<li v-for="article in recentArticles" :key="article.pk">
 			<router-link :to="article.slug">{{ article.title }}</router-link>
-			<div class="inj-recent__author">by {{ article.author }}</div>
+			<div class="inj-recent__author">
+				by 
+				<router-link
+					:to="`/contributor/${article.contributor.username}`"
+				>
+					{{ `${article.contributor.first_name} ${article.contributor.last_name}` }}
+				</router-link>
+			</div>
 		</li>
 	</ul>
 </div>
@@ -52,6 +59,7 @@ export default {
 		order: 1;
 	}
 	&__author {
+		display: block;
 		font-size: 11pt;
 		font-style: italic;
 		line-height: 1;

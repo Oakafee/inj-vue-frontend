@@ -6,7 +6,9 @@
 				<ArticleBreadcrumbs />
 				<h1>{{ articleDetail.title }}</h1>
 				<h3 v-if="articleDetail.subtitle">{{ articleDetail.subtitle }} </h3>
-				<h4>By {{ articleDetail.author }} - {{ formattedPubDate }}</h4>
+				<h4>By 
+					<router-link :to="contributorUrl">{{ contributorName }}</router-link>
+					 - {{ formattedPubDate }}</h4>
 			</div>
 			<div v-if="editable" class="inj-article__edit-content">
 				<textarea class="inj-textarea" :class="{ 'inj-textarea-error' : validationError }" v-model="editedContent" />
@@ -117,12 +119,18 @@ export default {
 			'authToken',
 			'user'
 		]),
+		contributorUrl() {
+			return `/contributor/${this.articleDetail.contributor.username}`
+		},
+		contributorName() {
+			return `${this.articleDetail.contributor.first_name} ${this.articleDetail.contributor.last_name}`
+		},
 		formattedPubDate() {
 			let pubDate = new Date(this.articleDetail.pub_date);
 			return pubDate.toLocaleString('default', constants.DATE_FORMAT);
 		},
 		editPermission() {
-			return this.articleDetail.contributor === this.user.id;
+			return this.articleDetail.contributor.id === this.user.id;
 		},
 		editable() {
 			return this.editableArticle === this.articleDetail.slug;

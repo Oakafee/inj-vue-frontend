@@ -8,7 +8,9 @@
 				<h2>{{ articleDetail.title }}</h2>
 			</router-link>
 			<h3 v-if="articleDetail.subtitle">{{ articleDetail.subtitle }} </h3>
-			<h4>By {{ articleDetail.author }}</h4>
+			<h4>By 
+					<router-link :to="contributorUrl">{{ contributorName }}</router-link>
+			</h4>
 		</div>
 		<div class="inj-article__text">
 			<p v-html="truncatedContent"></p>
@@ -34,6 +36,12 @@ export default {
 		}
 	},
 	computed: {
+		contributorUrl() {
+			return `/contributor/${this.articleDetail.contributor.username}`
+		},
+		contributorName() {
+			return `${this.articleDetail.contributor.first_name} ${this.articleDetail.contributor.last_name}`
+		},
 		truncatedContent() {
 			if (this.articleDetail.article_content) {
 				return this.articleDetail.article_content.substring(0, constants.FEATURED_ARTICLE_LENGTH) + '...';

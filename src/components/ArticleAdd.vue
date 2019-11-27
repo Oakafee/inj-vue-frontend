@@ -160,7 +160,7 @@ export default {
 				"title": this.newTitle,
 				"subtitle": this.newSubtitle,
 				//"author": `${this.user.first_name} ${this.user.last_name}`,
-				"contributor": this.user.id,
+				"contributor_id": this.user.id,
 				"article_content": this.newContent,
 				"parent": this.newParent
 			}

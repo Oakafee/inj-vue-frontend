@@ -21,7 +21,7 @@ const router = new VueRouter({
 		{ path: '/new-article/', name: 'new-article', component: ArticleAdd },
 		{ path: '/create-account/', name: 'create-account', component: CreateAccount },
 		{ path: '/reset-password/', name: 'reset-password', component: ResetPassword },
-		{ path: '/:slug/', component: Article },
+		{ path: '/:slug/', name: 'article', component: Article },
 		{ path: '/', name: 'home', component: Home },
 		{ path: '*', name: '404', component: FourOhFour },
 	],

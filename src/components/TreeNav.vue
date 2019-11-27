@@ -4,7 +4,10 @@
 			<svg @click="showChildren = !showChildren" class="tree-nav__chevron" :class="{ 'tree-nav__chevron--open' : showChildren, 'tree-nav__chevron--show' : hasChildren }" viewBox="0 0 24 24" stroke-width="2" fill="none">
 				<polyline points="9 18 15 12 9 6"></polyline>
 			</svg>
-			<router-link :to="parentArticle.slug" class="tree-nav__link">{{ parentArticle.title }}</router-link>
+			<router-link
+				:to="{ name: 'article', params: { slug: parentArticle.slug }}"
+				class="tree-nav__link"
+			>{{ parentArticle.title }}</router-link>
 		</li>
 		<ul v-for="child in childrenArticles" class="tree-nav__children" :class="{ 'tree-nav__children--show' : showChildren }" :key="child.pk">
 			<TreeNav :parentArticle="child" :articles="articles" />
