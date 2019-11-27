@@ -6,7 +6,7 @@
 	<ul>
 		<li v-for="article in recentArticles" :key="article.pk">
 			<router-link :to="article.slug">{{ article.title }}</router-link>
-			<div class="inj-recent__author">
+			<div v-if="article.contributor" class="inj-recent__author">
 				by 
 				<router-link
 					:to="`/contributor/${article.contributor.username}`"

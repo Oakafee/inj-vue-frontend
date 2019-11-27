@@ -159,7 +159,6 @@ export default {
 			let serializedBasicArticle = {
 				"title": this.newTitle,
 				"subtitle": this.newSubtitle,
-				//"author": `${this.user.first_name} ${this.user.last_name}`,
 				"contributor_id": this.user.id,
 				"article_content": this.newContent,
 				"parent": this.newParent

@@ -8,7 +8,7 @@
 				<h2>{{ articleDetail.title }}</h2>
 			</router-link>
 			<h3 v-if="articleDetail.subtitle">{{ articleDetail.subtitle }} </h3>
-			<h4>By 
+			<h4 v-if="contributorUrl">By 
 					<router-link :to="contributorUrl">{{ contributorName }}</router-link>
 			</h4>
 		</div>
@@ -37,10 +37,16 @@ export default {
 	},
 	computed: {
 		contributorUrl() {
-			return `/contributor/${this.articleDetail.contributor.username}`
+			if (this.articleDetail.contributor) {
+				return `/contributor/${this.articleDetail.contributor.username}`
+			}
+			return false
 		},
 		contributorName() {
-			return `${this.articleDetail.contributor.first_name} ${this.articleDetail.contributor.last_name}`
+			if (this.articleDetail.contributor) {
+				return `${this.articleDetail.contributor.first_name} ${this.articleDetail.contributor.last_name}`
+			}
+			return false
 		},
 		truncatedContent() {
 			if (this.articleDetail.article_content) {

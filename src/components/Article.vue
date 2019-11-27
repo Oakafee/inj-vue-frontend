@@ -1,7 +1,7 @@
 <template>
 	<div class="inj-article">
 	<ArticleMap :editable="editable" :editPermission="editPermission" />
-		<div class="inj-article__content" v-if="articleDetail.pk">
+		<div class="inj-article__content" v-if="articleDetail.contributor">
 			<div class="inj__title-area">
 				<ArticleBreadcrumbs />
 				<h1>{{ articleDetail.title }}</h1>
