@@ -1,9 +1,19 @@
 <template>
-	<div class="inj-article-comment-add">
-		<input class="inj-article-comment-add__title inj-text-input" :class="{ 'inj-text-input-error' : validationError }" type="text" v-model="comTitle" placeholder="Add Comment Title" />
-		<textarea class="inj-article-comment-add__content inj-textarea" v-model="comContent" :class="{ 'inj-textarea-error' : validationError }" placeholder="Add Your Thoughts..." />
-		<span class="inj-text-error" v-if="validationError">{{ validationError }} </span>
-		<button class="inj-button" :class="{ 'inj-button-error' : validationError }" @click="addComment()">Add your interpretation </button>
+	<div>
+		<hr class="inj-article-comments__break" />
+		<form v-if="user.id" class="inj-article-comment-add">
+			<input class="inj-article-comment-add__title inj-text-input" :class="{ 'inj-text-input-error' : validationError }" type="text" v-model="comTitle" placeholder="Add Comment Title" />
+			<textarea class="inj-article-comment-add__content inj-textarea" v-model="comContent" :class="{ 'inj-textarea-error' : validationError }" placeholder="Add Your Thoughts..." />
+			<span class="inj-text-error" v-if="validationError">{{ validationError }} </span>
+			<input
+				type="submit"
+				class="inj-button"
+				:class="{ 'inj-button-error' : validationError }"
+				value="Add your interpretation"
+				@click="addComment()"
+			/>
+		</form>
+		<p v-else class="inj-article-comment-add__logged-out">{{ loggedOutText }} </p>
 	</div>
 </template>
 
@@ -12,6 +22,7 @@ import axios from 'axios';
 import {mapState} from 'vuex';
 
 import store from '../store.js';
+import functions from '../functions';
 import constants from '../constants';
 
 export default {
@@ -21,12 +32,15 @@ export default {
 			comTitle: '',
 			comContent: '',
 			validationError: null,
+			loggedOutText: constants.LOG_IN_TO_COMMENT
 		}
 	},
 	computed: {
-		...mapState({
-			articleDetail: 'articleDetail',
-		}),
+		...mapState([
+			'articleDetail',
+			'authToken',
+			'user'
+		]),
 	},
 	methods: {
 		addComment() {
@@ -37,24 +51,29 @@ export default {
 			let serializedComment = {};
 			serializedComment = {
 				'com_title': this.comTitle,
-				'com_author': 'Jesse Fried',
+				'com_contributor_id': this.user.id,
 				'commentary': this.comContent,
-				'article': this.articleDetail.pk,
+				'article_id': this.articleDetail.pk,
 			};
 			// including this.articlePk in the request url isn't really necessary, it's just that I'm using the same Django REST class-based view for both retrieving an article's comments and adding new comments, the ListCreateAPIView
 			let apiUrl = constants.API_BASE_URL + 'commentary/' + this.articlePk + '/';
 			let self = this;
 
-			axios.post(apiUrl, serializedComment)
-				.then((response) => {
-					store.commit('addComment', response.data);
-					self.comTitle = '';
-					self.comContent = '';
-					self.validationError = null;
-				})
-				.catch((error) => {
-					self.validationError = 'server error: ' + error;
-				});
+			axios({
+				method: 'post',
+				url: apiUrl,
+				headers: functions.authHeader(self.authToken),
+				data: serializedComment
+			})
+			.then((response) => {
+				store.commit('addComment', response.data);
+				self.comTitle = '';
+				self.comContent = '';
+				self.validationError = null;
+			})
+			.catch((error) => {
+				self.validationError = 'server error: ' + error;
+			});
 		},
 	},
 }
@@ -65,6 +84,7 @@ export default {
 
 .inj-article-comment-add {
 	text-align: right;
+	padding-top: $spacing;
 	&__title {
 		width: calc(100% - 10px);
 		margin-bottom: 2 * $spacing;
@@ -72,6 +92,9 @@ export default {
 	&__content {
 		margin-bottom: 2 * $spacing;
 		height: 150px;
+	}
+	&__logged-out {
+		font-style: italic;	
 	}
 }
 </style>

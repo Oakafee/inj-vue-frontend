@@ -6,7 +6,6 @@
 			<h1>Welcome, {{ user.first_name }}. </h1>
 			<ul>
 				<li>{{ user.username }}</li>
-				<li>{{ user.email }} </li>
 				<li>{{ `${user.first_name} ${user.last_name}` }}</li>
 			</ul>
 			<p>If you are having any issues, please email me at interpretation.of.nj@gmail.com </p>
@@ -16,7 +15,10 @@
 				<h2>Articles by {{ contributorName }} </h2>
 				<ul>
 					<li v-for="article in articles" :key="article.pk" class="inj-contributor__article">
-						<router-link :to="`../${article.slug}`">
+						<router-link
+							:to="`../${article.slug}`"
+							class="inj-contributor__article-title"
+						>
 							{{ article.title }}
 						</router-link>
 						<div class="inj-contributor__article-date">
@@ -26,6 +28,27 @@
 				</ul>
 			</div>
 			<div v-else>{{ noArticles }} </div>
+		</div>
+		<div class="inj-contributor__commentary">
+			<div v-if="commentary.length > 0 && commentary[0].article">
+				<h2>Commentary by {{ contributorName }} </h2>
+				<ul>
+					<li v-for="comment in commentary" :key="comment.pk" class="inj-contributor__article">
+						<div class="inj-contributor__comment-title">
+							"{{ comment.com_title }}"
+						</div>
+						<div class="inj-contributor__comment-date">
+							<router-link
+								:to="`../${comment.article.slug}`"
+								class="inj-contributor__comment-subhead"
+							>
+								{{ comment.article.title }}
+							</router-link> - {{ comment.pub_date.substring(0,10) }}
+						</div>
+					</li>
+				</ul>
+			</div>
+			<div v-else>{{ noCommentary }} </div>
 		</div>
 	</div>
 </div>
@@ -44,7 +67,9 @@ export default {
 		return {
 			username: '',
 			articles: {},
+			commentary: {},
 			noArticles: constants.NO_CONTRIBUTOR_ARTICLES,
+			noCommentary: constants.NO_CONTRIBUTOR_COMMENTARY,
 			loading: false,
 		}
 	},
@@ -68,6 +93,7 @@ export default {
 	mounted() {
 		this.username = this.$route.params.username;
 		this.getContributorArticles();
+		this.getContributorCommentary();
 	},
 	beforeRouteUpdate (to, from, next) {
 		// this fires when the route changes without rerendering the component
@@ -77,7 +103,6 @@ export default {
 	},
 	methods: {
 		getContributorArticles() {
-	//		let apiUrl = constants.API_BASE_URL + constants.API_PATH + 'user/' + userId + '/';
 			let apiUrl = `${constants.API_BASE_URL + constants.API_PATH}user/${this.username}/`;
 			let self = this;
 			this.loading = true;
@@ -100,6 +125,26 @@ export default {
 					this.loading = false;
 				});
 		},
+		getContributorCommentary() {
+			let apiUrl = `${constants.API_BASE_URL}commentary/user/${this.username}/`;
+			let self = this;
+		
+			axios({
+				method: 'get',
+				url: apiUrl,
+			})
+			.then((response) => {
+					self.commentary = response.data;
+				})
+				.catch((error) => {
+					// handle error
+					if (error.response.status === 404) {
+						router.push({ name: '404' });
+					} else {
+						console.log('error with loading contributor commentary: ', error);
+					}
+				});
+		},
 		formatPubDate(rawPubDate) {
 			return functions.formatDate(rawPubDate);
 		}
@@ -111,17 +156,19 @@ export default {
 @import '../settings.scss';
 
 .inj-contributor {
-	&__article {
+	&__articles, &__commentary {
 		@media(min-width:$media-break) {
 			display: inline-block;
-			width: 270px;
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			margin-right: $spacing;
+			width: 50%;
+			vertical-align: top;
 		}
+	}
+	&__article, &__comment {
 		&-title {
 			font-size: $font-size-tertiary;
+		}
+		&-subhead {
+			line-height: 1.2;
 		}
 		&-date {
 			font-size: $font-size-secondary;

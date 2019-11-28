@@ -4,7 +4,12 @@
 		<hr class="inj-article-comments__break" />
 		<div class="inj-article-comments__content">
 			<h3>{{ comment.com_title }} </h3>
-			<h4>{{ comment.com_author }} - {{ comment.pub_date.substring(0,10) }} </h4>
+			<h4 v-if="comment.com_contributor">
+				<router-link
+					:to="`/contributor/${comment.com_contributor.username}`"
+				>{{ commentContributorName(comment) }}</router-link> 
+				- {{ comment.pub_date.substring(0,10) }}
+			</h4>
 			<p>{{ comment.commentary }} </p>
 		</div>
 	</div>
@@ -28,6 +33,11 @@ export default {
 			editableArticle: 'editableArticle',
 		}),
 	},
+	methods: {
+		commentContributorName(comment) {
+			return `${comment.com_contributor.first_name} ${comment.com_contributor.last_name}`
+		},
+	}
 }
 </script>
 

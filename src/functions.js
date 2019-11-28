@@ -58,9 +58,7 @@ export default {
 		.then((response) => {
 				// handle success
 				store.commit('getArticleDetail', response.data);
-				if (response.data.comments) {
-					self.getCommentary(response.data.pk);
-				}
+				self.getCommentary(response.data.pk);
 			})
 			.catch((error) => {
 				// handle error
@@ -114,8 +112,7 @@ export default {
 			})
 			.catch(function (error) {
 				// handle error, not sure what to do in this case
-				self.commentaryInfo = 'sad, there was an error';
-				return error;
+				console.log('error with getting the article\'s comments', error);
 			});
 	},
 	getGeoCategories() {

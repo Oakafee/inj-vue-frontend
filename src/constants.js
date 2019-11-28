@@ -2,8 +2,8 @@ export default {
 	NJ_BOUNDS: {'north': 41.61, 'east': -73.40, 'south': 39.61, 'west': -76.10},
 	NJ_CENTER: [40.07, -74.56],
 	API_BASE_URL: 
-	'https://inj-rest-staging.herokuapp.com/',
-	//'http://127.0.0.1:8000/',
+	//'https://inj-rest-staging.herokuapp.com/',
+	'http://127.0.0.1:8000/',
 	API_PATH: 'articles/',
 	API_LOGIN_PATH: 'api-token-auth/',
 	MAP_DEFAULT_OPTIONS: {
@@ -78,5 +78,7 @@ export default {
 		'position': 'topright'
 	},
 	PLEASE_LOG_IN: 'Please log in or create an account',
-	NO_CONTRIBUTOR_ARTICLES: 'There are no articles associated with that contributor.'
+	NO_CONTRIBUTOR_ARTICLES: 'There are no articles associated with this contributor.',
+	NO_CONTRIBUTOR_COMMENTARY: 'There is no commentary associated with this contributor.',
+	LOG_IN_TO_COMMENT: 'To comment, please log in or create an account. '
 }
