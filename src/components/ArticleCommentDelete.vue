@@ -1,5 +1,8 @@
 <template>
-	<span class="comment-delete">
+	<span
+		class="comment-delete inj-fade-transition"
+		:class="{ 'inj-fade-transition--hidden': deleted }"
+	 >
 		<svg
 			v-show="!error"
 			xmlns="http://www.w3.org/2000/svg"
@@ -44,7 +47,6 @@
 import axios from 'axios';
 import {mapState} from 'vuex';
 
-import store from '../store';
 import constants from '../constants';
 import functions from '../functions';
 
@@ -55,6 +57,7 @@ export default {
 		return {
 			confirm: false,
 			error: '',
+			deleted: false,
 		}
 	},
 	computed: {
@@ -71,8 +74,7 @@ export default {
 				headers: functions.authHeader(self.authToken),
 			})
 			.then(() => {
-				// handle success
-				store.commit('removeComment', self.comment);
+				functions.getCommentary(self.comment.article.pk);
 			})
 			.catch((error) => {
 				self.error = 'server error with delete: ' + error;

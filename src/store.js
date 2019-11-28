@@ -51,15 +51,6 @@ const store = new Vuex.Store({
 		editArticle (state, slug) {
 			state.editableArticle = slug;
 		},
-		addComment(state, comment) {
-			state.articleCommentary.push(comment);
-		},
-		removeComment(state, exComment) {
-			let index = state.articleCommentary.findIndex((comment) => {
-				comment.pk === exComment.pk
-			})
-			state.articleCommentary.splice(index, 1);
-		},
 		toggleEditMapFeature(state) {
 			state.editMapFeature = !state.editMapFeature;
 		},
