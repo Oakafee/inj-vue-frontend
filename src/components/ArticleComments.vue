@@ -4,12 +4,16 @@
 		<hr class="inj-article-comments__break" />
 		<div class="inj-article-comments__content">
 			<h3>{{ comment.com_title }} </h3>
-			<h4 v-if="comment.com_contributor">
+			<span class="inj-article-comments__contributor">
 				<router-link
 					:to="`/contributor/${comment.com_contributor.username}`"
 				>{{ commentContributorName(comment) }}</router-link> 
-				- {{ comment.pub_date.substring(0,10) }}
-			</h4>
+					- {{ comment.pub_date.substring(0,10) }}
+				<ArticleCommentDelete
+					:comment="comment"
+					v-if="comment.com_contributor.id === user.id"
+				/>
+			</span>
 			<p>{{ comment.commentary }} </p>
 		</div>
 	</div>
@@ -21,16 +25,19 @@
 import {mapState} from 'vuex';
 
 import ArticleCommentAdd from './ArticleCommentAdd';
+import ArticleCommentDelete from './ArticleCommentDelete';
 
 export default {
 	name: 'ArticleComments',
 	components: {
 		ArticleCommentAdd,
+		ArticleCommentDelete
 	},
 	computed: {
 		...mapState({
 			commentary: 'articleCommentary',
 			editableArticle: 'editableArticle',
+			user: 'user'
 		}),
 	},
 	methods: {
@@ -45,6 +52,9 @@ export default {
 @import '../settings.scss';
 
 .inj-article-comments {
+	&__contributor, &__delete {
+		display: inline;
+	}
 	&__content {
 		margin: $spacing 0;
 	}
