@@ -27,6 +27,16 @@ $map-expanded-height: calc(100vh - 150px);
 
 $transition-time: 0.6s;
 
+// Map specific styles
 
 $map-feature-stroke-width: 1px;
 $map-feature-opacity: 0.6;
+$map-feature-opacity-light: 0.3;
+
+$color-city: #ff570f;//#ff9e0f;
+$color-town: #ffa30f;
+$color-neighborhood: #ffd829;
+$color-physiographic-region: darkgreen;
+$color-mountain: #6f5c3e;
+$color-other-landform: #228B22;
+$color-nature: darkgreen;

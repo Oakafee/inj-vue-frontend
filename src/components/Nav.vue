@@ -1,17 +1,20 @@
 <template>
 	<nav class="inj-nav" :class="{ 'inj-nav--mobile-open' : mobileNavOpen, 'inj-nav--show' : articleList, 'inj-nav--offset' : articleMapExpanded }">
-		<LoginNav />
-		<div class="inj-nav__row inj-nav__row--bottom">
+		<div
+			v-if="!user.id && !loginFormOpen"
+			class="inj-nav__row inj-nav__row--top"
+		>
 			<button
-				v-if="user.id"
-				class="inj-button inj-button--full-width"
-				@click="addArticle"
-			>+ Add Article </button>
-			<button
-				v-else-if="!loginFormOpen"
 				class="inj-button inj-button--full-width"
 				@click="login"
 			>Log in </button>
+		</div>
+		<LoginNav />
+		<div v-if="user.id" class="inj-nav__row inj-nav__row--bottom">
+			<button
+				class="inj-button inj-button--full-width"
+				@click="addArticle"
+			>+ Add Article </button>
 		</div>
 		<div class="inj-nav__tree">
 			<div v-if="!articleList[0]">Loading...</div>
@@ -109,6 +112,9 @@ export default {
 	}
 	&__row {
 		padding: 0 2*$spacing;
+		&.inj-nav__row--top {
+			padding-top: $spacing/2;
+		}
 		&.inj-nav__row--bottom {
 			padding-bottom: 2*$spacing;
 		}

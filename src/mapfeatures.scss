@@ -4,45 +4,41 @@
 	&__pyhsiographic-region {
 		//some sort of greenish gray would be nice
 		stroke: none;
-		fill: darkgreen;
+		fill: $color-nature;
 		// stroke-width: 1px;
-		fill-opacity: 0.1;
+		fill-opacity: 0.2;
 	}
 	&__other-landform {
-		stroke: $color-wood;
-		fill: $color-wood;
-		fill-opacity: 0.5;
-		stroke-width: $map-feature-stroke-width;
+		stroke: none;
+		fill: $color-nature;
+		fill-opacity: 0.4;
 	}
 	&__mountain {
-		stroke: $color-horsehead;
-		stroke-width: $map-feature-stroke-width;;
-		opacity: 0.5;
-		fill: $color-horsehead;
-		fill-opacity: 1;
+		stroke: none;
+		fill: $color-mountain;
+		fill-opacity: 0.5;
 	}
 	&__swamp {
-		stroke: lightgreen;
-		fill: lightgreen;
-		stroke-width: $map-feature-stroke-width;
+		stroke: none;
+		fill: $color-primary;
+		fill-opacity: $map-feature-opacity-light;
 	}
 	&__other-political-entity {
-		stroke: $color-dress;
-		stroke-width: $map-feature-stroke-width;;
-		fill: $color-dress;
-		fill-opacity: 0.3;
+		stroke: none;
+		fill: $color-neighborhood;
+		fill-opacity: $map-feature-opacity-light;
 	}
 	&__city {
-		stroke: $color-tertiary;
-		fill: $color-tertiary;
-		stroke-width: $map-feature-stroke-width;;
-		fill-opacity: 0.3;
+		stroke: none;
+		fill: $color-city;
+		stroke-width: $map-feature-stroke-width;
+		fill-opacity: $map-feature-opacity-light;
 	}
 	&__town {
-		stroke: $color-secondary;
-		fill: $color-secondary;
-		stroke-width: $map-feature-stroke-width;;
-		fill-opacity: 0.3;
+		stroke: none;
+		fill: $color-town;
+		stroke-width: $map-feature-stroke-width;
+		fill-opacity: $map-feature-opacity-light;
 	}
 	&__river {
 		&-smaller {
@@ -62,7 +58,7 @@
 	}
 	&__waterfall {
 		stroke: $color-primary;
-		stroke-width: $map-feature-stroke-width;;
+		stroke-width: $map-feature-stroke-width;
 		fill: $color-primary;
 	}
 	&__other-infrastructure {}
@@ -89,9 +85,9 @@
 	&__point-of-interest {
 		stroke: black;
 		fill: black;
-		stroke-width: $map-feature-stroke-width;;
+		stroke-width: $map-feature-stroke-width;
 		opacity: $map-feature-opacity;
-		fill-opacity: 0.3;
+		fill-opacity: $map-feature-opacity-light;
 	}
 	&__default {
 		stroke: $color-primary;
