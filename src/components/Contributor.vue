@@ -77,6 +77,8 @@ export default {
 		contributorName() {
 			if (this.articles[0]) {
 				return `${this.articles[0].contributor.first_name} ${this.articles[0].contributor.last_name}`
+			} else if (this.commentary[0]) {
+				return `${this.commentary[0].com_contributor.first_name} ${this.commentary[0].com_contributor.last_name}`
 			}
 			return false
 		},
@@ -100,6 +102,7 @@ export default {
 		this.username = to.params.username;
 		next();
 		this.getContributorArticles();
+		this.getContributorCommentary();
 	},
 	methods: {
 		getContributorArticles() {
