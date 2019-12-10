@@ -53,6 +53,10 @@ a { color: $color-primary; } // this is a little ugly?
 	cursor: pointer;
 	transition-property: color, background-color, border-color;
 	transition-duration: 0.2s;
+	// to stop safari mobile from adding default styles
+	-webkit-appearance: none;
+	border-radius: 0;
+	
 	&:hover, &:focus {
 		@include light-button;
 	}

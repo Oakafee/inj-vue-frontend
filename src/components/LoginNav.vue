@@ -14,6 +14,7 @@
 			class="inj-login-nav__form inj-nav__row"
 			:class="{ 'inj-login-nav__form--hidden': !loginFormOpen }"
 			id="loginForm"
+			@submit.prevent="submitLoginForm()"
 		>
 			<div class="inj-form__button-row">
 				<router-link to="reset-password">Forgot password? </router-link>			
@@ -48,7 +49,6 @@
 					value="Log in"
 					class="inj-form-submit-button inj-button inj-button-secondary inj-button-small"
 					:class="{ 'inj-button--error' : validationError.message }"
-					@click="submitLoginForm()"
 				/>
 			</div>
 		</form>

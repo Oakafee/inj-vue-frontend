@@ -4,7 +4,7 @@
 			<h1 class="inj__title-area">Add New Article </h1>
 			<p>Please add your own new interpretive article, from your own personal perspective. </p>
 			<ArticleMap :editable="mapEditable" class="inj-form-element" />
-			<form id="injAddArticle">
+			<form id="injAddArticle" @submit.prevent="submitNewArticleForm()">
 				<input
 					type="text"
 					class="inj-text-input inj-text-input--full-width inj-form-element"
@@ -62,7 +62,6 @@
 						value="Add Article"
 						class="inj-button"
 						:class="{ 'inj-button--error' : validationError.message }"
-						@click="submitNewArticleForm()"
 					/>
 				</div>
 			</form>
@@ -199,7 +198,6 @@ export default {
 			.catch((error) => {
 				// handle error
 				self.submitInProgress = false;
-				console.log(error);
 				if (error.response) {
 					self.validationError.message = 'server error: ' + error.response.data.title;
 				}

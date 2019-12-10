@@ -1,7 +1,11 @@
 <template>
 	<div>
 		<hr class="inj-article-comments__break" />
-		<form v-if="user.id" class="inj-article-comment-add">
+		<form
+			v-if="user.id"
+			class="inj-article-comment-add"
+			@submit.prevent="addComment()"
+		>
 			<input class="inj-article-comment-add__title inj-text-input" :class="{ 'inj-text-input-error' : validationError }" type="text" v-model="comTitle" placeholder="Add Comment Title" />
 			<textarea class="inj-article-comment-add__content inj-textarea" v-model="comContent" :class="{ 'inj-textarea-error' : validationError }" placeholder="Add Your Thoughts..." />
 			<span class="inj-text-error" v-if="validationError">{{ validationError }} </span>
@@ -10,7 +14,6 @@
 				class="inj-button"
 				:class="{ 'inj-button-error' : validationError }"
 				value="Add your interpretation"
-				@click="addComment()"
 			/>
 		</form>
 		<p v-else class="inj-article-comment-add__logged-out">{{ loggedOutText }} </p>
