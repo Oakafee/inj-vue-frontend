@@ -386,7 +386,7 @@ export default {
 	&-container {
 		visibility: visible;
 		opacity: 1;
-		margin-bottom: $spacing;
+		margin: $spacing 0;
 		width: 100%;
 		transition-property: opacity, width;
 		transition-duration: $transition-time;

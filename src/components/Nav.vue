@@ -2,10 +2,10 @@
 	<nav class="inj-nav" :class="{ 'inj-nav--mobile-open' : mobileNavOpen, 'inj-nav--show' : articleList, 'inj-nav--offset' : articleMapExpanded }">
 		<div
 			v-if="!user.id && !loginFormOpen"
-			class="inj-nav__row inj-nav__row--top"
+			class="inj-nav__row"
 		>
 			<button
-				class="inj-button inj-button--full-width"
+				class="inj-nav__login inj-button inj-button--full-width"
 				@click="login"
 			>Log in </button>
 		</div>
@@ -78,6 +78,7 @@ export default {
 @import '../settings.scss';
 
 .inj-nav {
+	margin-top: $spacing;
 	background-color: $color-secondary;
 	visibility: hidden;
 	opacity: 0;
@@ -112,12 +113,12 @@ export default {
 	}
 	&__row {
 		padding: 0 2*$spacing;
-		&.inj-nav__row--top {
-			padding-top: $spacing/2;
-		}
 		&.inj-nav__row--bottom {
-			padding-bottom: 2*$spacing;
+			margin-bottom: $spacing;
 		}
+	}
+	&__login {
+		margin-bottom: $spacing;
 	}
 	&__tree {
 		padding-bottom: 2 * $spacing;

@@ -1,14 +1,14 @@
 <template>
 	<div>
-		<div class="inj-login-nav__login-text inj-nav__row">
-			<p v-if="user.id">
+		<div class="inj-login-nav__welcome inj-nav__row">
+			<span v-if="user.id">
 				Welcome
 				<router-link :to="{ name: 'contributor', params: { username: user.username }}">
 					{{ `${user.first_name} ${user.last_name}` }}
 				</router-link>, 
 				<a href="#" @click="logout($event)">Log out </a>
-			</p>
-			<p v-else-if="!loginFormOpen"><router-link to="create-account">Create an account</router-link> to add or comment </p>
+			</span>
+			<span v-else-if="!loginFormOpen"><router-link to="create-account">Create an account</router-link> to add or comment </span>
 		</div>
 		<form 
 			class="inj-login-nav__form inj-nav__row"
@@ -153,8 +153,10 @@ export default {
 @import '../settings.scss';
 
 .inj-login-nav {
-	&__login-text {
-		margin-top: $spacing;
+	&__welcome {
+		font-size: $font-size-primary;
+		line-height: $line-height-secondary;
+		margin-bottom: $spacing;
 	}
 	&__form {
 		height: 175px;

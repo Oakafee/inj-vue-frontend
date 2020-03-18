@@ -9,10 +9,10 @@ body {
 }
 
 p {
-	line-height: 1.5;
+	line-height: $line-height-primary;
 	font-size: $font-size-primary;
 	@media(min-width: $media-break) {
-		line-height: 1.7;
+		line-height: $line-height-secondary;
 	}
 }
 
@@ -158,12 +158,6 @@ a { color: $color-primary; } // this is a little ugly?
 		display: flex;
 		justify-content: right;
 	}
-}
-
-// Page Layout:
-
-.inj__title-area {
-	text-align: center;
 }
 
 // Transitions:

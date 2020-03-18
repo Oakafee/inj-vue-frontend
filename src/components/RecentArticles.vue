@@ -52,8 +52,6 @@ export default {
 @import '../settings.scss';
 
 .inj-recent {
-	padding: $spacing;
-	padding-left: 2.5*$spacing;
 	@media(min-width:$large-break) {
 		flex: 1 1 160px;
 		order: 1;

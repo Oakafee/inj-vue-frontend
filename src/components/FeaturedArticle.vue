@@ -2,7 +2,7 @@
 <div class="inj-featured-article">
 	<div v-if="serverError">{{ serverError }} </div>
 	<div v-else>
-		<h3 class="inj-featured-article__callout">Featured article</h3>
+		<h4>Featured article</h4>
 		<div class="inj__title-area">
 			<router-link :to="slug">
 				<h2>{{ articleDetail.title }}</h2>
@@ -80,9 +80,6 @@ export default {
 
 .inj-featured-article {
 	margin-top: 2*$spacing;
-	&__callout {
-		padding-left: 2*$spacing;
-	}
 	&__read-more {
 		text-align: right;
 		padding-top: 0;

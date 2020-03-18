@@ -67,6 +67,7 @@ export default {
 
 .inj-home-map {
 	&__container {
+		margin-bottom: 2 * $spacing;
 		@media(min-width:$large-break) {
 			flex: 25 1 auto;
 			order: 2;
