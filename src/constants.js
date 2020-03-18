@@ -2,13 +2,15 @@ export default {
 	NJ_BOUNDS: {'north': 41.61, 'east': -73.40, 'south': 39.61, 'west': -76.10},
 	NJ_CENTER: [40.07, -74.56],
 	API_BASE_URL: 
-	'https://inj-rest-staging.herokuapp.com/',
+	'https://inj-rest-production.herokuapp.com/',
+	//'https://inj-rest-staging.herokuapp.com/',
 	//'http://127.0.0.1:8000/',
 	API_PATH: 'articles/',
 	API_LOGIN_PATH: 'api-token-auth/',
 	MAP_DEFAULT_OPTIONS: {
-		center: [40.07, -74.56],
-		zoom: 8,
+		center: [40.17, -74.70],
+		// slightly north of the state's center, for the sake of the home page map
+		zoom: 9,
 		maxZoom: 15,
 		scrollWheelZoom: false
 	},

@@ -83,7 +83,7 @@ export default {
 }
 #homeMap {
 	width: 100%;
-	height: 500px;
+	height: 1200px;
 	border: 1px solid black;
 }
 
