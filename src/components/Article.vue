@@ -2,7 +2,7 @@
 	<div class="inj-article">
 	<ArticleMap :editable="editable" :editPermission="editPermission" />
 		<div class="inj-article__content" v-if="articleDetail.contributor">
-			<div class="inj__title-area">
+			<div class="inj-article__title">
 				<ArticleBreadcrumbs />
 				<h1>{{ articleDetail.title }}</h1>
 				<h3
@@ -286,6 +286,9 @@ export default {
 @import '../settings.scss';
 
 .inj-article {
+	&__title {
+		text-align: center;
+	}
 	&__edit-button-row {
 		position: fixed;
 		left: 0;

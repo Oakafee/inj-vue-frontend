@@ -67,7 +67,10 @@ export default {
 		'draw': {
 			'rectangle': false,
 			'circle': false,
-			'circlemarker': false
+			'circlemarker': false,
+			'polyline': {
+				'icon': false,
+			}
 		},
 		'position': 'topright'
 	},

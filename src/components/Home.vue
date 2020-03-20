@@ -29,9 +29,9 @@ export default {
 
 .inj-home {
 	&__map-row {
-		margin-top: $spacing;
 		@media(min-width:$large-break) {
 			display: flex;
+			margin-top: $spacing;
 		}
 	}
 }

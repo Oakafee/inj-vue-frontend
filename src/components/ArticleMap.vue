@@ -106,6 +106,7 @@ export default {
 		return {
 			map: '',
 			mapFeatureLayer: {},
+			mapDrawIcon: {},
 			mapDrawToolbar: {},
 			mapEditToolbar: {},
 			pasteDataModalOpen: false,
@@ -233,7 +234,19 @@ export default {
 				this.mapFeatureLayer = new L.FeatureGroup();
 					this.map.addLayer(this.mapFeatureLayer);
 			}
+			this.mapDrawIcon = new L.DivIcon({
+				iconSize: new L.Point(8, 8),
+				className: 'leaflet-div-icon inj-article-map__draw-icon'
+			});
 			this.mapDrawToolbar = new L.Control.Draw(constants.TOOLBAR_DRAW_OPTIONS);
+			this.mapDrawToolbar.setDrawingOptions({
+				polyline: {
+					icon: this.mapDrawIcon
+				},
+				polygon: {
+					icon: this.mapDrawIcon
+				}
+			});
 			this.map.addControl(this.mapDrawToolbar);
 			
 			this.map.on('draw:drawstart', () => store.commit('mapEditInProgress', true));
@@ -245,9 +258,9 @@ export default {
 		initializeEditToolbar() {
 			let toolbarOptions = constants.TOOLBAR_EDIT_OPTIONS;
 			toolbarOptions.edit.featureGroup = this.mapFeatureLayer;
+			this.mapEditToolbar = new L.Control.Draw(toolbarOptions);
 			// first remove the draw toolbar
 			if(this.mapDrawToolbar.options) this.mapDrawToolbar.remove();
-			this.mapEditToolbar = new L.Control.Draw(toolbarOptions);
 			this.map.addControl(this.mapEditToolbar);
 			this.map.on('draw:editstart', () => store.commit('mapEditInProgress', true));
 			this.map.on('draw:editstop', () => store.commit('mapEditInProgress', false));
@@ -429,6 +442,11 @@ export default {
 			width: 20px;
 		}
 	}
+	&__draw-icon {
+		background-color: $color-secondary;
+		border-radius: 4px;
+		// size for draw icons is being set in the JS above, for edit icons in the ugly css below with important rules
+	}
 }
 
 .paste-data {
@@ -453,4 +471,13 @@ export default {
 	@media(max-width: $media-break) { display: none }
 }
 
+
+// was too hard for me to use JS to change the edit marker icons, like I successfully did for the draw marker icons, so I am just overriding the CSS class with the styles I want. Terrible I know but oh well.
+.leaflet-editing-icon {
+	height: 8px !important;
+	width: 8px !important;
+	margin-left: -4px !important;
+	margin-top: -4px !important;
+	@extend .inj-article-map__draw-icon;
+}
 </style>
