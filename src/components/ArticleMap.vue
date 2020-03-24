@@ -391,7 +391,7 @@ export default {
 #articleMap {
 	height: $map-height;
 	border: 1px solid black;
-	transition: height $transition-time;
+	transition: height $transition-time-primary;
 }
 
 .inj-article-map {
@@ -402,7 +402,7 @@ export default {
 		margin: $spacing 0;
 		width: 100%;
 		transition-property: opacity, width;
-		transition-duration: $transition-time;
+		transition-duration: $transition-time-primary;
 		&.inj-article-map-hidden {
 			height: 0;
 			margin: 0;

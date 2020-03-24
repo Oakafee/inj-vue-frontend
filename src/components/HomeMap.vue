@@ -17,6 +17,10 @@ export default {
 		return {
 			map: {},
 			mapFeatureLayer: {},
+			lineStringFeatures: {
+				"type": "FeatureCollection",
+				"features": [],
+			}
 		}
 	},
 	computed: {
@@ -42,14 +46,39 @@ export default {
 	methods: {
 		addFeaturesToMap() {
 			this.mapFeatureLayer = L.geoJSON(this.mapFeatures, {
+				style: (feature) => {
+					let featureStyles = {
+						className: ''
+					}
+					
+					if (feature.geometry.type === 'LineString') {
+						// add the clickable transparent fat area around the line first
+						featureStyles.className = 'inj-map-feature__line-fattening';
+						// collect all the linestrings in a geoJSON feature collection
+						this.lineStringFeatures.features.push(feature);
+					} else {
+						featureStyles.className = functions.getMapClassName(feature, 'hover');
+					}
+					return featureStyles
+				},
 				onEachFeature: (feature, layer) => {
 					layer.bindPopup(this.popupText(feature));
-					layer.setStyle({ 'className': functions.getMapClassName(feature) });
 				},
 				pointToLayer: (feature, latlng) => {
 					return L.circleMarker(latlng, constants.MAP_POINT_MARKER_OPTIONS);
 				}
-			}).addTo(this.map);		
+			}).addTo(this.map);
+			this.addLineStringStyles();
+		},
+		addLineStringStyles() {
+			// add the thin styled part of linestrings on top of what's already there
+			this.mapFeatureLayer = L.geoJSON(this.lineStringFeatures, {
+				style: (feature) => {
+					return {
+						className: functions.getMapClassName(feature)
+					}
+				}
+			}).addTo(this.map);
 		},
 		popupText(feature) {
 			return `<p><a href='/#/${feature.properties.slug}' taregt='_blank'>${feature.properties.name}</a></p>`

@@ -162,7 +162,7 @@ export default {
 		height: 175px;
 		opacity: 1;
 		transition-property: height, opacity;
-		transition-duration: $transition-time;
+		transition-duration: $transition-time-primary;
 		&.inj-login-nav__form--hidden {
 			height: 0;
 			opacity: 0;

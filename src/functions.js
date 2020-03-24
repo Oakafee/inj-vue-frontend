@@ -128,8 +128,13 @@ export default {
 				return error;
 			});
 	},
-	getMapClassName(feature) {
-		return constants.MAP_FEATURE_CLASS_NAMES[feature.properties.category];
+	getMapClassName(feature, hoverable) {
+		let specificClass = constants.MAP_FEATURE_CLASS_NAMES[feature.properties.category]
+		
+		if (hoverable) {
+			return `inj-map-feature__home ${specificClass}`
+		}
+		return specificClass;
 	},
 	enableScrollWheelZoom(map) {
 		map.scrollWheelZoom.enable();

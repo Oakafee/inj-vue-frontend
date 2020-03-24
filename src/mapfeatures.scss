@@ -1,6 +1,12 @@
 @import 'settings.scss';
 
 .inj-map-feature {
+	&__home {
+		transition: fill-opacity ease $transition-time-secondary;
+		&:hover {
+			fill-opacity: 0.5;
+		}
+	}
 	&__pyhsiographic-region {
 		//some sort of greenish gray would be nice
 		stroke: none;
@@ -16,7 +22,11 @@
 	&__mountain {
 		stroke: none;
 		fill: $color-mountain;
-		fill-opacity: 0.5;
+		fill-opacity: 0.4;
+		// eh...
+		&.inj-map-feature__home:hover {
+			fill-opacity: 0.6;
+		}
 	}
 	&__swamp {
 		stroke: none;
@@ -94,5 +104,14 @@
 		stroke-width: $map-feature-stroke-width;
 		fill: $color-primary;
 		fill-opacity: 0.5;
+	}
+	&__line-fattening {
+		stroke: $color-secondary;
+		stroke-width: 9px;
+		stroke-opacity: 0;
+		transition: stroke-opacity ease $transition-time-secondary;
+		&:hover {
+			stroke-opacity: 0.8;
+		}
 	}
 }

@@ -83,7 +83,7 @@ export default {
 	visibility: hidden;
 	opacity: 0;
 	transition-property: opacity, margin-top;
-	transition-duration: $transition-time;
+	transition-duration: $transition-time-primary;
 	@media(max-width: $media-break) {
 		width: calc(100% - 24px); // to factor in the border and the padding on the container
 		position: absolute;

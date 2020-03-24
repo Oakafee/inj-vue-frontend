@@ -66,7 +66,7 @@ export default {
 		height: 200px;
 		overflow-y: scroll;
 		opacity: 1;
-		transition: opacity $transition-time;
+		transition: opacity $transition-time-primary;
 		&.filter-nav__results--hidden {
 			visibility: hidden;
 			height: 0;
