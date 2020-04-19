@@ -105,6 +105,9 @@
 		fill: $color-primary;
 		fill-opacity: 0.5;
 	}
+	&__line:hover {
+		filter: drop-shadow(1px 4px 0 $color-secondary) drop-shadow(-1px -4px 0 $color-secondary)
+	}
 	&__line-fattening {
 		stroke: $color-secondary;
 		stroke-width: 9px;

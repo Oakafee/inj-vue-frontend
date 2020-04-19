@@ -75,9 +75,12 @@ export default {
 			this.mapFeatureLayer = L.geoJSON(this.lineStringFeatures, {
 				style: (feature) => {
 					return {
-						className: functions.getMapClassName(feature)
+						className: `${functions.getMapClassName(feature)} inj-map-feature__line`
 					}
-				}
+				},
+				onEachFeature: (feature, layer) => {
+					layer.bindPopup(this.popupText(feature));
+				},
 			}).addTo(this.map);
 		},
 		popupText(feature) {
