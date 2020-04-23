@@ -2,8 +2,12 @@
 	<div class="inj-article">
 		<div v-if="user.id" class="inj-article__content">
 			<h1 class="inj__title-area">Add New Article </h1>
-			<p>Please add your own new interpretive article, from your own personal perspective. </p>
-			<ArticleMap :editable="mapEditable" class="inj-form-element" />
+			<p>Please add your own new interpretive article. The map feature is optional but encouraged. </p>
+			<ArticleMap
+				:editable="mapEditable"
+				:editPermission="mapEditable"
+				class="inj-form-element"
+			/>
 			<form id="injAddArticle" @submit.prevent="submitNewArticleForm()">
 				<input
 					type="text"

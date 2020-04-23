@@ -132,6 +132,9 @@ export default {
 			return functions.formatDate(this.articleDetail.pub_date);
 		},
 		editPermission() {
+			if (this.user.is_inj_editor) {
+				return true
+			}
 			if (this.articleDetail.contributor) {
 				return this.articleDetail.contributor.id === this.user.id;
 			}
