@@ -10,8 +10,8 @@
 					class="inj-article__subtitle"
 				>{{ articleDetail.subtitle }} </h3>
 				<h4>By 
-					<router-link :to="contributorUrl">{{ contributorName }}</router-link>
-					 - {{ formattedPubDate }}</h4>
+					<router-link :to="contributorUrl">{{ contributorName }}</router-link> 
+					- {{ formattedPubDate }}</h4>
 			</div>
 			<div v-if="editable" class="inj-article__edit-content">
 				<textarea class="inj-textarea" :class="{ 'inj-textarea-error' : validationError }" v-model="editedContent" />
@@ -39,7 +39,7 @@
 				<div v-else class="inj-button-row">
 					<span v-if="editable">
 						<!-- TODO: add transition -->
-						<button class="inj-button inj-button-tertiary" @click="deleteModalOpen = true">Delete </button>
+						<button v-if="deletePermission" class="inj-button inj-button-tertiary" @click="deleteModalOpen = true">Delete </button>
 						<button class="inj-button inj-button-secondary" @click="cancelEditing()">Cancel Edits </button>
 						<button class="inj-button" :class="{ 'inj-button--error' : validationError }" @click="submitChanges()">Submit </button>
 						<span class="inj-text-error" v-if="validationError">{{ validationError }}  </span>
@@ -139,6 +139,12 @@ export default {
 				return this.articleDetail.contributor.id === this.user.id;
 			}
 			return false
+		},
+		deletePermission() {
+			if (this.articleDetail.contributor) {
+				return this.articleDetail.contributor.id === this.user.id;
+			}
+			return false		
 		},
 		editable() {
 			return this.editableArticle === this.articleDetail.slug;
