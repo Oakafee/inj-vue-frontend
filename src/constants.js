@@ -26,6 +26,7 @@ export default {
 		radius: 4,
 	},
 	MAP_DEFAULT_FEATURE_CATEGORY: 15,
+	MAP_PATTERNED_FEATURE_CATEGORIES: [1],
 	MAP_FEATURE_CLASS_NAMES: [
 	// these are ordered by the pk of the geo categories. Not the best way I know
 		'zero',

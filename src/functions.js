@@ -129,7 +129,7 @@ export default {
 			});
 	},
 	getMapClassName(feature, hoverable) {
-		let specificClass = constants.MAP_FEATURE_CLASS_NAMES[feature.properties.category]
+		let specificClass = constants.MAP_FEATURE_CLASS_NAMES[feature.properties.category];
 		
 		if (hoverable) {
 			return `inj-map-feature__home ${specificClass}`
