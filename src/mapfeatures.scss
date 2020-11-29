@@ -34,21 +34,31 @@
 		fill-opacity: $map-feature-opacity-light;
 	}
 	&__other-political-entity {
-		stroke: none;
+		stroke: $color-neighborhood;
 		fill: $color-neighborhood;
-		fill-opacity: $map-feature-opacity-light;
+		fill-opacity: 0;
+		&.inj-map-feature__home:hover {
+			fill-opacity: $map-feature-opacity-light;
+		}
 	}
 	&__city {
 		stroke: none;
 		fill: $color-city;
 		stroke-width: $map-feature-stroke-width;
-		fill-opacity: $map-feature-opacity-light;
+		fill-opacity: 0.6;
+		&.inj-map-feature__home:hover {
+			fill-opacity: $map-feature-opacity-light;
+			stroke: $color-city;
+		}
 	}
 	&__town {
-		stroke: none;
+		stroke: $color-town;
 		fill: $color-town;
 		stroke-width: $map-feature-stroke-width;
-		fill-opacity: $map-feature-opacity-light;
+		fill-opacity: 0;
+		&.inj-map-feature__home:hover {
+			fill-opacity: $map-feature-opacity-light;
+		}
 	}
 	&__river {
 		&-smaller {

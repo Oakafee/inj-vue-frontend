@@ -84,6 +84,7 @@ export default {
 				},
 				onEachFeature: (feature, layer) => {
 					layer.bindPopup(this.popupText(feature));
+					console.log('line feature', feature.properties.name, feature.geometry.type);
 				},
 			}).addTo(this.map);
 		},
