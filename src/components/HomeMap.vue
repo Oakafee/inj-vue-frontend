@@ -2,6 +2,7 @@
 <div class="inj-home-map__container" @dblclick.once="enableScrollWheelZoom">
 	<div v-if="!mapFeatures.features" class="inj-home-map__loading">Loading...</div>
 	<div id="homeMap"></div>
+	<mapFeaturePatterns />
 </div>
 </template>
 
@@ -10,9 +11,11 @@ import L from 'leaflet';
 import {mapState} from 'vuex';
 import functions from '../functions';
 import constants from '../constants';
+import mapFeaturePatterns from './MapFeaturePatterns';
 
 export default {
 	name: 'HomeMap',
+	components: { mapFeaturePatterns },
 	data: function () {
 		return {
 			map: {},
@@ -63,13 +66,13 @@ export default {
 				},
 				onEachFeature: (feature, layer) => {
 					layer.bindPopup(this.popupText(feature));
+					layer.bindTooltip(feature.properties.name);
 				},
 				pointToLayer: (feature, latlng) => {
 					return L.circleMarker(latlng, constants.MAP_POINT_MARKER_OPTIONS);
 				}
 			}).addTo(this.map);
 			this.addLineStringStyles();
-			this.addPatternStyles();
 		},
 		popupText(feature) {
 			return `<p><a href='/#/${feature.properties.slug}' taregt='_blank'>${feature.properties.name}</a></p>`
@@ -84,35 +87,8 @@ export default {
 				},
 				onEachFeature: (feature, layer) => {
 					layer.bindPopup(this.popupText(feature));
-					console.log('line feature', feature.properties.name, feature.geometry.type);
 				},
 			}).addTo(this.map);
-		},
-		addPatternStyles() {
-			let svg = document.querySelector('svg.leaflet-zoom-animated');
-			let svgNs = 'http://www.w3.org/2000/svg';
-			let defs = document.createElementNS(svgNs, 'defs');
-			let pattern = document.createElementNS(svgNs, 'pattern');
-			let polygon = document.createElementNS(svgNs, 'polygon');
-			//let circletwo = document.querySelector("#circleTwo");
-
-			polygon.setAttribute('points', '0,0 2,5 0,10 5,8 10,10 8,5 10,0 5,2');
-			pattern.setAttribute('id', 'star');
-			pattern.setAttribute('viewBox', '0,0,10,10');
-			pattern.setAttribute('width', '10%');
-			pattern.setAttribute('height', '10%');
-  
-			pattern.append(polygon);
-			defs.append(pattern);
-			svg.prepend(defs);
-
-			let mapShapes = document.querySelectorAll('.inj-map-feature__pyhsiographic-region');
-			mapShapes.forEach(path => {
-				path.setAttribute('fill', 'url(#star)');
-				svg.append(path);	
-			})
-			// TODO: prepend defs to <svg> that leaflet auto-created
-			// TODO: select each shape that we want to pattern (I think we'll start with mountains), change its fill to url(#mtnPattern), append it to the bottom of the <svg>
 		},
 		enableScrollWheelZoom() {
 			this.map.scrollWheelZoom.enable();

@@ -49,6 +49,7 @@ export default {
 		'seventeen is missing',
 		'inj-map-feature__river-major',
 		'inj-map-feature__road-secondary-highway',
+		'inj-map-feature__mountain-range'
 	],
 	STATIC_BASE_URL: 'https://interpretation-of-nj.s3.us-east-2.amazonaws.com/',
 	DATE_FORMAT: { month: 'long', day: 'numeric', year: 'numeric' },

@@ -1,61 +1,95 @@
 @import 'settings.scss';
 
 .inj-map-feature {
+	fill-opacity: 1; // override of leaflet default
+	stroke-width: $map-feature-stroke-width;
 	&__home {
-		transition: fill-opacity ease $transition-time-secondary;
+		transition: fill-opacity $transition-time-secondary, stroke-opacity $transition-time-secondary;
+		
 		&:hover {
-			fill-opacity: 0.5;
+			fill-opacity: $map-feature-opacity-med;
 		}
 	}
 	&__pyhsiographic-region {
 		//some sort of greenish gray would be nice
-		stroke: none;
-		//fill: $color-nature;
-		// stroke-width: 1px;
-		fill-opacity: 0.2;
-	}
-	&__other-landform {
-		stroke: none;
 		fill: $color-nature;
-		fill-opacity: 0.4;
-	}
-	&__mountain {
-		stroke: none;
-		fill: $color-mountain;
-		fill-opacity: 0.4;
-		// eh...
+		fill-opacity: 0.1;
+		stroke: $color-nature;
+		stroke-opacity: $map-feature-opacity-med;
 		&.inj-map-feature__home:hover {
-			fill-opacity: 0.6;
+			fill-opacity: $map-feature-opacity-light;
+			stroke-opacity: 0;
 		}
 	}
+	&__other-landform {
+		fill: $color-nature;
+		fill-opacity: $map-feature-opacity-med;
+		stroke-opacity: 0;
+		&.inj-map-feature__home:hover {
+			fill-opacity: $map-feature-opacity-light;
+		}
+	}
+	&__mountain {
+		fill: $color-nature;
+		fill-opacity: $map-feature-opacity-med;
+		stroke: $color-nature;	
+		stroke-opacity: 0;
+		&.inj-map-feature__home:hover {
+			stroke-opacity: $map-feature-opacity;
+			fill-opacity: $map-feature-opacity-light;
+		}
+	}
+	&__mountain-range {
+		fill: url(#mountainPattern);
+		fill-opacity: $map-feature-opacity;
+		stroke: $color-nature;
+		stroke-opacity: 0;
+		&--pattern {
+			fill: $color-nature;
+		}
+		&.inj-map-feature__home:hover {
+			stroke-opacity: $map-feature-opacity;
+			fill-opacity: $map-feature-opacity-light;
+		}		
+	}
 	&__swamp {
-		stroke: none;
-		fill: $color-primary;
-		fill-opacity: $map-feature-opacity-light;
+		//fill: $color-primary;
+		fill: url(#swampPattern);
+		fill-opacity: $map-feature-opacity;
+		stroke: $color-primary;
+		stroke-opacity: 0;
+		&--pattern {
+			fill: $color-primary;
+		}
+		&.inj-map-feature__home:hover {
+			stroke-opacity: $map-feature-opacity;
+		}
 	}
 	&__other-political-entity {
-		stroke: $color-neighborhood;
 		fill: $color-neighborhood;
 		fill-opacity: 0;
+		stroke: $color-neighborhood;
+		stroke-opacity: $map-feature-opacity;
 		&.inj-map-feature__home:hover {
 			fill-opacity: $map-feature-opacity-light;
 		}
 	}
 	&__city {
-		stroke: none;
 		fill: $color-city;
+		fill-opacity: $map-feature-opacity-med;
+		stroke: $color-city;
 		stroke-width: $map-feature-stroke-width;
-		fill-opacity: 0.6;
+		stroke-opacity: $map-feature-opacity;
 		&.inj-map-feature__home:hover {
 			fill-opacity: $map-feature-opacity-light;
-			stroke: $color-city;
+			stroke-opacity: 1;
 		}
 	}
 	&__town {
-		stroke: $color-town;
 		fill: $color-town;
-		stroke-width: $map-feature-stroke-width;
 		fill-opacity: 0;
+		stroke: $color-town;
+		stroke-opacity: $map-feature-opacity;
 		&.inj-map-feature__home:hover {
 			fill-opacity: $map-feature-opacity-light;
 		}
@@ -72,9 +106,9 @@
 		}
 	}
 	&__lake-bay {
-		stroke: none;
 		fill: $color-primary;
 		fill-opacity: $map-feature-opacity;
+		stroke: none;
 	}
 	&__waterfall {
 		stroke: $color-primary;
@@ -84,17 +118,19 @@
 	&__other-infrastructure {}
 	&__road {
 		&-major-highway {
-			stroke: $color-quaternary;
+			stroke: $color-road;
 			opacity: $map-feature-opacity;
+			stroke-width: 2px
 		}
 		&-secondary-highway {
-			stroke: $color-quaternary;
+			stroke: $color-road;
 			opacity: $map-feature-opacity;
-			stroke-width: 2px;
+			stroke-width: 1px;
 		}
 		&-local {
-			stroke: $color-tertiary;
-			stroke-width: 2px;
+			stroke: $color-road;
+			opacity: $map-feature-opacity;
+			stroke-width: 1px;
 		}
 	}
 	&__bridge-tunnel {
@@ -126,5 +162,9 @@
 		&:hover {
 			stroke-opacity: 0.8;
 		}
+	}
+	&-patterns {
+		height: 0;
+		//this is sort of like an SVG sprite, located elsewhere in the DOM to be invisible
 	}
 }

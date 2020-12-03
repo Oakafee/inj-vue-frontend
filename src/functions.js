@@ -132,9 +132,9 @@ export default {
 		let specificClass = constants.MAP_FEATURE_CLASS_NAMES[feature.properties.category];
 		
 		if (hoverable) {
-			return `inj-map-feature__home ${specificClass}`
+			return `inj-map-feature inj-map-feature__home ${specificClass}`
 		}
-		return specificClass;
+		return `inj-map-feature ${specificClass}`;
 	},
 	enableScrollWheelZoom(map) {
 		map.scrollWheelZoom.enable();

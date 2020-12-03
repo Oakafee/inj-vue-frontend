@@ -35,12 +35,14 @@ $transition-time-secondary: 0.2s;
 
 $map-feature-stroke-width: 1px;
 $map-feature-opacity: 0.6;
+$map-feature-opacity-med: 0.4;
 $map-feature-opacity-light: 0.3;
 
 $color-city: #ff570f;//#ff9e0f;
 $color-town: #ffa30f;
 $color-neighborhood: #ffd829;
-$color-physiographic-region: darkgreen;
+$color-physiographic-region: darkgreen; //#2d640a;
 $color-mountain: #6f5c3e;
 $color-other-landform: #228B22;
 $color-nature: darkgreen;
+$color-road: #7c4635;

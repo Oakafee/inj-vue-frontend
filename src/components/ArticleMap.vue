@@ -84,6 +84,7 @@
 				<button class="inj-button" :class="{ 'inj-button--error' : validationError }" @click="addPastedFeature()">Add</button>
 			</div>
 		</InjModal>
+		<mapFeaturePatterns />
 	</div>
 </template>
 
@@ -97,10 +98,11 @@ import store from '../store';
 import functions from '../functions';
 import constants from '../constants';
 import InjModal from './InjModal';
+import mapFeaturePatterns from './MapFeaturePatterns';
 
 export default {
 	name: 'ArticleMap',
-	components: { InjModal },
+	components: { InjModal, mapFeaturePatterns },
 	props: ['editable', 'editPermission'],
 	data: function () {
 		return {
