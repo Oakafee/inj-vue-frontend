@@ -58,6 +58,12 @@
 					v-model="newContent"
 				/>
 				<p class="inj-text-error" v-if="validationError.message">{{ validationError.message }}  </p>
+				<div class="inj-form-element inj-article__choose-html">
+					<label for="htmlTags">
+						<input type="checkbox" id="htmlTags" v-model="newHtmlTags">
+						HTML tags used
+					</label>
+				</div>
 				<div class="inj-form-submit-button">
 					<span v-if="submitInProgress">Submitting article... </span>
 					<input
@@ -95,6 +101,7 @@ export default {
 			newAuthor: '',
 			newParent: this.$route.params.parent ? this.$route.params.parent : null,
 			newContent: '',
+			newHtmlTags: false,
 			mapEditable: true,
 			validationError: {
 				"field": "",
@@ -164,7 +171,8 @@ export default {
 				"subtitle": this.newSubtitle,
 				"contributor_id": this.user.id,
 				"article_content": this.newContent,
-				"parent": this.newParent
+				"parent": this.newParent,
+				"html_safe": this.newHtmlTags
 			}
 			if (this.newMapFeature.geometry && this.newMapFeature.geometry.coordinates) {
 				serializedArticle = {

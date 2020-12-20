@@ -14,7 +14,7 @@
 					v-if="comment.com_contributor.id === user.id"
 				/>
 			</span>
-			<p>{{ comment.commentary }} </p>
+			<p class="inj-article-comments__paragraph">{{ comment.commentary }} </p>
 		</div>
 	</div>
 	<ArticleCommentAdd class="inj-article-comments__content" v-if="!editableArticle" />
@@ -57,6 +57,9 @@ export default {
 	}
 	&__content {
 		margin: $spacing 0;
+	}
+	&__paragraph {
+		white-space: pre-line;
 	}
 	&__break {
 		width: 33%;
