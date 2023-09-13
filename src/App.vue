@@ -14,7 +14,6 @@
 <script>
 import {mapState} from 'vuex';
 
-import store from './store.js'
 import Title from './components/Title.vue'
 import Nav from './components/Nav.vue'
 import SaveChangesModal from './components/SaveChangesModal.vue'

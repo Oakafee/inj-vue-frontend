@@ -2,7 +2,7 @@
 	<span
 		class="comment-delete inj-fade-transition"
 		:class="{ 'inj-fade-transition--hidden': deleted }"
-	 >
+	>
 		<svg
 			v-show="!error"
 			xmlns="http://www.w3.org/2000/svg"

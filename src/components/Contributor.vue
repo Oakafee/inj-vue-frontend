@@ -123,6 +123,7 @@ export default {
 					if (error.response.status === 404) {
 						router.push({ name: '404' });
 					} else {
+						// eslint-disable-next-line
 						console.log('error with loading contributor articles: ', error);
 					}
 					this.loading = false;
@@ -144,6 +145,7 @@ export default {
 					if (error.response.status === 404) {
 						router.push({ name: '404' });
 					} else {
+						// eslint-disable-next-line
 						console.log('error with loading contributor commentary: ', error);
 					}
 				});

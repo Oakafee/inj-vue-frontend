@@ -10,7 +10,6 @@
 
 <script>
 import RecentArticles from './RecentArticles';
-import constants from '../constants';
 
 export default {
 	name: 'HomeMapSideColumn',

@@ -1,6 +1,6 @@
 <template>
 <ul v-if="childrenArticlesList.length > 0"><h3>Children articles: </h3>
-	<li v-for="article in childrenArticlesList">
+	<li v-for="article in childrenArticlesList" :key="article.id">
 		<router-link :to="article.slug">{{ article.title }}</router-link>
 	</li>
 </ul>
