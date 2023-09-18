@@ -6,7 +6,7 @@ export default {
 //	'https://inj-rest-staging.herokuapp.com/',
 //	'http://127.0.0.1:8000/',
 //	'https://oakafee2.pythonanywhere.com/',
-	'http://injstaging-oakafee2.pythonanywhere.com/',
+	'https://injstaging-oakafee2.pythonanywhere.com/',
 	API_PATH: 'articles/',
 	API_LOGIN_PATH: 'api-token-auth/',
 	MAP_DEFAULT_OPTIONS: {
