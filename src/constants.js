@@ -2,11 +2,11 @@ export default {
 	NJ_BOUNDS: {'north': 41.61, 'east': -73.40, 'south': 39.61, 'west': -76.10},
 	NJ_CENTER: [40.07, -74.56],
 	API_BASE_URL: 
-// 	'https://inj-rest-production.herokuapp.com/',
+ 	'https://inj-rest-production.herokuapp.com/',
 //	'https://inj-rest-staging.herokuapp.com/',
 //	'http://127.0.0.1:8000/',
 //	'https://oakafee2.pythonanywhere.com/',
-	'https://injstaging-oakafee2.pythonanywhere.com/',
+//	'https://injstaging-oakafee2.pythonanywhere.com/',
 	API_PATH: 'articles/',
 	API_LOGIN_PATH: 'api-token-auth/',
 	MAP_DEFAULT_OPTIONS: {

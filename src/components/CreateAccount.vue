@@ -82,7 +82,7 @@
 					:class="{
 						'inj-button--error': validationError.message,
 					}"
-					@click="createAccount()"
+					@click.prevent="createAccount()"
 				/>
 			</div>
 		</form>
